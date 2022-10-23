@@ -75,9 +75,10 @@ SESSION_CONFIGS = [
     ),
     dict(
         name='public_goods_simple',
-        display_name="Public Goods (simple version from tutorial)",
+        display_name="Public Goods Game",
         num_demo_participants=3,
-        app_sequence=['public_goods_simple', 'payment_info'],
+        app_sequence=['public_goods_simple'],
+        endowment_default=40
     ),
     dict(
         name='trust_simple',
@@ -85,6 +86,12 @@ SESSION_CONFIGS = [
         num_demo_participants=2,
         app_sequence=['trust_simple'],
     ),
+    dict(
+        name='ultimatum_game',
+        display_name="ultimatum Game",
+        app_sequence=['ultimatum_game'],
+        num_demo_participants=2,
+    )
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
@@ -102,7 +109,7 @@ SESSION_CONFIG_DEFAULTS = dict(
 LANGUAGE_CODE = 'en'
 
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'USD'
+REAL_WORLD_CURRENCY_CODE = 'EUR'
 USE_POINTS = True
 
 ROOMS = [

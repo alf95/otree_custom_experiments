@@ -1,0 +1,23 @@
+{{ block title }}
+Your role and decision
+{{ endblock }}
+
+{{ block content }}
+
+{{ include C.INSTRUCTIONS_FILE }}
+
+<p>
+    You are the <b>responder</b>.
+</p>
+
+
+<p>
+    Hai ricevuto un' offerta di {{group.amount_offered.__int__()}} punti.
+</p>
+
+{{ formfields }}
+
+{{ next_button }}
+
+{{ endblock }}
+
