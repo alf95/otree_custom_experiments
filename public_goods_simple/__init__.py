@@ -5,7 +5,7 @@ class C(BaseConstants):
     NAME_IN_URL = 'public_goods_simple'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 2
-    MPCR=0.5
+    #MPCR=0.5
 
 
 class Subsession(BaseSubsession):
@@ -40,7 +40,7 @@ def set_payoffs(group: Group):
     players = group.get_players()
     contributions = [p.contribution for p in players]
     group.total_contribution = sum(contributions)
-    group.individual_share = group.total_contribution * C.MPCR
+    group.individual_share = group.total_contribution * group.subsession.session.config['MPCR']
 
     for p in players:
         p.payoff = p.endowment - p.contribution + group.individual_share
