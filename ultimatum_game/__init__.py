@@ -8,7 +8,7 @@ Strategy method for ultimatum game.
 class C(BaseConstants):
     NAME_IN_URL = 'ultimatum_game'
     PLAYERS_PER_GROUP = 2
-    NUM_ROUNDS = 1
+    NUM_ROUNDS = 10
     INSTRUCTIONS_FILE = __name__ + '/instructions.html'
     ENDOWMENT = cu(10)
     OFFER_CHOICES = currency_range(0, ENDOWMENT, 1)

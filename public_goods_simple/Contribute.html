@@ -1,10 +1,10 @@
 {{ extends "global/Page.html" }}
-{{ block title }}Contribute{{ endblock }}
+{{ block title }}Contribute (Round {{player.round_number}}){{ endblock }}
 {{ block content }}
 
     <p>
         This is a public goods game with
-        {{ C.PLAYERS_PER_GROUP }} players per group,
+        {{ session.num_participants }} players per group,
         an endowment of {{ player.endowment }},
         and an efficiency factor of {{ session.config.MPCR }}.
     </p>

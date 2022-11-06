@@ -5,14 +5,14 @@ SESSION_CONFIGS = [
         name='public_goods_simple',
         display_name="Public Goods Game",
         num_demo_participants=3,
-        app_sequence=['public_goods_simple'],
+        app_sequence=['public_goods_simple', 'payment_info'],
         endowment_default=40,
         MPCR=0.5
     ),
     dict(
         name='ultimatum_game',
         display_name="Ultimatum Game",
-        app_sequence=['ultimatum_game'],
+        app_sequence=['ultimatum_game', 'payment_info'],
         num_demo_participants=2,
     )
 ]

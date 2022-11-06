@@ -1,16 +1,6 @@
 from otree.api import *
 
 
-class C(BaseConstants):
-    NAME_IN_URL = 'public_goods_simple'
-    PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 2
-    #MPCR=0.5
-
-
-class Subsession(BaseSubsession):
-    pass
-
 def get_endowments_from_csv():
     import csv
 
@@ -21,9 +11,22 @@ def get_endowments_from_csv():
     
     return endowments
 
+class C(BaseConstants):
+    NAME_IN_URL = 'public_goods_simple'
+    PLAYERS_PER_GROUP = None
+    NUM_ROUNDS = 10
+    endowments = get_endowments_from_csv()
+    #MPCR=0.5
 
-#def creating_session(subsession: Subsession):
-#session = subsession.session
+
+class Subsession(BaseSubsession):
+    pass
+
+
+
+"""def creating_session(subsession: Subsession):
+    session = subsession.session
+    print(session.num_participants)"""
     
 
 class Group(BaseGroup):
@@ -50,12 +53,10 @@ def set_payoffs(group: Group):
 class FirstWaitPage(WaitPage):
     @staticmethod
     def after_all_players_arrive(group: Group):
-        endowments = get_endowments_from_csv()
+        endowments = C.endowments
         for player in group.get_players():
-            print(endowments)
             playerId = player.participant.label
-            print(player.participant)
-            player.endowment = endowments[playerId]
+            player.endowment = endowments[playerId]  
 
 
 class Contribute(Page):
