@@ -1,4 +1,5 @@
 from otree.api import *
+import pathlib
 
 doc = """
 Strategy method for ultimatum game.
@@ -19,9 +20,15 @@ class C(BaseConstants):
         POSSIBLE_ALLOCATIONS.append(dict(p1_amount=OFFER, p2_amount=ENDOWMENT - OFFER))
 
 
+
+
 class Subsession(BaseSubsession):
     pass
 
+
+def creating_session(subsession: Subsession):
+    for p in subsession.get_players():
+        p.finished_round = False
 
 
 class Group(BaseGroup):
@@ -33,32 +40,59 @@ class Group(BaseGroup):
         # note to self: remove this once i release bugfix
         choices=[[False, 'No'], [True, 'Yes']],
     )
-    # another way to implement this game would be with an ExtraModel, instead of making
-    # all these hardcoded fields.
-    # that's what the choice_list app does.
-    # that would be more flexible, but also more complex since you would have to implement the
-    # formfields yourself with HTML and Javascript.
-    # in this case, since the rules of the game are pretty simple,
-    # and there are not too many fields,
-    # just defining these hardcoded fields is fine.
     
 
 
-def set_payoffs(group: Group):
+def set_payoffs(group: Group):    
     p1, p2 = group.get_players()
     p1.player_type = 'proposer'
     p2.player_type = 'responder'
     amount_offered = group.amount_offered
     if group.offer_accepted:
         p1.payoff = C.ENDOWMENT - amount_offered
-        p2.payoff = amount_offered
+        p2.payoff = amount_offered 
     else:
         p1.payoff = 0
         p2.payoff = 0
 
+    p1.finished_round = True
+    p2.finished_round = True
+
+    print(group.subsession.get_players())
+    print("Players in subsession")
+    if group.round_number == C.NUM_ROUNDS:
+        active_players = list(filter(lambda p:  p.round_number < C.NUM_ROUNDS or not(p.finished_round), group.subsession.get_players()))
+        #print(active_players)
+        if len(active_players) == 0:
+            print("Session completed")
+            players = []
+            for pl in group.subsession.get_players():
+                participant = pl.participant
+                players.append([participant.label, participant.payoff.__int__()])
+            writePayoffsInCSV(players)
+    #print(group.subsession.get_players()[0].participant.payoff)
+    
+
+def writePayoffsInCSV(data):
+    import csv
+    file = pathlib.Path(pathlib.Path(__file__).parent / "../public_goods_simple/endowment_players.csv")
+    if file.exists():
+        file.unlink()
+    header = ['id','endowment']
+    
+    with open(file, 'x', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+
+        # write the header
+        writer.writerow(header)
+
+        # write multiple rows
+        writer.writerows(data)
+
 
 class Player(BasePlayer):
     player_type = models.StringField(choices=['proposer', 'responder'])
+    finished_round = models.BooleanField()
 
 
 class P1(Page):
