@@ -1,12 +1,18 @@
 from otree.api import *
-
+import json
 
 def get_endowments_from_csv():
     import csv
+    from io import StringIO
+    from RemoteFileSystem import RemoteFileSystem
 
-    f = open(__name__ + '/endowment_players.csv', encoding='utf-8-sig')
+
+    content = RemoteFileSystem().read_file("endowment_players.csv")
+
+    data_io = StringIO(content)
+    reader = csv.DictReader(data_io)
     endowments = {}
-    for row in csv.DictReader(f):
+    for row in reader:
         endowments[row['id']] = int(row['endowment'])
     
     return endowments
@@ -15,18 +21,18 @@ class C(BaseConstants):
     NAME_IN_URL = 'public_goods_simple'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 10
-    endowments = get_endowments_from_csv()
-    #MPCR=0.5
 
 
 class Subsession(BaseSubsession):
-    pass
+    endowments = models.LongStringField()
 
 
 
-"""def creating_session(subsession: Subsession):
-    session = subsession.session
-    print(session.num_participants)"""
+def creating_session(subsession: Subsession):
+    print("creating_session method")
+    print("round number " + str(subsession.round_number))
+    if(subsession.round_number == 1):
+        subsession.endowments = json.dumps(get_endowments_from_csv())
     
 
 class Group(BaseGroup):
@@ -53,10 +59,10 @@ def set_payoffs(group: Group):
 class FirstWaitPage(WaitPage):
     @staticmethod
     def after_all_players_arrive(group: Group):
-        endowments = C.endowments
+        endowments = json.loads(group.subsession.in_round(1).endowments)
         for player in group.get_players():
-            playerId = player.participant.label
-            player.endowment = endowments[playerId]  
+            player_id = player.participant.label
+            player.endowment = endowments[player_id]  
 
 
 class Contribute(Page):

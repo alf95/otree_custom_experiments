@@ -9,7 +9,7 @@ Strategy method for ultimatum game.
 class C(BaseConstants):
     NAME_IN_URL = 'ultimatum_game'
     PLAYERS_PER_GROUP = 2
-    NUM_ROUNDS = 10
+    NUM_ROUNDS = 2
     INSTRUCTIONS_FILE = __name__ + '/instructions.html'
     ENDOWMENT = cu(10)
     OFFER_CHOICES = currency_range(0, ENDOWMENT, 1)
@@ -70,26 +70,22 @@ def set_payoffs(group: Group):
             for pl in group.subsession.get_players():
                 participant = pl.participant
                 players.append([participant.label, participant.payoff.__int__()])
-            writePayoffsInCSV(players)
+            write_payoffs_to_csv(players)
     #print(group.subsession.get_players()[0].participant.payoff)
     
 
-def writePayoffsInCSV(data):
+def write_payoffs_to_csv(data):
     import csv
-    file = pathlib.Path(pathlib.Path(__file__).parent / "../public_goods_simple/endowment_players.csv")
-    if file.exists():
-        file.unlink()
-    header = ['id','endowment']
+    from io import StringIO
+    from RemoteFileSystem import RemoteFileSystem
+
     
-    with open(file, 'x', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
-
-        # write the header
-        writer.writerow(header)
-
-        # write multiple rows
-        writer.writerows(data)
-
+    header = ['id','endowment']
+    buff = StringIO()
+    writer2 = csv.writer(buff, quoting=csv.QUOTE_NONE)
+    writer2.writerow(header)
+    writer2.writerows(data)
+    RemoteFileSystem().update_file(filename="endowment_players.csv", content= buff.getvalue())
 
 class Player(BasePlayer):
     player_type = models.StringField(choices=['proposer', 'responder'])
