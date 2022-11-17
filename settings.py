@@ -1,5 +1,7 @@
 from os import environ
 
+use_bot_ug = eval(environ.get('USE_BOT_UG')) if environ.get('USE_BOT_UG') is not None else False
+
 SESSION_CONFIGS = [
     dict(
         name='public_goods_simple',
@@ -14,6 +16,7 @@ SESSION_CONFIGS = [
         display_name="Ultimatum Game",
         app_sequence=['ultimatum_game', 'payment_info'],
         num_demo_participants=2,
+        use_browser_bots=use_bot_ug
     )
 ]
 
@@ -48,6 +51,12 @@ ROOMS = [
         name='test',
         display_name='Test class (same file)',
         participant_label_file='_rooms/econ101.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='test_60_pl',
+        display_name='Test 60 players',
+        participant_label_file='_rooms/test_60players.txt',
         use_secure_urls=True
     )
 ]

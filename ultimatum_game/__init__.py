@@ -58,7 +58,6 @@ def set_payoffs(group: Group):
     p1.finished_round = True
     p2.finished_round = True
 
-    print(group.subsession.get_players())
     print("Players in subsession")
     if group.subsession.round_number == C.NUM_ROUNDS:
         players_other_groups = list(filter(lambda player: player.participant.id_in_session not in [p1.participant.id_in_session, p2.participant.id_in_session], group.subsession.get_players()))
