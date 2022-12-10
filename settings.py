@@ -51,14 +51,12 @@ ROOMS = [
         participant_label_file='_rooms/room1_pgg.txt',
         use_secure_urls=True
     ),
-    ,
     dict(
         name='room2_pgg',
         display_name='Room 2 PGG',
         participant_label_file='_rooms/room2_pgg.txt',
         use_secure_urls=True
     ),
-    ,
     dict(
         name='room3_pgg',
         display_name='Room 3 PGG',
