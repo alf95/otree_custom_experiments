@@ -40,23 +40,29 @@ USE_POINTS = True
 
 ROOMS = [
     dict(
-        name='econ101',
-        display_name='Econ 101 class',
-        participant_label_file='_rooms/econ101.txt',
-        use_secure_urls=True
-    ),
-    dict(name='live_demo', display_name='Room for live demo (no participant labels)'),
-
-    dict(
-        name='test',
-        display_name='Test class (same file)',
-        participant_label_file='_rooms/econ101.txt',
+        name='room_ug',
+        display_name='Room UG (all players)',
+        participant_label_file='_rooms/room_ug.txt',
         use_secure_urls=True
     ),
     dict(
-        name='test_60_pl',
-        display_name='Test 60 players',
-        participant_label_file='_rooms/test_60players.txt',
+        name='room1_pgg',
+        display_name='Room 1 PGG',
+        participant_label_file='_rooms/room1_pgg.txt',
+        use_secure_urls=True
+    ),
+    ,
+    dict(
+        name='room2_pgg',
+        display_name='Room 2 PGG',
+        participant_label_file='_rooms/room2_pgg.txt',
+        use_secure_urls=True
+    ),
+    ,
+    dict(
+        name='room3_pgg',
+        display_name='Room 3 PGG',
+        participant_label_file='_rooms/room3_pgg.txt',
         use_secure_urls=True
     )
 ]
