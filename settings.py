@@ -47,20 +47,38 @@ ROOMS = [
     ),
     dict(
         name='room1_pgg',
-        display_name='Room 1 PGG',
+        display_name='Room 1 PGG (1-10 players)',
         participant_label_file='_rooms/room1_pgg.txt',
         use_secure_urls=True
     ),
     dict(
         name='room2_pgg',
-        display_name='Room 2 PGG',
+        display_name='Room 2 PGG (11-20 players)',
         participant_label_file='_rooms/room2_pgg.txt',
         use_secure_urls=True
     ),
     dict(
         name='room3_pgg',
-        display_name='Room 3 PGG',
+        display_name='Room 3 PGG (21-30 players)',
         participant_label_file='_rooms/room3_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room4_pgg',
+        display_name='Room 4 PGG (31-40 players)',
+        participant_label_file='_rooms/room4_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room5_pgg',
+        display_name='Room 5 PGG (41-50 players)',
+        participant_label_file='_rooms/room5_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room6_pgg',
+        display_name='Room 6 PGG (51-60 players)',
+        participant_label_file='_rooms/room6_pgg.txt',
         use_secure_urls=True
     )
 ]
