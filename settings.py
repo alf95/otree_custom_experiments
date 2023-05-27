@@ -17,6 +17,13 @@ SESSION_CONFIGS = [
         app_sequence=['ultimatum_game', 'payment_info'],
         num_demo_participants=2,
         use_browser_bots=use_bot_ug
+    ),
+dict(
+        name='negotiation_game',
+        display_name="Negotiation Game",
+        app_sequence=['negotiation_game', 'payment_info'],
+        num_demo_participants=2,
+        use_browser_bots=False
     )
 ]
 
