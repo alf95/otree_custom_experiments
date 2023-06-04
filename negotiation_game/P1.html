@@ -17,5 +17,10 @@
     {{ formfields }}
 
     {{ next_button }}
+<script>
+    var isFirstMove = '{{player.round_number == 1}}'; //True or False in Python != Javascript
+    var originalOffer = '{{group.amount_offered.__int__()}}'
+</script>
+<script src="{{ static 'negotiation_game/pages.js' }}"></script>
 
 {{ endblock }}

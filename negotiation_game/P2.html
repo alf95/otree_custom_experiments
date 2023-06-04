@@ -21,41 +21,8 @@ Your role and decision (Round {{player.round_number}})
 
 <script>
     var originalOffer = '{{group.amount_offered.__int__()}}'
-    $(function (){
-        var $divFormAmountOffered = $("[name=amount_offered]").closest("._formfield");
-        var $divMakeNewOffer =  $("[name=make_new_offer]").closest("._formfield")
-        $divFormAmountOffered.hide();
-        $divMakeNewOffer.hide();
-
-
-        /* events */
-        $("[name=offer_accepted]").on('change', function () {
-            let hasAccepted = $(this).val() == "True";
-            if(!hasAccepted){
-                $("[name=make_new_offer][value=False]").prop('checked', true);
-                $divMakeNewOffer.show();
-            }else{
-                $divMakeNewOffer.hide();
-            }
-        })
-
-        $("[name=make_new_offer]").on('change', function (){
-            let makeNewOffer = $(this).val() == "True";
-            if(makeNewOffer){
-                $divFormAmountOffered.show();
-            }else{
-                $divFormAmountOffered.hide();
-            }
-        })
-
-        $('#form').submit(function () {
-            //reset offer to the initial value
-            if($("[name=offer_accepted]").val() == "True" || $("[name=make_new_offer]") == "False"){
-                $("[name=amount_offered]").val(originalOffer);
-            }
-        })
-    })
 </script>
+<script src="{{ static 'negotiation_game/pages.js' }}"></script>
 
 
 {{ endblock }}

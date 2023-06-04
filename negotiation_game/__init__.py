@@ -39,12 +39,6 @@ class Group(BaseGroup):
         widget=widgets.RadioSelect,
         # note to self: remove this once i release bugfix
         choices=[[False, 'No'], [True, 'Yes']],
-    )
-    counter_offer_accepted = models.BooleanField(
-        label="Would you accept the counter offer?",
-        widget=widgets.RadioSelect,
-        # note to self: remove this once i release bugfix
-        choices=[[False, 'No'], [True, 'Yes']],
         initial=False
     )
 
@@ -60,15 +54,12 @@ class Group(BaseGroup):
 def set_payoffs(group: Group):    
     p1, p2 = group.get_players()
     amount_offered = group.amount_offered
-    if group.offer_accepted or group.counter_offer_accepted:
+    if group.offer_accepted:
         p1.payoff = C.ENDOWMENT - amount_offered
         p2.payoff = amount_offered 
     else:
         p1.payoff = 0
         p2.payoff = 0
-
-    p1.finished_round = True
-    p2.finished_round = True
         
     
 
@@ -84,7 +75,7 @@ class P1(Page):
     @staticmethod
     def get_form_fields(player):
         if player.round_number > 1:
-            return ['amount_offered', 'counter_offer_accepted']
+            return ['amount_offered', 'offer_accepted']
         else:
             return ['amount_offered']
 
@@ -92,17 +83,16 @@ class P1(Page):
     @staticmethod
     def is_displayed(player: Player):
         if player.round_number > 1:
-            #self.form_fields.append('counter_offer_accepted')
+            #self.form_fields.append('offer_accepted')
             prev_group = player.group.in_round(player.round_number - 1)
             player.group.amount_offered = prev_group.amount_offered
             player.group.offer_accepted = prev_group.offer_accepted
-            player.group.counter_offer_accepted = prev_group.counter_offer_accepted
             player.group.make_new_offer = prev_group.make_new_offer
         return player.id_in_group == 1 and player.group.make_new_offer
     
     @staticmethod
     def before_next_page(player, timeout_happened):
-        if player.group.counter_offer_accepted:
+        if player.group.offer_accepted:
             player.group.make_new_offer = False
 
 
