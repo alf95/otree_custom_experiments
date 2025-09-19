@@ -158,9 +158,7 @@ Each folder contains an independent oTree app with `models.py`, `pages.py`, `tem
 
 See [LICENSE](LICENSE) for details.
 
-If you use this code for research, please cite:
-
-> Chen, Daniel L., Martin Schonger, and Chris Wickens. “oTree – An open-source platform for laboratory, online, and field experiments.” *Journal of Behavioral and Experimental Finance*, Vol. 9, 2016, 88‑97.
+If you use this code for research, please cite this repository.
 
 ---
 
