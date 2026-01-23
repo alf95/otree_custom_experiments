@@ -1,20 +1,16 @@
 from otree.api import *
 import json
 
-def get_endowments_from_csv():
-    import csv
-    from io import StringIO
-    from RemoteFileSystem import RemoteFileSystem
+def get_endowments_from_db():
+    from ultimatum_game import FinalPayoff
 
-
-    content = RemoteFileSystem().read_file("endowment_players.csv")
-
-    data_io = StringIO(content)
-    reader = csv.DictReader(data_io)
     endowments = {}
-    for row in reader:
-        endowments[row['id']] = int(row['endowment'])
-    
+    # Recupera tutti i record dalla tabella FinalPayoff
+    payoff_records = FinalPayoff.filter()
+
+    for record in payoff_records:
+        endowments[record.player_label] = record.final_payoff
+
     return endowments
 
 class C(BaseConstants):
@@ -32,8 +28,8 @@ def creating_session(subsession: Subsession):
     print("creating_session method")
     print("round number " + str(subsession.round_number))
     if(subsession.round_number == 1):
-        subsession.endowments = json.dumps(get_endowments_from_csv())
-    
+        subsession.endowments = json.dumps(get_endowments_from_db())
+
 
 class Group(BaseGroup):
     total_contribution = models.CurrencyField()
@@ -62,7 +58,7 @@ class FirstWaitPage(WaitPage):
         endowments = json.loads(group.subsession.in_round(1).endowments)
         for player in group.get_players():
             player_id = player.participant.label
-            player.endowment = endowments[player_id]  
+            player.endowment = endowments[player_id]
 
 
 class Contribute(Page):
