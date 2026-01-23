@@ -1,5 +1,4 @@
 from otree.api import *
-import pathlib
 
 doc = """
 Strategy method for ultimatum game.
@@ -52,8 +51,8 @@ def set_payoffs(group: Group):
         p1.payoff = C.ENDOWMENT - amount_offered
         p2.payoff = amount_offered 
     else:
-        p1.payoff = 0
-        p2.payoff = 0
+        p1.payoff = cu(0)
+        p2.payoff = cu(0)
 
     p1.finished_round = True
     p2.finished_round = True
@@ -69,22 +68,35 @@ def set_payoffs(group: Group):
             for pl in group.subsession.get_players():
                 participant = pl.participant
                 players.append([participant.label, participant.payoff.__int__()])
-            write_payoffs_to_csv(players)
+            write_payoffs_to_db(players)
     #print(group.subsession.get_players()[0].participant.payoff)
     
 
-def write_payoffs_to_csv(data):
-    import csv
-    from io import StringIO
-    from RemoteFileSystem import RemoteFileSystem
+def write_payoffs_to_db(data):
+    """
+    Salva i payoff finali nel database PostgreSQL.
+    I dati sono già persistiti attraverso il modello Participant di oTree,
+    ma questa funzione crea un record nella tabella FinalPayoff per tracciamento.
+    """
+    from datetime import datetime
+    for player_data in data:
+        player_id, payoff = player_data
+        payoff_record = FinalPayoff.create()
+        payoff_record.player_label = player_id
+        payoff_record.final_payoff = payoff
+        payoff_record.timestamp = datetime.now().isoformat()
+    print(f"Salvati {len(data)} payoff nel database")
 
-    
-    header = ['id','endowment']
-    buff = StringIO()
-    writer2 = csv.writer(buff, quoting=csv.QUOTE_NONE)
-    writer2.writerow(header)
-    writer2.writerows(data)
-    RemoteFileSystem().update_file(filename="endowment_players.csv", content= buff.getvalue())
+
+class FinalPayoff(ExtraModel):
+    """
+    Modello personalizzato per salvare i payoff finali dei giocatori.
+    Questa tabella viene creata nel database PostgreSQL.
+    """
+    player_label = models.StringField()
+    final_payoff = models.IntegerField()
+    timestamp = models.StringField()
+
 
 class Player(BasePlayer):
     player_type = models.StringField(choices=['proposer', 'responder'])
