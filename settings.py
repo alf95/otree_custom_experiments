@@ -92,7 +92,7 @@ Here are some oTree games.
 """
 
 # don't share this with anybody.
-SECRET_KEY = '6lertt4wlb09zj@4wyuy-p-6)i$vh!ljwx&r9bti6kgw54k-h8'
+SECRET_KEY = environ.get('SECRET_KEY', '6lertt4wlb09zj@4wyuy-p-6)i$vh!ljwx&r9bti6kgw54k-h8')
 
 # if an app is included in SESSION_CONFIGS, you don't need to list it here
 INSTALLED_APPS = ['otree']
