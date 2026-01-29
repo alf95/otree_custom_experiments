@@ -1,4 +1,8 @@
+import time
+
 from otree.api import *
+
+from _shared.chat_mixin import ChatPage
 
 doc = """
 Strategy method for ultimatum game.
@@ -8,7 +12,7 @@ Strategy method for ultimatum game.
 class C(BaseConstants):
     NAME_IN_URL = 'ultimatum_game'
     PLAYERS_PER_GROUP = 2
-    NUM_ROUNDS = 10
+    NUM_ROUNDS = 2
     INSTRUCTIONS_FILE = __name__ + '/instructions.html'
     ENDOWMENT = cu(10)
     OFFER_CHOICES = currency_range(0, ENDOWMENT, 1)
@@ -103,7 +107,7 @@ class Player(BasePlayer):
     finished_round = models.BooleanField()
 
 
-class P1(Page):
+class P1(ChatPage):
     form_model = 'group'
     form_fields = ['amount_offered']
 
@@ -120,7 +124,7 @@ class P1ContributionWaitPage(WaitPage):
 
 
 
-class P2(Page):
+class P2(ChatPage):
     form_model = 'group'
     form_fields = ['offer_accepted']
 
@@ -138,7 +142,7 @@ class ResultsWaitPage(WaitPage):
     )
 
 
-class Results(Page):
+class Results(ChatPage):
     pass
 
 

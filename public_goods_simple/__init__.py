@@ -16,7 +16,7 @@ def get_endowments_from_db():
 class C(BaseConstants):
     NAME_IN_URL = 'public_goods_simple'
     PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 10
+    NUM_ROUNDS = 2
 
 
 class Subsession(BaseSubsession):

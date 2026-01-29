@@ -14,9 +14,15 @@ SESSION_CONFIGS = [
     dict(
         name='ultimatum_game',
         display_name="Ultimatum Game",
-        app_sequence=['ultimatum_game', 'payment_info'],
+        app_sequence=['chat_system', 'ultimatum_game', 'payment_info'],
         num_demo_participants=2,
         use_browser_bots=use_bot_ug
+    ),
+    dict(
+        name='experimenter_dashboard',
+        display_name='Experimenter Dashboard',
+        app_sequence=['chat_system', 'experimenter_dashboard'],
+        num_demo_participants=1,
     )
 ]
 

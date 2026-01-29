@@ -1,0 +1,315 @@
+<!-- ChatWidget.html - Include this in your base template -->
+<style>
+    #chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+    }
+
+    #chat-header {
+        background: #007bff;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #chat-header:hover {
+        background: #0056b3;
+    }
+
+    #chat-body {
+        display: none;
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #chat-body.open {
+        display: flex;
+    }
+
+    #chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f8f9fa;
+        max-height: 320px;
+    }
+
+    .chat-message {
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        max-width: 85%;
+        word-wrap: break-word;
+    }
+
+    .chat-message.from-subject {
+        background: #e3f2fd;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .chat-message.from-experimenter {
+        background: #fff3e0;
+        margin-right: auto;
+    }
+
+    .chat-message strong {
+        display: block;
+        font-size: 0.85em;
+        margin-bottom: 4px;
+        opacity: 0.8;
+    }
+
+    #chat-input-area {
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: white;
+        border-radius: 0 0 8px 8px;
+        display: flex;
+        gap: 8px;
+    }
+
+    #chat-message-input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    #chat-send-button {
+        padding: 8px 16px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    #chat-send-button:hover {
+        background: #0056b3;
+    }
+
+    #chat-send-button:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .unread-badge {
+        background: #dc3545;
+        color: white;
+        border-radius: 10px;
+        padding: 2px 8px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .chat-timestamp {
+        font-size: 0.75em;
+        opacity: 0.6;
+        margin-top: 4px;
+    }
+
+    #toggle-icon {
+        transition: transform 0.3s;
+    }
+
+    #toggle-icon.open {
+        transform: rotate(180deg);
+    }
+</style>
+
+<div id="chat-widget">
+    <div id="chat-header">
+        <span>
+            <strong>💬 Chat with Experimenter</strong>
+            <span id="unread-count" class="unread-badge" style="display: none;">0</span>
+        </span>
+        <span id="toggle-icon">▼</span>
+    </div>
+
+    <div id="chat-body">
+        <div id="chat-messages">
+            <!-- Messages will be inserted here -->
+        </div>
+
+        <div id="chat-input-area">
+            <input
+                type="text"
+                id="chat-message-input"
+                placeholder="Type your message..."
+                maxlength="500"
+            />
+            <button id="chat-send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Chat widget state
+        let chatMessages = [];
+        let isChatOpen = false;
+        let unreadCount = 0;
+        let isFirstLoad = true;
+
+        // DOM elements
+        const chatHeader = document.getElementById('chat-header');
+        const chatBody = document.getElementById('chat-body');
+        const chatMessagesContainer = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('chat-message-input');
+        const sendButton = document.getElementById('chat-send-button');
+        const unreadBadge = document.getElementById('unread-count');
+        const toggleIcon = document.getElementById('toggle-icon');
+
+        // Toggle chat open/closed
+        function toggleChat() {
+            isChatOpen = !isChatOpen;
+            if (isChatOpen) {
+                chatBody.classList.add('open');
+                toggleIcon.classList.add('open');
+                unreadCount = 0;
+                updateUnreadBadge();
+                markMessagesAsRead();
+            } else {
+                chatBody.classList.remove('open');
+                toggleIcon.classList.remove('open');
+            }
+        }
+
+        // Update unread badge
+        function updateUnreadBadge() {
+            if (unreadCount > 0) {
+                unreadBadge.textContent = unreadCount;
+                unreadBadge.style.display = 'inline-block';
+            } else {
+                unreadBadge.style.display = 'none';
+            }
+        }
+
+        // Format timestamp
+        function formatTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Display messages
+        function displayMessages() {
+            chatMessagesContainer.innerHTML = '';
+
+            chatMessages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'chat-message ' +
+                    (msg.is_from_experimenter ? 'from-experimenter' : 'from-subject');
+
+                const sender = msg.is_from_experimenter ? 'Experimenter' : 'You';
+                const timeStr = formatTime(msg.timestamp);
+
+                div.innerHTML = `
+                    <strong>${sender}</strong>
+                    <div>${msg.body}</div>
+                    <div class="chat-timestamp">${timeStr}</div>
+                `;
+
+                chatMessagesContainer.appendChild(div);
+            });
+
+            // Scroll to bottom
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+
+        // Send message
+        function sendMessage() {
+            const body = messageInput.value.trim();
+
+            if (body) {
+                sendButton.disabled = true;
+
+                liveSend({
+                    type: 'send_chat_message',
+                    body: body
+                });
+
+                messageInput.value = '';
+                setTimeout(() => {
+                    sendButton.disabled = false;
+                    messageInput.focus();
+                }, 500);
+            }
+        }
+
+        // Get messages
+        function getMessages() {
+            liveSend({ type: 'get_chat_messages' });
+        }
+
+        // Mark messages as read
+        function markMessagesAsRead() {
+            if (isChatOpen && unreadCount > 0) {
+                liveSend({ type: 'mark_messages_read' });
+            }
+        }
+
+        // Handle incoming data from live method
+        window.liveRecv = function(data) {
+            console.log('Chat widget received data:', data);
+            if (Array.isArray(data)) {
+                const previousLength = chatMessages.length;
+                chatMessages = data;
+
+                // Count new unread messages (only if chat is closed)
+                if (!isChatOpen && !isFirstLoad) {
+                    const newMessages = chatMessages.length - previousLength;
+                    if (newMessages > 0) {
+                        // Check if new messages are from experimenter
+                        const newFromExperimenter = chatMessages
+                            .slice(-newMessages)
+                            .filter(m => m.is_from_experimenter && !m.is_read)
+                            .length;
+
+                        if (newFromExperimenter > 0) {
+                            unreadCount += newFromExperimenter;
+                            updateUnreadBadge();
+
+                            // Optional: play notification sound
+                            // new Audio('/static/notification.mp3').play();
+                        }
+                    }
+                }
+
+                isFirstLoad = false;
+                displayMessages();
+            }
+        };
+
+        // Event listeners
+        chatHeader.addEventListener('click', toggleChat);
+
+        sendButton.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initial load and polling
+        getMessages();
+        setInterval(getMessages, 2000);
+
+    })();
+</script>

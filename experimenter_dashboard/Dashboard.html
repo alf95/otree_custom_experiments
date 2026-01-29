@@ -1,0 +1,315 @@
+{{ block title }}Experimenter Chat Dashboard{{ endblock }}
+
+{{ block content }}
+<div class="container-fluid">
+    <h2>Participant Chat Dashboard</h2>
+    <p class="text-muted">Monitor and respond to all participant messages across all sessions</p>
+
+    <div class="row">
+        <div class="col-md-3">
+            <h4>Participants</h4>
+            <div id="participant-list" style="border: 1px solid #ddd; border-radius: 4px; padding: 0; max-height: 600px; overflow-y: auto;">
+                <!-- Participant list will appear here -->
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div id="chat-area">
+                <h4 id="current-participant">Select a participant to view chat</h4>
+                <div id="messages" style="height: 450px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 15px; background: #f8f9fa;">
+                    <!-- Messages will appear here -->
+                </div>
+
+                <div id="reply-section" style="display: none;">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="message-input"
+                            class="form-control"
+                            placeholder="Type your reply..."
+                            maxlength="500"
+                        />
+                        <button id="send-button" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .participant-item {
+        padding: 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+    }
+
+    .participant-item:hover {
+        background: #f8f9fa;
+    }
+
+    .participant-item.active {
+        background: #e3f2fd;
+        border-left: 4px solid #007bff;
+    }
+
+    .session-badge {
+        display: inline-block;
+        background: #6c757d;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.75em;
+        margin-left: 5px;
+    }
+
+    .message-bubble {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 8px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+
+    .message-bubble.from-participant {
+        background: #fff3e0;
+        margin-right: auto;
+    }
+
+    .message-bubble.from-experimenter {
+        background: #e8f5e9;
+        margin-left: auto;
+    }
+
+    .message-header {
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+        opacity: 0.8;
+    }
+
+    .message-timestamp {
+        font-size: 0.75em;
+        opacity: 0.6;
+        margin-top: 5px;
+    }
+
+    .unread-badge {
+        background: #dc3545;
+        color: white;
+        border-radius: 12px;
+        padding: 3px 8px;
+        font-size: 0.8em;
+        font-weight: bold;
+        float: right;
+    }
+
+    .no-participants {
+        padding: 40px;
+        text-align: center;
+        color: #999;
+    }
+</style>
+
+{{ formfields }}
+
+<script>
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Check if liveSend is available
+        if (typeof liveSend === 'undefined') {
+            console.error('liveSend is not defined. Make sure Dashboard page has live_method defined.');
+            document.getElementById('messages').innerHTML =
+                '<div class="alert alert-danger">Error: Live functionality not available. Check console for details.</div>';
+            return;
+        }
+
+        let allChats = {};
+        let currentParticipantId = null;
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString();
+        }
+
+        function displayParticipantList() {
+            const container = document.getElementById('participant-list');
+            container.innerHTML = '';
+
+            const participantIds = Object.keys(allChats);
+
+            if (participantIds.length === 0) {
+                container.innerHTML = '<div class="no-participants">No participants with chat messages yet.<br><br>Participants will appear here once they send their first message.</div>';
+                return;
+            }
+
+            // Sort by unread count (highest first), then by participant ID
+            participantIds.sort(function(a, b) {
+                const unreadDiff = allChats[b].unread_count - allChats[a].unread_count;
+                if (unreadDiff !== 0) return unreadDiff;
+                return a - b;
+            });
+
+            participantIds.forEach(function(participantId) {
+                const chat = allChats[participantId];
+                const div = document.createElement('div');
+                div.className = 'participant-item';
+
+                if (participantId == currentParticipantId) {
+                    div.classList.add('active');
+                }
+
+                let label = chat.participant_label || chat.participant_code;
+                let sessionBadge = '<span class="session-badge">' + escapeHtml(chat.session_code || 'Unknown') + '</span>';
+                let badgeHtml = '';
+
+                if (chat.unread_count > 0) {
+                    badgeHtml = '<span class="unread-badge">' + chat.unread_count + '</span>';
+                }
+
+                div.innerHTML =
+                    '<div>' +
+                    '<strong>' + escapeHtml(label) + '</strong>' +
+                    sessionBadge +
+                    badgeHtml +
+                    '<br>' +
+                    '<small class="text-muted">' + escapeHtml(chat.participant_code) + '</small>' +
+                    '<br>' +
+                    '<small class="text-muted">' + chat.messages.length + ' message(s)</small>' +
+                    '</div>';
+
+                div.onclick = function() {
+                    selectParticipant(participantId);
+                };
+
+                container.appendChild(div);
+            });
+        }
+
+        function selectParticipant(participantId) {
+            currentParticipantId = participantId;
+            const chat = allChats[participantId];
+
+            let label = chat.participant_label || chat.participant_code;
+            let sessionInfo = chat.session_code ? ' (Session: ' + chat.session_code + ')' : '';
+            document.getElementById('current-participant').textContent = 'Chat with ' + label + sessionInfo;
+            document.getElementById('reply-section').style.display = 'block';
+
+            displayMessages(chat.messages);
+            displayParticipantList();
+
+            // Mark as read
+            if (chat.unread_count > 0) {
+                try {
+                    liveSend({
+                        type: 'mark_participant_read',
+                        participant_id: participantId
+                    });
+                } catch (error) {
+                    console.error('Error marking as read:', error);
+                }
+            }
+        }
+
+        function displayMessages(messages) {
+            const container = document.getElementById('messages');
+            container.innerHTML = '';
+
+            if (messages.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center" style="margin-top: 50px;">No messages yet</p>';
+                return;
+            }
+
+            messages.forEach(function(msg) {
+                const div = document.createElement('div');
+                div.className = 'message-bubble ' +
+                    (msg.is_from_experimenter ? 'from-experimenter' : 'from-participant');
+
+                const sender = msg.is_from_experimenter ? 'You (Experimenter)' : 'Participant';
+                const timeStr = formatTime(msg.timestamp);
+
+                div.innerHTML =
+                    '<div class="message-header">' + sender + '</div>' +
+                    '<div>' + escapeHtml(msg.body) + '</div>' +
+                    '<div class="message-timestamp">' + timeStr + '</div>';
+
+                container.appendChild(div);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const body = input.value.trim();
+
+            if (body && currentParticipantId) {
+                try {
+                    liveSend({
+                        type: 'send_message',
+                        participant_id: currentParticipantId,
+                        body: body
+                    });
+                    input.value = '';
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    alert('Failed to send message. Please try again.');
+                }
+            }
+        }
+
+        function getAllChats() {
+            try {
+                liveSend({ type: 'get_all_chats' });
+            } catch (error) {
+                console.error('Error getting chats:', error);
+            }
+        }
+
+        // This function receives data from the server
+        window.liveRecv = function(data) {
+            if (typeof data === 'object' && !Array.isArray(data) && data !== null) {
+                // Check if it's an error
+                if (data.error) {
+                    console.error('Server error:', data.error);
+                    return;
+                }
+
+                allChats = data;
+                displayParticipantList();
+
+                if (currentParticipantId && allChats[currentParticipantId]) {
+                    displayMessages(allChats[currentParticipantId].messages);
+                }
+            } else if (data === 'update_chat' || data === 'marked_read') {
+                getAllChats();
+            }
+        };
+
+        // Event listeners
+        document.getElementById('send-button').onclick = sendMessage;
+        document.getElementById('message-input').onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        };
+
+        // Initial load - wait a bit for page to fully initialize
+        setTimeout(function() {
+            getAllChats();
+
+            // Poll for updates every 3 seconds
+            setInterval(getAllChats, 3000);
+        }, 500);
+
+    });
+</script>
+{{ endblock }}
