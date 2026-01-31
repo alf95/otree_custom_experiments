@@ -71,8 +71,8 @@ class ResultsWaitPage(WaitPage):
 
 
 class Results(Page):
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         player = self.player
         group = self.group
         
