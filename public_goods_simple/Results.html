@@ -10,5 +10,14 @@
         Your profit is therefore {{ player.payoff }}.
     </p>
 
+    {% if show_total_payoff %}
+    <div style="margin-top: 30px; padding: 20px; border: 2px solid #007bff; border-radius: 5px; background-color: #f0f8ff;">
+        <h3>Final Results</h3>
+        <p style="font-size: 18px; font-weight: bold;">
+            Your total payoff across all {{ player.round_number }} rounds: <span style="color: #28a745;">{{ total_payoff }}</span>
+        </p>
+    </div>
+    {% endif %}
+
     {{ next_button }}
 {{ endblock }}

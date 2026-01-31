@@ -71,7 +71,25 @@ class ResultsWaitPage(WaitPage):
 
 
 class Results(Page):
-    pass
+    def get_context_data(self):
+        context = super().get_context_data()
+        player = self.player
+        group = self.group
+        
+        # Calculate total payoff across all rounds
+        all_payoffs = [p.payoff for p in player.in_all_rounds() if p.payoff is not None]
+        total_payoff = sum(all_payoffs)
+        
+        # Check if this is the last round and group id is even
+        is_last_round = player.round_number == C.NUM_ROUNDS
+        is_even_group = group.id_in_subsession % 2 == 0
+        
+        context['total_payoff'] = total_payoff
+        context['is_last_round'] = is_last_round
+        context['is_even_group'] = is_even_group
+        context['show_total_payoff'] = is_last_round and is_even_group
+        
+        return context
 
 
 page_sequence = [FirstWaitPage, Contribute, ResultsWaitPage, Results]
