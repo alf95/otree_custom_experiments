@@ -75,8 +75,7 @@ class ResultsWaitPage(WaitPage):
 
 
 class Results(Page):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def vars_for_template(self):
         player = self.player
         group = self.group
         
@@ -88,12 +87,12 @@ class Results(Page):
         is_last_round = player.round_number == C.NUM_ROUNDS
         is_even_group = group.id_in_subsession % 2 == 0
         
-        context['total_payoff'] = total_payoff
-        context['is_last_round'] = is_last_round
-        context['is_even_group'] = is_even_group
-        context['show_total_payoff'] = is_last_round and is_even_group
-        
-        return context
+        return {
+            'total_payoff': total_payoff,
+            'is_last_round': is_last_round,
+            'is_even_group': is_even_group,
+            'show_total_payoff': is_last_round and is_even_group,
+        }
 
 
 page_sequence = [FirstWaitPage, Contribute, ResultsWaitPage, Results]
