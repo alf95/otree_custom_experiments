@@ -70,7 +70,8 @@ class Contribute(Page):
 
 class ResultsWaitPage(WaitPage):
     page_title = 'Calculating Results'
-    body_text = 'Your contributions are being calculated. Please wait for the results.'
+    body_text = 'Your contributions are being calculated. Please wait for the results. You can play Tic Tac Toe while you wait.'
+    template_name = 'public_goods_simple/TicTacToe.html'
     after_all_players_arrive = set_payoffs
 
 

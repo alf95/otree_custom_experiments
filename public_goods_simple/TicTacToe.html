@@ -1,0 +1,117 @@
+<div class="card bg-light m-3">
+  <div class="card-body text-center">
+    <h3>Tic Tac Toe — Play vs AI 🎯</h3>
+    <p>Play for fun while you wait. This game does not affect experiment outcomes.</p>
+
+    <div id="ttt" style="display:inline-block; text-align:center;">
+      <div id="board" style="display:grid; grid-template-columns: repeat(3, 90px); grid-gap:8px; margin: 12px auto;">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+      <p id="status" style="min-height:1.2em; font-weight:600;"></p>
+      <button id="restart" class="btn btn-primary">Restart</button>
+    </div>
+
+    <style>
+      #board .cell {
+        width:90px; height:90px; display:flex; align-items:center; justify-content:center;
+        background:#fff; border-radius:6px; box-shadow: 0 0 0 2px #e9ecef inset; font-size:36px; cursor:pointer;
+        user-select:none;
+      }
+      #board .cell.disabled { cursor:default; opacity:0.7 }
+    </style>
+
+    <script>
+      (function() {
+        const HUMAN = 'X';
+        const AI = 'O';
+        let board = Array(9).fill(null);
+        let gameOver = false;
+
+        const cells = document.querySelectorAll('.cell');
+        const statusEl = document.getElementById('status');
+        const restartBtn = document.getElementById('restart');
+
+        const wins = [
+          [0,1,2],[3,4,5],[6,7,8],
+          [0,3,6],[1,4,7],[2,5,8],
+          [0,4,8],[2,4,6]
+        ];
+
+        function checkWinner(b) {
+          for (const [a,c,d] of wins) {
+            if (b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+          }
+          return b.every(Boolean) ? 'draw' : null;
+        }
+
+        function render() {
+          board.forEach((v,i) => {
+            const el = cells[i];
+            el.textContent = v || '';
+            el.classList.toggle('disabled', !!v || gameOver);
+          });
+          const res = checkWinner(board);
+          if (res === HUMAN) statusEl.textContent = 'You win! 🎉';
+          else if (res === AI) statusEl.textContent = 'AI wins. 🤖';
+          else if (res === 'draw') statusEl.textContent = 'Draw.';
+          else statusEl.textContent = "Your move (X).";
+        }
+
+        function availableIndices(b) { return b.map((v,i) => v ? null : i).filter(n => n !== null); }
+
+        function aiMove() {
+          // 1) Win if possible
+          for (const i of availableIndices(board)) {
+            const copy = board.slice(); copy[i] = AI;
+            if (checkWinner(copy) === AI) { board[i] = AI; return; }
+          }
+          // 2) Block human win
+          for (const i of availableIndices(board)) {
+            const copy = board.slice(); copy[i] = HUMAN;
+            if (checkWinner(copy) === HUMAN) { board[i] = AI; return; }
+          }
+          // 3) Take center
+          if (!board[4]) { board[4] = AI; return; }
+          // 4) Take a corner
+          const corners = [0,2,6,8].filter(i => !board[i]);
+          if (corners.length) { board[corners[Math.floor(Math.random()*corners.length)]] = AI; return; }
+          // 5) Random
+          const avail = availableIndices(board);
+          if (avail.length) board[avail[Math.floor(Math.random()*avail.length)]] = AI;
+        }
+
+        cells.forEach(el => el.addEventListener('click', e => {
+          if (gameOver) return;
+          const idx = Number(el.dataset.index);
+          if (board[idx]) return;
+          board[idx] = HUMAN;
+          let res = checkWinner(board);
+          if (res) { gameOver = true; render(); return; }
+          // AI move after slight delay
+          setTimeout(() => {
+            aiMove();
+            res = checkWinner(board);
+            if (res) gameOver = true;
+            render();
+          }, 350);
+          render();
+        }));
+
+        restartBtn.addEventListener('click', () => {
+          board = Array(9).fill(null); gameOver = false; render();
+        });
+
+        // initial render
+        render();
+      })();
+    </script>
+  </div>
+</div>
