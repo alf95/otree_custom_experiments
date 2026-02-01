@@ -132,7 +132,7 @@ class P2(Page):
 
 
 
-class ResultsWaitPage(CustomWaitPage):
+class ResultsWaitPage(WaitPage):
     page_title = 'Thank You'
     body_text = 'When the other player arrives, the payoff will be calculated.'
     after_all_players_arrive = set_payoffs
