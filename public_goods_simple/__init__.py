@@ -75,9 +75,9 @@ class ResultsWaitPage(WaitPage):
 
 
 class Results(Page):
-    def vars_for_template(self):
-        player = self.player
-        group = self.group
+    @staticmethod
+    def vars_for_template(player: Player):
+        group = player.group
         
         # Calculate total payoff across all rounds
         all_payoffs = [p.payoff for p in player.in_all_rounds() if p.payoff is not None]
