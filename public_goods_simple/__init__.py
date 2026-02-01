@@ -53,6 +53,8 @@ def set_payoffs(group: Group):
 
 # PAGES
 class FirstWaitPage(WaitPage):
+    page_title = 'Waiting for Participants'
+    body_text = 'Please wait while we prepare the experiment and other participants join.'
     @staticmethod
     def after_all_players_arrive(group: Group):
         endowments = json.loads(group.subsession.in_round(1).endowments)
@@ -67,6 +69,8 @@ class Contribute(Page):
 
 
 class ResultsWaitPage(WaitPage):
+    page_title = 'Calculating Results'
+    body_text = 'Your contributions are being calculated. Please wait for the results.'
     after_all_players_arrive = set_payoffs
 
 
