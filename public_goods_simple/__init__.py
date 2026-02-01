@@ -53,7 +53,7 @@ def set_payoffs(group: Group):
 
 # PAGES
 class FirstWaitPage(WaitPage):
-    page_title = 'Waiting for Participants'
+    title_text  = 'Waiting for Participants'
     body_text = 'Please wait while we prepare the experiment and other participants join.'
     @staticmethod
     def after_all_players_arrive(group: Group):
@@ -69,7 +69,7 @@ class Contribute(Page):
 
 
 class ResultsWaitPage(WaitPage):
-    page_title = 'Calculating Results'
+    title_text  = 'Calculating Results'
     body_text = 'Your contributions are being calculated. Please wait for the results. You can play Tic Tac Toe while you wait.'
     template_name = 'public_goods_simple/TicTacToe.html'
     after_all_players_arrive = set_payoffs

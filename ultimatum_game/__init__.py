@@ -114,7 +114,7 @@ class P1(Page):
 
 
 class P1ContributionWaitPage(WaitPage):
-    page_title = 'Waiting for Proposal'
+    title_text = 'Waiting for Proposal'
     body_text = 'The other player is making their proposal. Please wait...'
     @staticmethod
     def is_displayed(player: Player):
@@ -133,7 +133,7 @@ class P2(Page):
 
 
 class ResultsWaitPage(WaitPage):
-    page_title = 'Thank You'
+    title_text = 'Thank You'
     body_text = 'When the other player arrives, the payoff will be calculated.'
     after_all_players_arrive = set_payoffs
     title_text = "Thank you"
