@@ -85,7 +85,7 @@ class Results(Page):
         
         # Check if this is the last round and group id is even
         is_last_round = player.round_number == C.NUM_ROUNDS
-        is_even_group = group.id_in_subsession % 2 == 0
+        is_even_group = player.id_in_group % 2 == 0
         
         return {
             'total_payoff': total_payoff,
