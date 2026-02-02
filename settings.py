@@ -80,6 +80,30 @@ ROOMS = [
         display_name='Room 6 PGG (51-60 players)',
         participant_label_file='_rooms/room6_pgg.txt',
         use_secure_urls=True
+    ),
+    dict(
+        name='room7_pgg',
+        display_name='Room 7 PGG (61-70 players)',
+        participant_label_file='_rooms/room7_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room8_pgg',
+        display_name='Room 8 PGG (71-80 players)',
+        participant_label_file='_rooms/room8_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room9_pgg',
+        display_name='Room 9 PGG (81-90 players)',
+        participant_label_file='_rooms/room9_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room10_pgg',
+        display_name='Room 10 PGG (91-100 players)',
+        participant_label_file='_rooms/room10_pgg.txt',
+        use_secure_urls=True
     )
 ]
 
