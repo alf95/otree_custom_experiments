@@ -104,6 +104,18 @@ ROOMS = [
         display_name='Room 10 PGG (91-100 players)',
         participant_label_file='_rooms/room10_pgg.txt',
         use_secure_urls=True
+    ),
+    dict(
+        name='room11_pgg',
+        display_name='Room 11 PGG (101-110 players)',
+        participant_label_file='_rooms/room11_pgg.txt',
+        use_secure_urls=True
+    ),
+    dict(
+        name='room12_pgg',
+        display_name='Room 12 PGG (111-120 players)',
+        participant_label_file='_rooms/room12_pgg.txt',
+        use_secure_urls=True
     )
 ]
 
