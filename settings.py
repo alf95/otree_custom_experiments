@@ -1,7 +1,7 @@
 from os import environ
 
 # =============================================================================
-#  CONFIGURAZIONE DELLE SESSIONI — GUIDA RAPIDA PER LO SPERIMENTATORE
+#  CONFIGURAZIONE DELLE SESSIONI - GUIDA RAPIDA PER LO SPERIMENTATORE
 # =============================================================================
 #  Non serve conoscere la fisica quantistica per usare questo esperimento.
 #  Ogni voce qui sotto e' una "condizione sperimentale" gia' pronta: cambia
@@ -66,6 +66,40 @@ SESSION_CONFIGS = [
         app_sequence=['quantum_pd'],
         bot_strategy='tit_for_tat',
     ),
+    # -------------------------------------------------------------------------
+    # PUBLIC GOODS GAME - "Ritorno al Futuro" (1 umano Marty + 3 bot)
+    # -------------------------------------------------------------------------
+    #  * `marty_strategy`   = 'human'       -> Marty gioca tramite la dashboard
+    #                                          interattiva (sessione con umano)
+    #                        = 'tit_for_tat' -> Marty e' simulato (sessioni/test
+    #                                          automatici): 5 unita' al round 1,
+    #                                          poi media dei contributi altrui.
+    #  * `default_language` = lingua di partenza del selettore ('it' o 'en').
+    #  * `show_bot_results` = True/False    -> se True mostra la tabella dettagliata
+    #                                          con scelte/guadagni dei singoli bot;
+    #                                          se False (default) mostra solo la
+    #                                          scelta del giocatore e il fondo comune.
+    # -------------------------------------------------------------------------
+    dict(
+        name='bttf_pgg_human',
+        display_name='Public Goods Game - Ritorno al Futuro (Marty: umano)',
+        doc='PGG classico a 4 ruoli (Marty umano + bot Doc, Biff, Jennifer). Tema Ritorno al Futuro.',
+        num_demo_participants=1,
+        app_sequence=['bttf_pgg'],
+        marty_strategy='human',
+        default_language='it',
+        show_bot_results=False,
+    ),
+    dict(
+        name='bttf_pgg_auto',
+        display_name='Public Goods Game - Ritorno al Futuro (Marty: tit-for-tat)',
+        doc='PGG classico a 4 ruoli con Marty simulato (tit-for-tat), per sessioni/test automatici.',
+        num_demo_participants=1,
+        app_sequence=['bttf_pgg'],
+        marty_strategy='tit_for_tat',
+        default_language='it',
+        show_bot_results=False,
+    ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(
@@ -97,6 +131,10 @@ Scegli una sessione qui sotto in base al comportamento che vuoi dare al bot
     <li><strong>Tit-for-tat</strong> &mdash; il bot imita la scelta precedente del partecipante.</li>
 </ul>
 <p>Per uno studio pulito, assegna ogni partecipante a una sola condizione.</p>
+<p><strong>Public Goods Game &mdash; Ritorno al Futuro.</strong>
+Sono disponibili anche due sessioni del gioco dei beni pubblici (PGG) a tema
+<em>Ritorno al Futuro</em>: una in cui Marty e' giocato da un umano e una in
+simulazione automatica (Marty gioca tit-for-tat).</p>
 """
 
 SECRET_KEY = environ.get('OTREE_SECRET_KEY', 'quantum-pd-dev-secret-key')

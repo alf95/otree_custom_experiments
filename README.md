@@ -105,3 +105,29 @@ Each session config sets the `bot_strategy` custom key, read in the backend via
 
 For the full protocol math and data model, see
 [`quantum_pd/README.md`](quantum_pd/README.md).
+
+---
+
+# Public Goods Game - "Back to the Future"
+
+The same project also ships a second app, `bttf_pgg/`: a **classic 4-player
+Public Goods Game** (1 human **Marty** + 3 bots **Doc**, **Biff** and
+**Jennifer**), themed after *Back to the Future*.
+
+- Endowment: **10 Energy Units** per player.
+- Multiplier of the common fund: **1.6x**, split equally among 4 players.
+- Success message: **"Time travel successful (88 MPH)!"** vs **"Time Paradox
+  Triggered!"** when the fund misses the 1.21 GW threshold.
+- Fully **bilingual (IT/EN)** with a language selector, 80s neon-dashboard theme.
+- Two session configs: `bttf_pgg_human` (Marty human) and `bttf_pgg_auto`
+  (Marty simulated with Tit-for-Tat).
+
+```bash
+otree devserver          # then pick a bttf_pgg session
+otree test bttf_pgg_auto # automated test (Marty = Tit-for-Tat bot)
+```
+
+Full documentation (rules, math, bot strategies, setup):
+
+- Italiano: [`docs/README_IT.md`](docs/README_IT.md)
+- English: [`docs/README_EN.md`](docs/README_EN.md)
