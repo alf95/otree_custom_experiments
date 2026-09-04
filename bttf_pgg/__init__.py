@@ -34,7 +34,11 @@ Tutte le monete donate dal gruppo servono a caricare la DeLorean (100 monete = 1
 
 class C(BaseConstants):
     NAME_IN_URL = 'bttf_pgg'
-    PLAYERS_PER_GROUP = None  # un solo gruppo con tutti i giocatori (i bot sono virtuali)
+    # I bot (Doc, Biff, Jennifer) sono virtuali e vengono simulati in
+    # `simulate()`. Ogni partecipante che apre lo stesso link gioca
+    # autonomamente contro i bot: la simulazione gira per il SINGOLO giocatore
+    # (non per il gruppo), quindi non c'e' attesa tra umani diversi.
+    PLAYERS_PER_GROUP = None
 
     NUM_ROUNDS = 5
 
@@ -472,74 +476,78 @@ def marty_tit_for_tat_contribution(player):
 # LOGICA DI SIMULAZIONE E ACCUMULO INTERTEMPORALE
 # ---------------------------------------------------------------------------
 
-def simulate(group):
-    """Calcola contributi, cassa di round, carica DeLorean e verdetto finale."""
-    for player in group.get_players():
-        player.marty_strategy = group.session.config.get('marty_strategy', 'human')
+def simulate(player):
+    """Calcola contributi, cassa di round, carica DeLorean e verdetto finale.
 
-        doc = doc_contribution(player)
-        biff = biff_contribution(player)
-        jennifer = jennifer_conditional_contribution(player)
+    Opera sul SINGOLO giocatore (non sul gruppo): cosi' ogni partecipante che
+    apre lo stesso link gioca autonomamente contro i bot, senza attendere gli
+    altri umani della sessione.
+    """
+    player.marty_strategy = player.session.config.get('marty_strategy', 'human')
 
-        player.doc_contribution = doc
-        player.biff_contribution = biff
-        player.jennifer_contribution = jennifer
+    doc = doc_contribution(player)
+    biff = biff_contribution(player)
+    jennifer = jennifer_conditional_contribution(player)
 
-        # Contributo di Marty: dalla dashboard (umano) oppure tit-for-tat (auto).
-        marty = player.field_maybe_none('contribution')
-        if marty is None:
-            marty = 0
-        if player.marty_strategy != 'human':
-            marty = marty_tit_for_tat_contribution(player)
-            player.contribution = marty
+    player.doc_contribution = doc
+    player.biff_contribution = biff
+    player.jennifer_contribution = jennifer
 
-        # Economia del singolo round
-        total = float(marty + doc + biff + jennifer)
-        fund = total * C.MULTIPLIER
-        share = fund / C.N_PLAYERS
+    # Contributo di Marty: dalla dashboard (umano) oppure tit-for-tat (auto).
+    marty = player.field_maybe_none('contribution')
+    if marty is None:
+        marty = 0
+    if player.marty_strategy != 'human':
+        marty = marty_tit_for_tat_contribution(player)
+        player.contribution = marty
 
-        player.total_contribution = total
-        player.fund_energy = fund
-        player.individual_share = share
+    # Economia del singolo round
+    total = float(marty + doc + biff + jennifer)
+    fund = total * C.MULTIPLIER
+    share = fund / C.N_PLAYERS
 
-        player.marty_payoff = round(C.ENDOWMENT - marty + share, 2)
-        player.doc_payoff = round(C.ENDOWMENT - doc + share, 2)
-        player.biff_payoff = round(C.ENDOWMENT - biff + share, 2)
-        player.jennifer_payoff = round(C.ENDOWMENT - jennifer + share, 2)
+    player.total_contribution = total
+    player.fund_energy = fund
+    player.individual_share = share
 
-        # Accumulo monete progressivo (carica della DeLorean)
-        prev_rounds = player.in_previous_rounds()
-        cumul_energy = sum(p.total_contribution for p in prev_rounds) + total
-        player.cumulative_energy = round(cumul_energy, 2)
+    player.marty_payoff = round(C.ENDOWMENT - marty + share, 2)
+    player.doc_payoff = round(C.ENDOWMENT - doc + share, 2)
+    player.biff_payoff = round(C.ENDOWMENT - biff + share, 2)
+    player.jennifer_payoff = round(C.ENDOWMENT - jennifer + share, 2)
 
-        # Potenza del Flusso Canalizzatore (GW cumulati verso 1.21 GW)
-        gw_ratio = cumul_energy / C.CUMULATIVE_TARGET_ENERGY
-        player.cumulative_gw = round(gw_ratio * C.FLUX_TARGET_GW, 3)
-        player.round_flux_gw = player.cumulative_gw
-        player.energy_progress_pct = round(min(100.0, gw_ratio * 100.0), 1)
+    # Accumulo monete progressivo (carica della DeLorean)
+    prev_rounds = player.in_previous_rounds()
+    cumul_energy = sum(p.total_contribution for p in prev_rounds) + total
+    player.cumulative_energy = round(cumul_energy, 2)
 
-        # Somma provvisoria dei payoff di Marty nei round giocati (Salvadanaio)
-        cumul_marty_payoff = sum(p.marty_payoff for p in prev_rounds) + player.marty_payoff
-        player.cumulative_marty_payoff = round(cumul_marty_payoff, 2)
+    # Potenza del Flusso Canalizzatore (GW cumulati verso 1.21 GW)
+    gw_ratio = cumul_energy / C.CUMULATIVE_TARGET_ENERGY
+    player.cumulative_gw = round(gw_ratio * C.FLUX_TARGET_GW, 3)
+    player.round_flux_gw = player.cumulative_gw
+    player.energy_progress_pct = round(min(100.0, gw_ratio * 100.0), 1)
 
-        # Gestione round finale (Round 5) vs round intermedi (1..4)
-        is_final = (player.round_number == C.NUM_ROUNDS)
-        player.is_final_round = is_final
+    # Somma provvisoria dei payoff di Marty nei round giocati (Salvadanaio)
+    cumul_marty_payoff = sum(p.marty_payoff for p in prev_rounds) + player.marty_payoff
+    player.cumulative_marty_payoff = round(cumul_marty_payoff, 2)
 
-        # Il payoff del round viene sempre accreditato: `participant.payoff`
-        # somma automaticamente al totale accumulato (nessuna perdita possibile).
-        player.payoff = player.marty_payoff
+    # Gestione round finale (Round 5) vs round intermedi (1..4)
+    is_final = (player.round_number == C.NUM_ROUNDS)
+    player.is_final_round = is_final
 
-        if is_final:
-            success = (cumul_energy >= C.CUMULATIVE_TARGET_ENERGY)
-            player.game_success = success
-            player.goal_reached = success
-            # Nessuna perdita: il partecipante tiene sempre tutto il totale accumulato.
-            player.final_game_payoff = player.cumulative_marty_payoff
-        else:
-            player.game_success = False
-            player.goal_reached = False
-            player.final_game_payoff = 0.0
+    # Il payoff del round viene sempre accreditato: `participant.payoff`
+    # somma automaticamente al totale accumulato (nessuna perdita possibile).
+    player.payoff = player.marty_payoff
+
+    if is_final:
+        success = (cumul_energy >= C.CUMULATIVE_TARGET_ENERGY)
+        player.game_success = success
+        player.goal_reached = success
+        # Nessuna perdita: il partecipante tiene sempre tutto il totale accumulato.
+        player.final_game_payoff = player.cumulative_marty_payoff
+    else:
+        player.game_success = False
+        player.goal_reached = False
+        player.final_game_payoff = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -652,17 +660,13 @@ class DecisionPage(Page):
         )
 
 
-class ResultsWaitPage(WaitPage):
-    after_all_players_arrive = simulate
-
-    @staticmethod
-    def vars_for_template(player):
-        return dict(texts=get_texts(player))
-
-
 class ResultsPage(Page):
     @staticmethod
     def vars_for_template(player):
+        # La simulazione va eseguita QUI (prima del rendering), perche'
+        # `vars_for_template` viene chiamato prima di `before_next_page`.
+        simulate(player)
+
         t = get_texts(player)
         is_final = (player.round_number == C.NUM_ROUNDS)
         rounds_remaining = max(0, C.NUM_ROUNDS - player.round_number)
@@ -727,4 +731,4 @@ class ResultsPage(Page):
         )
 
 
-page_sequence = [LanguagePage, FormIniziale, IntroPage, DecisionPage, ResultsWaitPage, ResultsPage]
+page_sequence = [LanguagePage, FormIniziale, IntroPage, DecisionPage, ResultsPage]
