@@ -1,6 +1,8 @@
 from otree.api import *
 
+import hashlib
 import random
+import string
 
 
 doc = """
@@ -71,6 +73,55 @@ class Player(BasePlayer):
     )
     contribution = models.IntegerField(
         min=0, max=C.ENDOWMENT,
+    )
+
+    # --- Scheda anagrafica (Notte dei Ricercatori 2026) ---
+    codice_id = models.StringField(initial='')
+    genere = models.StringField(
+        choices=[
+            ['uomo', 'Uomo'],
+            ['donna', 'Donna'],
+            ['altro', 'Altro'],
+            ['non_specifico', 'Preferisco non specificare'],
+        ],
+        label='Genere',
+    )
+    eta = models.IntegerField(
+        min=1, max=120,
+        label='Età (in cifre)',
+    )
+    titolo_studio = models.StringField(
+        choices=[
+            ['licenza_elementare', 'Licenza elementare (scuola primaria)'],
+            ['licenza_media', 'Licenza media (scuola secondaria di I grado)'],
+            ['diploma', 'Diploma di scuola superiore (scuola secondaria di II grado)'],
+            ['qualifica_professionale', 'Qualifica professionale'],
+            ['laurea_triennale', 'Laurea triennale / base'],
+            ['laurea_magistrale', 'Laurea magistrale'],
+            ['master_i', 'Master universitario di I livello'],
+            ['master_ii', 'Master universitario di II livello'],
+            ['dottorato', 'Dottorato di ricerca'],
+        ],
+        label='Titolo di studio raggiunto',
+    )
+    occupazione = models.StringField(
+        choices=[
+            ['studente', 'Studente'],
+            ['lavoratore', 'Lavoratore'],
+            ['disoccupato', 'Disoccupato'],
+            ['pensionato', 'Pensionato'],
+        ],
+        label='Occupazione',
+    )
+    luogo_residenza = models.StringField(
+        label='Luogo di residenza (città o paese)',
+    )
+    esperienza_precedente = models.StringField(
+        choices=[
+            ['si', 'Sì'],
+            ['no', 'No'],
+        ],
+        label='Esperienza pregressa nella partecipazione ad esperimenti',
     )
 
     # --- Strategia di Marty (dalla configurazione di sessione) ---
@@ -350,6 +401,21 @@ def get_texts(player):
     return TEXTS[get_lang(player)]
 
 
+def generate_participant_id(player):
+    """Genera un codice identificativo univoco nel formato
+    ID + numero (0-500, minimo 2 cifre) + lettera maiuscola (A-Z).
+
+    Esempi: 'ID01A', 'ID402X'. Il codice e' derivato in modo deterministico
+    dal `participant.code` di oTree (univoco per sessione), quindi non cambia
+    tra un round e l'altro e non collide tra partecipanti diversi.
+    """
+    seed = player.participant.code or str(player.participant.id)
+    digest = hashlib.sha256(seed.encode('utf-8')).hexdigest()
+    number = int(digest[:6], 16) % 501                    # 0..500
+    letter = string.ascii_uppercase[int(digest[6:8], 16) % 26]  # A..Z
+    return f"ID{number:02d}{letter}"
+
+
 # ---------------------------------------------------------------------------
 # STRATEGIE COMPORTAMENTALI DEI BOT (Letteratura Sperimentale)
 # ---------------------------------------------------------------------------
@@ -502,6 +568,30 @@ class LanguagePage(Page):
         player.participant.vars['lang'] = player.lang
 
 
+class FormIniziale(Page):
+    form_model = 'player'
+    form_fields = [
+        'genere', 'eta', 'titolo_studio', 'occupazione',
+        'luogo_residenza', 'esperienza_precedente',
+    ]
+
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
+
+    @staticmethod
+    def vars_for_template(player):
+        codice = player.participant.vars.get('codice_id')
+        if not codice:
+            codice = generate_participant_id(player)
+            player.participant.vars['codice_id'] = codice
+        return dict(codice_id=codice)
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        player.codice_id = player.participant.vars.get('codice_id', '')
+
+
 class IntroPage(Page):
     @staticmethod
     def is_displayed(player):
@@ -637,4 +727,4 @@ class ResultsPage(Page):
         )
 
 
-page_sequence = [LanguagePage, IntroPage, DecisionPage, ResultsWaitPage, ResultsPage]
+page_sequence = [LanguagePage, FormIniziale, IntroPage, DecisionPage, ResultsWaitPage, ResultsPage]
