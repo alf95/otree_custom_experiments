@@ -1,0 +1,102 @@
+from os import environ
+
+# =============================================================================
+#  CONFIGURAZIONE DELLE SESSIONI — GUIDA RAPIDA PER LO SPERIMENTATORE
+# =============================================================================
+#  Non serve conoscere la fisica quantistica per usare questo esperimento.
+#  Ogni voce qui sotto e' una "condizione sperimentale" gia' pronta: cambia
+#  solo il COMPORTAMENTO del bot (l'avversario controllato dal computer).
+#
+#  Scegli una sessione in base a cosa vuoi che faccia il bot:
+#
+#    * coopera sempre ....... il bot non tradisce mai (condizione "gentile")
+#    * tradisce sempre ...... il bot tradisce a ogni round (condizione "ostile")
+#    * mossa speciale ....... il bot usa la strategia quantistica ottimale:
+#                             se entrambi la usano si ottiene il massimo
+#                             guadagno reciproco
+#    * casuale .............. il bot sceglie a caso a ogni round
+#    * tit-for-tat .......... il bot copia la scelta del partecipante del
+#                             round precedente (al primo round coopera)
+#
+#  Ogni sessione corrisponde a UNA strategia del bot. Per confrontare le
+#  condizioni, crea una sessione per ciascuna e confronta i risultati finali.
+# =============================================================================
+
+# La chiave personalizzata `bot_strategy` viene letta nel backend tramite
+# `group.session.config['bot_strategy']` e determina il comportamento del bot.
+# I suoi valori sono chiavi interne del codice: NON vanno modificati.
+SESSION_CONFIGS = [
+    dict(
+        name='quantum_pd_cooperate',
+        display_name='Dilemma del Prigioniero - Bot: coopera sempre',
+        doc='Il bot coopera a ogni round. Condizione piu\' semplice, utile per familiarizzare.',
+        num_demo_participants=1,
+        app_sequence=['quantum_pd'],
+        bot_strategy='always_classical_cooperate',
+    ),
+    dict(
+        name='quantum_pd_defect',
+        display_name='Dilemma del Prigioniero - Bot: tradisce sempre',
+        doc='Il bot tradisce a ogni round. Condizione "ostile".',
+        num_demo_participants=1,
+        app_sequence=['quantum_pd'],
+        bot_strategy='always_classical_defect',
+    ),
+    dict(
+        name='quantum_pd_quantum',
+        display_name='Dilemma del Prigioniero - Bot: mossa speciale',
+        doc='Il bot usa la strategia speciale del gioco quantistico (la piu\' vantaggiosa se usata da entrambi).',
+        num_demo_participants=1,
+        app_sequence=['quantum_pd'],
+        bot_strategy='always_quantum',
+    ),
+    dict(
+        name='quantum_pd_random',
+        display_name='Dilemma del Prigioniero - Bot: casuale',
+        doc='Il bot sceglie a caso a ogni round.',
+        num_demo_participants=1,
+        app_sequence=['quantum_pd'],
+        bot_strategy='random',
+    ),
+    dict(
+        name='quantum_pd_tit_for_tat',
+        display_name='Dilemma del Prigioniero - Bot: tit-for-tat (imita)',
+        doc='Il bot copia la scelta del partecipante del round precedente; al primo round coopera.',
+        num_demo_participants=1,
+        app_sequence=['quantum_pd'],
+        bot_strategy='tit_for_tat',
+    ),
+]
+
+SESSION_CONFIG_DEFAULTS = dict(
+    real_world_currency_per_point=1.00,
+    participation_fee=0.00,
+    doc="",
+)
+
+LANGUAGE_CODE = 'it'
+
+REAL_WORLD_CURRENCY_CODE = 'EUR'
+
+USE_POINTS = True
+
+ROOMS = []
+
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD', 'admin')
+
+DEMO_PAGE_INTRO_HTML = """
+<p><strong>Come iniziare (nessuna fisica richiesta).</strong>
+Scegli una sessione qui sotto in base al comportamento che vuoi dare al bot
+(l'avversario controllato dal computer):</p>
+<ul>
+    <li><strong>Coopera sempre</strong> &mdash; il bot non tradisce mai.</li>
+    <li><strong>Tradisce sempre</strong> &mdash; il bot tradisce a ogni round.</li>
+    <li><strong>Mossa speciale</strong> &mdash; il bot usa la strategia ottimale del gioco quantistico.</li>
+    <li><strong>Casuale</strong> &mdash; il bot sceglie a caso.</li>
+    <li><strong>Tit-for-tat</strong> &mdash; il bot imita la scelta precedente del partecipante.</li>
+</ul>
+<p>Per uno studio pulito, assegna ogni partecipante a una sola condizione.</p>
+"""
+
+SECRET_KEY = environ.get('OTREE_SECRET_KEY', 'quantum-pd-dev-secret-key')

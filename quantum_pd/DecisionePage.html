@@ -1,0 +1,100 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    Dilemma del Prigioniero &mdash; Fai la tua scelta
+{{ endblock }}
+
+{{ block content }}
+
+<p>
+    In ogni round giochi contro un <strong>avversario controllato dal computer</strong>.
+    La combinazione delle vostre scelte determina quanti punti guadagni.
+    Componi la tua <strong>mossa</strong> con i due cursori qui sotto: non serve
+    alcuna conoscenza tecnica.
+</p>
+
+<div class="alert alert-info">
+    <strong>Come si guadagnano i punti</strong> (in ogni round):
+    <ul class="mb-0">
+        <li>Se <strong>entrambi cooperate</strong>: guadagni <strong>{{ payoff_cc }}</strong> punti.</li>
+        <li>Se <strong>tu cooperi e il computer tradisce</strong>: guadagni <strong>{{ payoff_cd }}</strong> punti.</li>
+        <li>Se <strong>tu tradisci e il computer coopera</strong>: guadagni <strong>{{ payoff_dc }}</strong> punti.</li>
+        <li>Se <strong>entrambi tradite</strong>: guadagni <strong>{{ payoff_dd }}</strong> punti.</li>
+    </ul>
+    <p class="mb-0 mt-2 text-muted">In totale ci sono {{ num_rounds }} round.</p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">1. Quanto vuoi cooperare o tradire?</h5>
+        <p class="text-muted mb-1">Sposta il cursore: tutto a sinistra = cooperi, tutto a destra = tradisci.</p>
+        <div class="d-flex justify-content-between text-muted small mb-1">
+            <span>Cooperare</span>
+            <span>Tradire</span>
+        </div>
+        <input type="range" class="form-range w-100" name="theta" id="theta"
+               min="0" max="{{ theta_max }}" step="0.001"
+               value="{{ theta_value }}" oninput="updatePreview()">
+        {{ formfield_errors 'theta' }}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">2. Vuoi usare la "mossa speciale"?</h5>
+        <p class="text-muted mb-1">Sposta il cursore a destra per usarla. Ha effetto soprattutto quando stai cooperando.</p>
+        <div class="d-flex justify-content-between text-muted small mb-1">
+            <span>No (mossa normale)</span>
+            <span>Si' (mossa speciale)</span>
+        </div>
+        <input type="range" class="form-range w-100" name="phi" id="phi"
+               min="0" max="{{ phi_max }}" step="0.001"
+               value="{{ phi_value }}" oninput="updatePreview()">
+        {{ formfield_errors 'phi' }}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body text-center">
+        <h6 class="mb-2">La tua mossa attuale</h6>
+        <span class="badge bg-primary fs-6" id="strategy-label">-</span>
+        <div class="mt-3">
+            <span class="text-muted small me-2">Scelte rapide:</span>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="setPreset(0, 0)">Cooperare</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="setPreset(Math.PI, 0)">Tradire</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPreset(0, Math.PI / 2)">Mossa speciale</button>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ next_button }}
+</div>
+
+<script>
+    const thetaEl = document.getElementById('theta');
+    const phiEl = document.getElementById('phi');
+
+    function describeMove(theta, phi) {
+        const eps = 0.01;
+        if (Math.abs(theta - Math.PI) < eps) return 'Tradimento';
+        if (Math.abs(theta) < eps && Math.abs(phi) < eps) return 'Cooperazione';
+        if (Math.abs(theta) < eps && Math.abs(phi - Math.PI / 2) < eps) return 'Mossa speciale';
+        return 'Mossa mista';
+    }
+
+    function updatePreview() {
+        const theta = parseFloat(thetaEl.value);
+        const phi = parseFloat(phiEl.value);
+        document.getElementById('strategy-label').textContent = describeMove(theta, phi);
+    }
+
+    function setPreset(theta, phi) {
+        thetaEl.value = theta;
+        phiEl.value = phi;
+        updatePreview();
+    }
+
+    updatePreview();
+</script>
+
+{{ endblock }}

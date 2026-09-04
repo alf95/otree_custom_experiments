@@ -1,0 +1,68 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    Risultati del round
+{{ endblock }}
+
+{{ block content }}
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">La tua scelta</h5>
+                <p class="card-text mb-0">{{ human_move_label }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Scelta del computer</h5>
+                <p class="card-text mb-0">{{ bot_strategy_label }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h5>Quanto era probabile ogni esito</h5>
+<table class="table table-striped table-sm w-auto">
+    <thead>
+        <tr>
+            <th>Esito</th>
+            <th>Probabilita'</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Entrambi cooperate</td>
+            <td>{{ prob_cc_pct }}%</td>
+        </tr>
+        <tr>
+            <td>Tu cooperi, il computer tradisce</td>
+            <td>{{ prob_cd_pct }}%</td>
+        </tr>
+        <tr>
+            <td>Tu tradisci, il computer coopera</td>
+            <td>{{ prob_dc_pct }}%</td>
+        </tr>
+        <tr>
+            <td>Entrambi tradite</td>
+            <td>{{ prob_dd_pct }}%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h5>Esito e punti di questo round</h5>
+<p>
+    Esito estratto: <strong>{{ outcome_label }}</strong><br>
+    Punti guadagnati in questo round (tu): <strong>{{ payoff_round }}</strong><br>
+    Punti del computer: {{ bot_payoff }}
+</p>
+<p class="text-muted small">
+    Con la stessa scelta ripetuta molte volte, in media guadagneresti circa
+    {{ expected_payoff }} punti a round.
+</p>
+
+{{ next_button }}
+
+{{ endblock }}
