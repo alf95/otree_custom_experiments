@@ -114,10 +114,11 @@ The same project also ships a second app, `bttf_pgg/`: a **classic 4-player
 Public Goods Game** (1 human **Marty** + 3 bots **Doc**, **Biff** and
 **Jennifer**), themed after *Back to the Future*.
 
-- Endowment: **10 Energy Units** per player.
-- Multiplier of the common fund: **1.6x**, split equally among 4 players.
-- Success message: **"Time travel successful (88 MPH)!"** vs **"Time Paradox
-  Triggered!"** when the fund misses the 1.21 GW threshold.
+- Endowment: **10 Energy Units** per player per round (5 rounds).
+- Multiplier of each round's common fund: **1.6x**, split equally among 4 players.
+- **Collective-Risk Threshold**: Energy accumulates across 5 rounds toward **1.21 GW** (100 units total).
+- Final outcome at **Round 5**: **"88 MPH - Time travel successful!"** (keep all earnings) vs **"Time Paradox Triggered!"** (earnings wiped out if threshold is missed).
+- **Behavioral bots**: Doc (Altruist/Target-Pacer), Biff (Pure Free Rider), Jennifer (Conditional Cooperator).
 - Fully **bilingual (IT/EN)** with a language selector, 80s neon-dashboard theme.
 - Two session configs: `bttf_pgg_human` (Marty human) and `bttf_pgg_auto`
   (Marty simulated with Tit-for-Tat).

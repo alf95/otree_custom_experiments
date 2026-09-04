@@ -25,114 +25,213 @@ body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",
 .retro-label{color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-size:.75rem}
 .retro-value{color:var(--orange);font-weight:bold;text-shadow:0 0 6px rgba(255,159,28,.6)}
 .retro-big{color:var(--cyan);font-size:1.5rem;text-shadow:0 0 8px rgba(0,229,255,.7)}
-.retro-success{background:rgba(57,255,20,.1);border:1px solid var(--green);color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.8);padding:16px;border-radius:6px;font-size:1.25rem;letter-spacing:1px}
-.retro-danger{background:rgba(255,59,59,.1);border:1px solid var(--red);color:var(--red);text-shadow:0 0 8px rgba(255,59,59,.8);padding:16px;border-radius:6px;font-size:1.25rem;letter-spacing:1px}
-.retro-lang-option{color:var(--text);font-size:1.1rem;cursor:pointer;padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:var(--panel2)}
-.retro-lang-option:hover{border-color:var(--green)}
-.retro-btn{background:var(--panel2);color:var(--cyan);border:1px solid var(--line)}
-.retro-btn:hover{border-color:var(--cyan);color:var(--green)}
+.retro-success{background:rgba(57,255,20,.12);border:2px solid var(--green);color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.8);padding:20px;border-radius:8px;letter-spacing:1px}
+.retro-danger{background:rgba(255,59,59,.12);border:2px solid var(--red);color:var(--red);text-shadow:0 0 8px rgba(255,59,59,.8);padding:20px;border-radius:8px;letter-spacing:1px}
+.progress-retro-track{background:#04100c;border:1px solid var(--line);border-radius:4px;height:24px;overflow:hidden;box-shadow:inset 0 0 10px rgba(0,0,0,.9)}
+.progress-retro-bar{background:linear-gradient(90deg, #00e5ff, #39ff14);height:100%;box-shadow:0 0 12px rgba(57,255,20,.8);transition:width .4s ease}
 .alert-info{background:rgba(0,229,255,.08);color:var(--text);border-color:var(--line)}
 a{color:var(--cyan)}
 </style>
 
 <div class="retro-header">:: {{ texts.results_header }} ::</div>
 
-<div class="{{ result_banner_class }} text-center mb-4">
-    {{ result_message }}
-</div>
+{{ if is_final_round }}
+    <!-- ================================================================= -->
+    <!-- SCHERMATA FINALE: VERDETTO DEL VIAGGIO NEL TEMPO (ROUND 5)         -->
+    <!-- ================================================================= -->
+    <div class="card mb-4 {{ if game_success }}border-success{{ else }}border-danger{{ endif }}">
+        <div class="card-body">
+            <div class="{{ if game_success }}retro-success{{ else }}retro-danger{{ endif }} text-center mb-3">
+                <h2 style="font-size:1.8rem; margin-bottom:10px;">
+                    {{ if game_success }}{{ texts.final_success_badge }}{{ else }}{{ texts.final_paradox_badge }}{{ endif }}
+                </h2>
+                <p class="mb-0" style="font-size:1.05rem; line-height:1.5;">
+                    {{ if game_success }}{{ texts.final_success_desc }}{{ else }}{{ texts.final_paradox_desc }}{{ endif }}
+                </p>
+            </div>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">{{ texts.results_flux_title }}</h5>
-        <div class="retro-screen text-center py-3 mb-2">
-            {{ flux_power_gw }} {{ texts.gw }}
+            <div class="row text-center mt-3 g-3">
+                <div class="col-md-6">
+                    <div class="p-3" style="background:var(--panel2); border:1px solid var(--line); border-radius:6px;">
+                        <div class="retro-label">{{ texts.final_total_power }}</div>
+                        <div class="retro-big my-1">{{ cumulative_gw }} {{ texts.gw }}</div>
+                        <div class="retro-label">{{ texts.results_flux_target }}: {{ flux_target_gw }} {{ texts.gw }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3" style="background:var(--panel2); border:1px solid var(--line); border-radius:6px;">
+                        <div class="retro-label">{{ texts.final_total_energy }}</div>
+                        <div class="retro-big my-1">{{ cumulative_energy }} / {{ cumulative_target_energy }} {{ texts.units }}</div>
+                        <div class="retro-label">Carica finale: {{ energy_progress_pct }}%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-3" style="background:#030d08; border:1px solid var(--line); border-radius:6px;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="retro-label">{{ texts.final_provisional_earnings }}:</span>
+                    <span class="retro-value" style="font-size:1.1rem;">{{ cumulative_marty_payoff }} {{ texts.units }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-2" style="border-top:1px dashed var(--line);">
+                    <strong style="color:var(--cyan); letter-spacing:1px;">{{ texts.final_actual_earnings }}:</strong>
+                    <span style="font-size:1.6rem; font-weight:bold; color:{{ if game_success }}var(--green){{ else }}var(--red){{ endif }};">
+                        {{ final_game_payoff }} {{ texts.units }}
+                    </span>
+                </div>
+            </div>
         </div>
-        <p class="retro-label mb-0">{{ texts.results_flux_target }}: {{ flux_target_gw }} {{ texts.gw }}</p>
     </div>
-</div>
 
-{{ if show_bot_results }}
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">{{ texts.results_contrib_title }}</h5>
-        <table class="table table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>{{ texts.col_player }}</th>
-                    <th>{{ texts.col_strategy }}</th>
-                    <th class="text-end">{{ texts.col_contribution }}</th>
-                    <th class="text-end">{{ texts.col_payoff }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ texts.you_label }}</td>
-                    <td>{{ texts.strategy_you }}</td>
-                    <td class="text-end">{{ contribution }}</td>
-                    <td class="text-end">{{ marty_payoff }}</td>
-                </tr>
-                <tr>
-                    <td>Doc</td>
-                    <td>{{ texts.strategy_always_cooperate }}</td>
-                    <td class="text-end">{{ doc_contribution }}</td>
-                    <td class="text-end">{{ doc_payoff }}</td>
-                </tr>
-                <tr>
-                    <td>Biff</td>
-                    <td>{{ texts.strategy_always_defect }}</td>
-                    <td class="text-end">{{ biff_contribution }}</td>
-                    <td class="text-end">{{ biff_payoff }}</td>
-                </tr>
-                <tr>
-                    <td>Jennifer</td>
-                    <td>{{ texts.strategy_random }}</td>
-                    <td class="text-end">{{ jennifer_contribution }}</td>
-                    <td class="text-end">{{ jennifer_payoff }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- CRONOLOGIA DEI ROUND -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ texts.final_round_history_title }}</h5>
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ texts.col_round }}</th>
+                        <th class="text-end">{{ texts.col_marty_contrib }}</th>
+                        <th class="text-end">{{ texts.col_group_contrib }}</th>
+                        <th class="text-end">{{ texts.col_marty_round_payoff }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ for r in round_history }}
+                    <tr>
+                        <td>Round {{ r.round }}</td>
+                        <td class="text-end">{{ r.marty_contrib }}</td>
+                        <td class="text-end">{{ r.group_total }}</td>
+                        <td class="text-end">{{ r.marty_payoff }}</td>
+                    </tr>
+                    {{ endfor }}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+
 {{ else }}
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">{{ texts.results_your_decision }}</h5>
-        <table class="table table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>{{ texts.col_player }}</th>
-                    <th>{{ texts.col_strategy }}</th>
-                    <th class="text-end">{{ texts.col_contribution }}</th>
-                    <th class="text-end">{{ texts.col_payoff }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ texts.you_label }}</td>
-                    <td>{{ texts.strategy_you }}</td>
-                    <td class="text-end">{{ contribution }}</td>
-                    <td class="text-end">{{ marty_payoff }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- ================================================================= -->
+    <!-- SCHERMATA INTERMEDIA: ACCUMULO ENERGETICO (ROUND 1..4)            -->
+    <!-- ================================================================= -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ texts.results_flux_title }}</h5>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="retro-label">{{ texts.results_progress_label }}</span>
+                <span class="retro-value" style="font-size:1.2rem;">{{ cumulative_gw }} / {{ flux_target_gw }} {{ texts.gw }} ({{ energy_progress_pct }}%)</span>
+            </div>
+            <div class="progress-retro-track mb-3">
+                <div class="progress-retro-bar" style="width: {{ energy_progress_pct }}%;"></div>
+            </div>
+            <div class="d-flex justify-content-between retro-label mb-2">
+                <span>{{ energy_accumulated_text }}</span>
+                <span>{{ texts.results_flux_target }}: {{ flux_target_gw }} {{ texts.gw }}</span>
+            </div>
+            <div class="alert alert-info mb-0 py-2">
+                <small>{{ interim_status_text }}</small>
+            </div>
+        </div>
     </div>
-</div>
+
+    {{ if show_bot_results }}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ texts.results_contrib_title }}</h5>
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ texts.col_player }}</th>
+                        <th>{{ texts.col_strategy }}</th>
+                        <th class="text-end">{{ texts.col_contribution }}</th>
+                        <th class="text-end">{{ texts.col_payoff }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ texts.you_label }}</td>
+                        <td>{{ texts.strategy_you }}</td>
+                        <td class="text-end">{{ contribution }}</td>
+                        <td class="text-end">{{ marty_payoff }}</td>
+                    </tr>
+                    <tr>
+                        <td>Doc</td>
+                        <td>{{ texts.strategy_doc }}</td>
+                        <td class="text-end">{{ doc_contribution }}</td>
+                        <td class="text-end">{{ doc_payoff }}</td>
+                    </tr>
+                    <tr>
+                        <td>Biff</td>
+                        <td>{{ texts.strategy_biff }}</td>
+                        <td class="text-end">{{ biff_contribution }}</td>
+                        <td class="text-end">{{ biff_payoff }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jennifer</td>
+                        <td>{{ texts.strategy_jennifer }}</td>
+                        <td class="text-end">{{ jennifer_contribution }}</td>
+                        <td class="text-end">{{ jennifer_payoff }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{ else }}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ texts.results_your_decision }}</h5>
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ texts.col_player }}</th>
+                        <th class="text-end">{{ texts.col_contribution }}</th>
+                        <th class="text-end">{{ texts.col_payoff }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ texts.you_label }}</td>
+                        <td class="text-end">{{ contribution }}</td>
+                        <td class="text-end">{{ marty_payoff }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{ endif }}
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ texts.results_summary_title }}</h5>
+            <ul class="list-group list-group-flush" style="background:transparent;">
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
+                    <span>{{ texts.results_total }}</span>
+                    <span class="retro-value">{{ total_contribution }} {{ texts.units }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
+                    <span>{{ texts.results_fund }}</span>
+                    <span class="retro-value">{{ fund_energy }} {{ texts.units }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
+                    <span>{{ texts.results_share }}</span>
+                    <span class="retro-value">{{ individual_share }} {{ texts.units }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
+                    <span>{{ texts.results_payoff_you }}</span>
+                    <span class="retro-big">{{ marty_payoff }} {{ texts.units }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--cyan); border-color:var(--line);">
+                    <span>{{ texts.results_cumulative_payoff }}</span>
+                    <span class="retro-big" style="color:var(--green);">{{ cumulative_marty_payoff }} {{ texts.units }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
 {{ endif }}
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">{{ texts.results_summary_title }}</h5>
-        <ul class="list-unstyled mb-0">
-            <li class="mb-2">{{ texts.results_total }}: <span class="retro-value">{{ total_contribution }}</span> {{ texts.units }}</li>
-            <li class="mb-2">{{ texts.results_fund }}: <span class="retro-value">{{ fund_energy }}</span> {{ texts.units }}</li>
-            <li class="mb-2">{{ texts.results_share }}: <span class="retro-value">{{ individual_share }}</span> {{ texts.units }}</li>
-            <li>{{ texts.results_payoff_you }}: <span class="retro-big">{{ marty_payoff }}</span> {{ texts.units }}</li>
-        </ul>
-    </div>
-</div>
-
 <div class="mt-4">
-    <button type="submit" class="otree-btn-next btn btn-primary btn-lg px-5">{{ texts.results_continue }}</button>
+    <button type="submit" class="otree-btn-next btn btn-primary btn-lg px-5">
+        {{ if is_final_round }}{{ texts.final_finish_btn }}{{ else }}{{ texts.results_continue }}{{ endif }}
+    </button>
 </div>
 
 {{ endblock }}

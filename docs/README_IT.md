@@ -13,106 +13,82 @@ Canalizzatore** (*Flux Capacitor*) e' scarico: per viaggiare nel tempo serve una
 potenza di almeno **1.21 GW**. Insieme a te giocano altri tre abitanti di Hill
 Valley:
 
-| Giocatore | Tipo | Strategia |
-|-----------|------|-----------|
-| **Marty** | Umano (o bot nei test) | Scelta libera / Tit-for-Tat |
-| **Doc**   | Bot  | Always Cooperate |
-| **Biff**  | Bot  | Always Defect |
-| **Jennifer** | Bot | Random |
+| Giocatore | Tipo | Strategia | Ruolo Comportamentale (Letteratura) |
+|-----------|------|-----------|-----------------------------------|
+| **Marty** | Umano (o bot nei test) | Scelta libera / Tit-for-Tat | Giocatore decisionale (pivotal) |
+| **Doc**   | Bot  | Always Cooperate | Altruist / Target-Pacer (Milinski et al. 2008) |
+| **Biff**  | Bot  | Always Defect | Pure Free Rider (Fischbacher et al. 2001) |
+| **Jennifer** | Bot | Conditional Cooperator | Reattiva/Reciproca (Fischbacher et al. 2001) |
 
-In ogni round i quattro giocatori ricevono una dotazione di **10 Unita' di
+In ciascuno dei 5 round i quattro giocatori ricevono una dotazione di **10 Unita' di
 Energia** (Plutonio / Energy Units) e decidono quanto versare nel fondo comune.
-Se il fondo supera la soglia di **1.21 GW** il viaggio nel tempo riesce -
-**"Viaggio nel tempo riuscito (88 MPH)!"** - altrimenti si innesca un
-**"Paradosso Temporale Innescato!"**.
+L'energia si accumula progressivamente round dopo round nel Flusso Canalizzatore.
+Al termine del **Round 5 (fine gioco)**, se la carica complessiva del gruppo raggiunge
+almeno **100 unita' (pari a 1.21 GW)**, il viaggio nel tempo riesce:
+**"88 MPH - Viaggio nel tempo riuscito!"** e Marty incassa tutti i punti accumulati.
+Se invece il fondo non raggiunge la soglia, si innesca il **"Paradosso Temporale"**:
+la linea temporale collassa e i guadagni vengono azzerati (*Collective-Risk failure*, Milinski et al. 2008).
 
 ---
 
 ## 2. Regole del PGG e valori matematici
 
-Il gioco e' un *public goods game* lineare standard.
+Il gioco combina un *public goods game* lineare ripetuto con un **Collective-Risk Social Dilemma (CRSD)** intertemporale.
 
-- **Dotazione iniziale** per giocatore: `ENDOWMENT = 10` Unita' di Energia.
-- **Fattore moltiplicativo** del fondo comune: `MULTIPLIER = 1.6`.
+- **Dotazione per round**: `ENDOWMENT = 10` Unita' di Energia per giocatore (50 totali a testa in 5 round).
+- **Fattore moltiplicativo del round**: `MULTIPLIER = 1.6`.
 - **Numero di giocatori**: `N_PLAYERS = 4` (Marty + Doc + Biff + Jennifer).
-- **Numero di round**: `NUM_ROUNDS = 5` (modificabile in `C`).
+- **Numero di round**: `NUM_ROUNDS = 5`.
 
-Ogni giocatore `i` sceglie un contributo `c_i` compreso tra `0` e `10`.
-Il payoff del round per il giocatore `i` e':
+In ciascun round ogni giocatore `i` sceglie un contributo `c_i \in [0, 10]`.
+Il payoff provvisorio del round per il giocatore `i` e':
 
 ```
 payoff_i = 10 - c_i + (1.6 * (c_1 + c_2 + c_3 + c_4)) / 4
 ```
 
-In pratica:
-
-1. Si sommano i contributi dei 4 giocatori: `fondo = c_marty + c_doc + c_biff + c_jennifer`.
-2. Il fondo viene moltiplicato per `1.6`.
-3. Il fondo moltiplicato viene diviso in **4 parti uguali**.
-4. Il guadagno di ciascuno e': *10 - contributo versato + la propria quota*.
-
-**Esempio**: se tutti versano 10 -> fondo `40 x 1.6 = 64`, quota `16` a testa,
-payoff `10 - 10 + 16 = 16` a testa.
-
-### Soglia narrativa (1.21 GW)
+### Soglia cumulativa a fine gioco (1.21 GW)
 
 - `FLUX_TARGET_GW = 1.21` (potenza necessaria al viaggio nel tempo).
-- `THRESHOLD_POT = 30` (contributo totale minimo per raggiungere 1.21 GW).
+- `CUMULATIVE_TARGET_ENERGY = 100` (somma minima dei contributi di tutti i 4 giocatori sui 5 round).
+- Capacita' massima del gruppo nei 5 round: `4 giocatori * 10 unita' * 5 round = 200 unita'`.
+- La soglia di 100 unita' corrisponde esattamente al **50% di cooperazione complessiva**.
 
-La potenza del Flusso Canalizzatore e' calcolata cosi':
+La potenza del Flusso Canalizzatore cresce proporzionalmente all'energia accumulata:
 
 ```
-potenza (GW) = (1.6 * fondo) * (1.21 / (30 * 1.6))
+potenza (GW) = (energia_cumulata / 100) * 1.21 GW
 ```
 
-Il fondo moltiplicato di soglia vale `30 x 1.6 = 48` unita', che corrisponde
-esattamente a **1.21 GW**. Il viaggio riesce quando
-`fondo totale >= THRESHOLD_POT` (cioe' almeno 30 unita' versate in totale).
+- **Nei Round 1–4 (fase di accumulo)**: la schermata dei risultati mostra l'avanzamento della carica con una barra di progressione retro, senza emettere sentenze premature.
+- **Al Round 5 (verdetto finale)**:
+  - Se `energia_cumulata >= 100` (almeno 1.21 GW): **Viaggio nel tempo riuscito (88 MPH)**. Marty conserva il 100% dei punti accumulati nei 5 round.
+  - Se `energia_cumulata < 100`: **Paradosso Temporale Innescato**. Il payoff finale viene azzerato (`PARADOX_PAYOFF_RATIO = 0.0`).
 
 ---
 
-## 3. Strategie dei bot
+## 3. Strategie dei bot (Fondamenti Scientifici)
 
-Le strategie sono implementate in `bttf_pgg/__init__.py`.
+Le strategie dei bot sono basate sulla letteratura empirica sui beni pubblici (*Fischbacher, Gächter & Fehr 2001*; *Milinski et al. 2008*):
 
-### Doc - *Always Cooperate*
-Versa **sempre 10 unita'** a ogni round.
+### Doc - *Altruistic Cooperator / Target-Pacer*
+Versa **sempre 10 unita'** a ogni round per assicurare la base energetica della DeLorean (50 unita' totali).
 
-```python
-doc = C.ENDOWMENT  # 10
-```
+### Biff - *Pure Free Rider*
+Versa **sempre 0 unita'** a ogni round, sfruttando gli altri partecipanti per massimizzare il proprio conto privato.
 
-### Biff - *Always Defect*
-Versa **sempre 0 unita'** a ogni round.
-
-```python
-biff = 0
-```
-
-### Jennifer - *Random*
-Versa un **ammontare casuale** (intero uniforme in `[0, 10]`) a ogni round.
-
-```python
-jennifer = random.randint(0, C.ENDOWMENT)
-```
+### Jennifer - *Conditional Cooperator*
+Non e' piu' puramente casuale, ma rispecchia il profilo empirico del cooperatore condizionato:
+- **Round 1**: offre un contributo benevolo di **5 unita'**.
+- **Round 2–5**: calcola la media dei contributi degli altri partecipanti (Marty, Doc, Biff) al round precedente e si allinea ad essa.
+  Se Marty coopera generosamente (10), Jennifer risponde versando 7; se Marty diserta (0), Jennifer si ritrae versando 3.
 
 ### Marty - umano o bot (Tit-for-Tat)
 
-- **Marty umano** (`marty_strategy = 'human'`): sceglie il contributo tramite la
-  **dashboard interattiva** (slider da 0 a 10).
+- **Marty umano** (`marty_strategy = 'human'`): sceglie il contributo tramite la dashboard interattiva (slider da 0 a 10).
 - **Marty bot** (`marty_strategy = 'tit_for_tat'`, sessioni/test automatici):
-  - **Round 1**: versa **5 unita'** (`TFT_FIRST_ROUND = 5`).
-  - **Dal round 2**: versa la **media (arrotondata) dei contributi forniti dagli
-    altri tre giocatori (Doc, Biff, Jennifer) nel round precedente**.
-
-```python
-def marty_tit_for_tat_contribution(player):
-    if player.round_number == 1:
-        return C.TFT_FIRST_ROUND
-    prev = player.in_round(player.round_number - 1)
-    others = [prev.doc_contribution, prev.biff_contribution, prev.jennifer_contribution]
-    return int(round(sum(others) / len(others)))
-```
+  - **Round 1**: versa **5 unita'**.
+  - **Dal round 2**: versa la media (arrotondata) dei contributi forniti dagli altri tre giocatori (Doc, Biff, Jennifer) nel round precedente.
 
 ---
 

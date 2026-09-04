@@ -11,105 +11,82 @@ You are **Marty McFly**, in 1985. The **DeLorean** is stuck and the **Flux
 Capacitor** is drained: time travel requires at least **1.21 GW** of power.
 Three other residents of Hill Valley are playing with you:
 
-| Player | Type | Strategy |
-|--------|------|----------|
-| **Marty** | Human (or bot in tests) | Free choice / Tit-for-Tat |
-| **Doc**   | Bot  | Always Cooperate |
-| **Biff**  | Bot  | Always Defect |
-| **Jennifer** | Bot | Random |
+| Player | Type | Strategy | Behavioral Role (Literature) |
+|--------|------|----------|-------------------------------|
+| **Marty** | Human (or bot in tests) | Free choice / Tit-for-Tat | Decision maker (pivotal) |
+| **Doc**   | Bot  | Always Cooperate | Altruist / Target-Pacer (Milinski et al. 2008) |
+| **Biff**  | Bot  | Always Defect | Pure Free Rider (Fischbacher et al. 2001) |
+| **Jennifer** | Bot | Conditional Cooperator | Reactive/Reciprocal (Fischbacher et al. 2001) |
 
-Each round, the four players receive an endowment of **10 Energy Units**
-(Plutonium) and decide how much to contribute to the common fund. If the fund
-clears the **1.21 GW** threshold, time travel succeeds - **"Time travel
-successful (88 MPH)!"** - otherwise a **"Time Paradox Triggered!"** occurs.
+Across 5 rounds, all four players receive an endowment of **10 Energy Units**
+(Plutonium) per round and decide how much to contribute to the common fund.
+Energy accumulates round after round in the Flux Capacitor.
+At the end of **Round 5 (game end)**, if the group's collective energy reaches at
+least **100 units (equivalent to 1.21 GW)**, time travel succeeds:
+**"88 MPH - Time travel successful!"** and Marty secures all accumulated earnings.
+If the collective energy falls short of 1.21 GW, a **"Time Paradox"** is triggered:
+the timeline collapses and all earnings are wiped out (*Collective-Risk failure*, Milinski et al. 2008).
 
 ---
 
 ## 2. PGG rules and mathematical values
 
-This is a standard linear public goods game.
+This game combines a repeated linear public goods game with an intertemporal **Collective-Risk Social Dilemma (CRSD)**.
 
-- **Initial endowment** per player: `ENDOWMENT = 10` Energy Units.
-- **Multiplier** of the common fund: `MULTIPLIER = 1.6`.
+- **Round endowment** per player: `ENDOWMENT = 10` Energy Units (50 units total across 5 rounds).
+- **Round multiplier**: `MULTIPLIER = 1.6`.
 - **Number of players**: `N_PLAYERS = 4` (Marty + Doc + Biff + Jennifer).
-- **Number of rounds**: `NUM_ROUNDS = 5` (configurable in `C`).
+- **Number of rounds**: `NUM_ROUNDS = 5`.
 
-Each player `i` chooses a contribution `c_i` between `0` and `10`.
-The round payoff for player `i` is:
+Each player `i` chooses a contribution `c_i \in [0, 10]`.
+The provisional round payoff for player `i` is:
 
 ```
 payoff_i = 10 - c_i + (1.6 * (c_1 + c_2 + c_3 + c_4)) / 4
 ```
 
-Step by step:
-
-1. Sum the 4 contributions: `fund = c_marty + c_doc + c_biff + c_jennifer`.
-2. Multiply the fund by `1.6`.
-3. Split the multiplied fund into **4 equal shares**.
-4. Each player's payoff is: *10 - own contribution + own share*.
-
-**Example**: if everyone contributes 10 -> fund `40 x 1.6 = 64`, share `16`
-each, payoff `10 - 10 + 16 = 16` each.
-
-### Narrative threshold (1.21 GW)
+### Cumulative end-game threshold (1.21 GW)
 
 - `FLUX_TARGET_GW = 1.21` (power required for time travel).
-- `THRESHOLD_POT = 30` (minimum total contribution to reach 1.21 GW).
+- `CUMULATIVE_TARGET_ENERGY = 100` (minimum sum of all 4 players' contributions across 5 rounds).
+- Group maximum capacity over 5 rounds: `4 players * 10 units * 5 rounds = 200 units`.
+- The 100-unit threshold corresponds exactly to **50% collective cooperation**.
 
-Flux Capacitor power is computed as:
+Flux Capacitor power grows proportionally with accumulated energy:
 
 ```
-power (GW) = (1.6 * fund) * (1.21 / (30 * 1.6))
+power (GW) = (cumulative_energy / 100) * 1.21 GW
 ```
 
-The threshold multiplied fund is `30 x 1.6 = 48` units, which corresponds
-exactly to **1.21 GW**. Time travel succeeds when
-`total fund >= THRESHOLD_POT` (at least 30 units contributed in total).
+- **In Rounds 1–4 (charging phase)**: the results page shows real-time charging progression via a retro bar indicator without issuing premature verdicts.
+- **At Round 5 (final verdict)**:
+  - If `cumulative_energy >= 100` (at least 1.21 GW): **Time travel succeeds at 88 MPH**. Marty keeps 100% of accumulated round earnings.
+  - If `cumulative_energy < 100`: **Time Paradox Triggered**. Final earnings are wiped out (`PARADOX_PAYOFF_RATIO = 0.0`).
 
 ---
 
-## 3. Bot strategies
+## 3. Bot strategies (Scientific Foundations)
 
-Strategies are implemented in `bttf_pgg/__init__.py`.
+Bot strategies are grounded in experimental public goods literature (*Fischbacher, Gächter & Fehr 2001*; *Milinski et al. 2008*):
 
-### Doc - *Always Cooperate*
-Contributes **10 units every round**.
+### Doc - *Altruistic Cooperator / Target-Pacer*
+Contributes **10 units every round** to secure the DeLorean's baseline energy (50 units total).
 
-```python
-doc = C.ENDOWMENT  # 10
-```
+### Biff - *Pure Free Rider*
+Contributes **0 units every round**, exploiting others to maximize private account gains.
 
-### Biff - *Always Defect*
-Contributes **0 units every round**.
-
-```python
-biff = 0
-```
-
-### Jennifer - *Random*
-Contributes a **random amount** (uniform integer in `[0, 10]`) each round.
-
-```python
-jennifer = random.randint(0, C.ENDOWMENT)
-```
+### Jennifer - *Conditional Cooperator*
+Replaces random play with empirical conditional cooperation:
+- **Round 1**: offers an initial benevolent contribution of **5 units**.
+- **Rounds 2–5**: observes the contributions of the other three participants (Marty, Doc, Biff) in the previous round and matches their average.
+  If Marty contributes generously (10), Jennifer responds with 7; if Marty defects (0), Jennifer drops to 3.
 
 ### Marty - human or bot (Tit-for-Tat)
 
-- **Human Marty** (`marty_strategy = 'human'`): chooses the contribution through
-  the **interactive dashboard** (0-10 slider).
+- **Human Marty** (`marty_strategy = 'human'`): chooses the contribution through the interactive dashboard (0-10 slider).
 - **Bot Marty** (`marty_strategy = 'tit_for_tat'`, automatic sessions/tests):
-  - **Round 1**: contributes **5 units** (`TFT_FIRST_ROUND = 5`).
-  - **From round 2 on**: contributes the **rounded mean of the contributions
-    made by the other three players (Doc, Biff, Jennifer) in the previous round**.
-
-```python
-def marty_tit_for_tat_contribution(player):
-    if player.round_number == 1:
-        return C.TFT_FIRST_ROUND
-    prev = player.in_round(player.round_number - 1)
-    others = [prev.doc_contribution, prev.biff_contribution, prev.jennifer_contribution]
-    return int(round(sum(others) / len(others)))
-```
+  - **Round 1**: contributes **5 units**.
+  - **From round 2 on**: contributes the rounded mean of the contributions made by Doc, Biff, and Jennifer in the previous round.
 
 ---
 

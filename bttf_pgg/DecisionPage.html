@@ -39,6 +39,12 @@ a{color:var(--cyan)}
 
 <p>{{ texts.decision_intro }}</p>
 
+{{ if show_charge_status }}
+<div class="alert alert-info mb-4 py-2 px-3">
+    <strong>:: STATUS ::</strong> {{ decision_charge_status }}
+</div>
+{{ endif }}
+
 <div class="card mb-4">
     <div class="card-body">
         <div class="retro-screen text-center py-3 mb-3">
