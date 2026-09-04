@@ -9,82 +9,129 @@
 :root{--bg:#05080a;--panel:#0a1216;--panel2:#0d191f;--line:#143c3c;--green:#39ff14;--cyan:#00e5ff;--orange:#ff9f1c;--red:#ff3b3b;--text:#cdf5cc;--dim:#7fa393}
 body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",Courier,monospace}
 .otree-body{max-width:860px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 0 14px rgba(57,255,20,.1),inset 0 0 22px rgba(0,0,0,.55);color:var(--text)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 0 14px rgba(57,255,20,.1),inset 0 0 22px rgba(0,0,0,.55);color:var(--text)}
 .card-header,.card-title,h1,h2,h3,h4,h5,h6{color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.55);letter-spacing:.5px}
 .table{color:var(--text);--bs-table-bg:transparent;--bs-table-striped-bg:rgba(57,255,20,.05);border-color:var(--line)}
 .table thead th{color:var(--cyan);border-color:var(--line);text-shadow:0 0 6px rgba(0,229,255,.5)}
 .table td{border-color:var(--line)}
 .otree-btn-next{background:var(--green)!important;color:#031803!important;border:none!important;font-weight:bold;letter-spacing:1px;text-shadow:none;box-shadow:0 0 12px rgba(57,255,20,.55)}
 .otree-btn-next:hover{background:var(--cyan)!important;color:#001418!important;box-shadow:0 0 16px rgba(0,229,255,.8)}
-.form-range::-webkit-slider-runnable-track{background:#0e211c;border:1px solid var(--line)}
-.form-range::-webkit-slider-thumb{background:var(--orange);border:2px solid #6b3b00;box-shadow:0 0 10px rgba(255,159,28,.9)}
-.form-range::-moz-range-track{background:#0e211c;border:1px solid var(--line)}
-.form-range::-moz-range-thumb{background:var(--orange);border:2px solid #6b3b00;box-shadow:0 0 10px rgba(255,159,28,.9)}
-.retro-header{color:var(--cyan);letter-spacing:2px;font-size:1.05rem;border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:22px;text-shadow:0 0 6px rgba(0,229,255,.6)}
-.retro-screen{background:#030d08;border:1px solid var(--line);box-shadow:inset 0 0 22px rgba(0,0,0,.85);color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.85);letter-spacing:3px;border-radius:6px}
-.retro-label{color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-size:.75rem}
-.retro-value{color:var(--orange);font-weight:bold;text-shadow:0 0 6px rgba(255,159,28,.6)}
-.retro-big{color:var(--cyan);font-size:1.5rem;text-shadow:0 0 8px rgba(0,229,255,.7)}
-.retro-success{background:rgba(57,255,20,.1);border:1px solid var(--green);color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.8);padding:16px;border-radius:6px;font-size:1.25rem;letter-spacing:1px}
-.retro-danger{background:rgba(255,59,59,.1);border:1px solid var(--red);color:var(--red);text-shadow:0 0 8px rgba(255,59,59,.8);padding:16px;border-radius:6px;font-size:1.25rem;letter-spacing:1px}
-.retro-lang-option{color:var(--text);font-size:1.1rem;cursor:pointer;padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:var(--panel2)}
-.retro-lang-option:hover{border-color:var(--green)}
-.retro-btn{background:var(--panel2);color:var(--cyan);border:1px solid var(--line)}
-.retro-btn:hover{border-color:var(--cyan);color:var(--green)}
-.alert-info{background:rgba(0,229,255,.08);color:var(--text);border-color:var(--line)}
-a{color:var(--cyan)}
+.form-range::-webkit-slider-runnable-track{background:#0e211c;border:2px solid var(--line);border-radius:6px;height:14px}
+.form-range::-webkit-slider-thumb{background:var(--orange);border:2px solid #fff;border-radius:50%;width:28px;height:28px;margin-top:-7px;box-shadow:0 0 14px rgba(255,159,28,1);cursor:pointer}
+.form-range::-moz-range-track{background:#0e211c;border:2px solid var(--line);border-radius:6px;height:14px}
+.form-range::-moz-range-thumb{background:var(--orange);border:2px solid #fff;border-radius:50%;width:28px;height:28px;box-shadow:0 0 14px rgba(255,159,28,1);cursor:pointer}
+.retro-header{color:var(--cyan);letter-spacing:2px;font-size:1.05rem;border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:20px;text-shadow:0 0 6px rgba(0,229,255,.6)}
+.retro-label{color:var(--dim);letter-spacing:1px;font-size:.85rem}
+.retro-btn{background:var(--panel2);color:var(--cyan);border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-weight:bold}
+.retro-btn:hover{border-color:var(--green);color:var(--green);background:#0f2820}
+.alert-info{background:rgba(0,229,255,.08);color:var(--text);border:1px solid var(--cyan);border-radius:8px}
+.box-allocation{border-radius:8px;transition:transform .2s ease}
+.box-allocation:hover{transform:translateY(-2px)}
 </style>
 
 <div class="retro-header">:: {{ texts.decision_header }} ::</div>
 
-<p>{{ texts.decision_intro }}</p>
+<p class="lead mb-4" style="font-size:1.15rem; color:#e0ffe0;">{{ texts.decision_intro }}</p>
 
 {{ if show_charge_status }}
 <div class="alert alert-info mb-4 py-2 px-3">
-    <strong>:: STATUS ::</strong> {{ decision_charge_status }}
+    <strong>:: STATO DEL FLUSSO CANALIZZATORE ::</strong> {{ decision_charge_status }}
 </div>
 {{ endif }}
 
+<!-- DOPPIO BOX INTERATTIVO SALVADANAIO / CASSA COMUNE -->
+<div class="row g-3 mb-4">
+    <!-- Box Salvadanaio Personale -->
+    <div class="col-6">
+        <div class="card box-allocation h-100 text-center p-3" style="border: 2px solid var(--green); background: rgba(57, 255, 20, 0.08);">
+            <div class="retro-label" style="color: var(--green); font-size: 0.95rem; font-weight: bold;">
+                🪙 {{ texts.decision_box_keep_title }}
+            </div>
+            <div id="keep-display" style="font-size: 3.4rem; font-weight: bold; color: var(--green); margin: 4px 0; text-shadow: 0 0 10px rgba(57,255,20,.6);">
+                {{ kept_value }}
+            </div>
+            <div class="retro-label" style="font-size: 0.8rem; color: #a4e5a4;">
+                {{ texts.decision_box_keep_desc }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Box Cassa DeLorean -->
+    <div class="col-6">
+        <div class="card box-allocation h-100 text-center p-3" style="border: 2px solid var(--orange); background: rgba(255, 159, 28, 0.08);">
+            <div class="retro-label" style="color: var(--orange); font-size: 0.95rem; font-weight: bold;">
+                ⚡ {{ texts.decision_box_give_title }}
+            </div>
+            <div id="contrib-display" style="font-size: 3.4rem; font-weight: bold; color: var(--orange); margin: 4px 0; text-shadow: 0 0 10px rgba(255,159,28,.6);">
+                {{ contribution_value }}
+            </div>
+            <div class="retro-label" style="font-size: 0.8rem; color: #f5cca0;">
+                {{ texts.decision_box_give_desc }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDER DECISIONALE -->
 <div class="card mb-4">
-    <div class="card-body">
-        <div class="retro-screen text-center py-3 mb-3">
-            <div id="contrib-display" style="font-size:3rem;">{{ contribution_value }}</div>
-            <div class="retro-label" style="font-size:.85rem;">{{ texts.decision_current }}</div>
+    <div class="card-body p-4">
+        <label for="contrib" class="form-label mb-2" style="font-size:1.05rem; color:var(--cyan);">
+            {{ texts.decision_slider_label }}
+        </label>
+        
+        <div class="d-flex justify-content-between retro-label mb-2">
+            <span style="color:var(--green); font-weight:bold;">◀ {{ texts.decision_min }}</span>
+            <span style="color:var(--orange); font-weight:bold;">{{ texts.decision_max }} ▶</span>
         </div>
 
-        <p class="mb-1">{{ texts.decision_slider_label }}</p>
-        <div class="d-flex justify-content-between retro-label mb-1">
-            <span>{{ texts.decision_min }}</span>
-            <span>{{ texts.decision_max }}</span>
-        </div>
-        <input type="range" class="form-range w-100" name="contribution" id="contrib"
+        <input type="range" class="form-range w-100 my-2" name="contribution" id="contrib"
                min="0" max="{{ max_contribution }}" step="1"
                value="{{ contribution_value }}" oninput="updateContrib()">
         {{ formfield_errors 'contribution' }}
 
-        <div class="mt-4">
-            <span class="retro-label me-2">{{ texts.decision_quick }}:</span>
-            <button type="button" class="retro-btn btn btn-sm me-1" onclick="setContrib(10)">{{ texts.decision_quick_all }}</button>
-            <button type="button" class="retro-btn btn btn-sm me-1" onclick="setContrib(5)">{{ texts.decision_quick_half }}</button>
-            <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(0)">{{ texts.decision_quick_none }}</button>
+        <!-- SCELTE RAPIDE -->
+        <div class="mt-4 pt-3 border-top" style="border-color:var(--line)!important;">
+            <span class="retro-label me-3">{{ texts.decision_quick }}:</span>
+            <div class="btn-group mt-2 mt-sm-0" role="group">
+                <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(0)">
+                    {{ texts.decision_quick_none }}
+                </button>
+                <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(5)">
+                    {{ texts.decision_quick_half }}
+                </button>
+                <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(10)">
+                    {{ texts.decision_quick_all }}
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="mt-4">
-    <button type="submit" class="otree-btn-next btn btn-primary btn-lg px-5">{{ texts.decision_submit }}</button>
+    <button type="submit" class="otree-btn-next btn btn-primary btn-lg px-5 py-3" style="font-size:1.2rem;">
+        {{ texts.decision_submit }} &rarr;
+    </button>
 </div>
 
 <script>
+    const TOTAL_ENDOWMENT = {{ endowment }};
     const contribEl = document.getElementById('contrib');
-    const displayEl = document.getElementById('contrib-display');
+    const contribDisplayEl = document.getElementById('contrib-display');
+    const keepDisplayEl = document.getElementById('keep-display');
+
     function updateContrib() {
-        displayEl.textContent = contribEl.value;
+        const give = parseInt(contribEl.value, 10) || 0;
+        const keep = TOTAL_ENDOWMENT - give;
+        contribDisplayEl.textContent = give;
+        keepDisplayEl.textContent = keep;
     }
+
     function setContrib(v) {
         contribEl.value = v;
         updateContrib();
     }
+
+    // Inizializzazione al caricamento della pagina
     updateContrib();
 </script>
 

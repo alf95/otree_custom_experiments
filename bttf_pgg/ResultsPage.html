@@ -1,92 +1,227 @@
 {{ extends "global/Page.html" }}
 {{ block title }}
-    {{ title }}
+{{ title }}
 {{ endblock }}
 
 {{ block content }}
 
 <style>
-:root{--bg:#05080a;--panel:#0a1216;--panel2:#0d191f;--line:#143c3c;--green:#39ff14;--cyan:#00e5ff;--orange:#ff9f1c;--red:#ff3b3b;--text:#cdf5cc;--dim:#7fa393}
-body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",Courier,monospace}
-.otree-body{max-width:860px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 0 14px rgba(57,255,20,.1),inset 0 0 22px rgba(0,0,0,.55);color:var(--text)}
-.card-header,.card-title,h1,h2,h3,h4,h5,h6{color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.55);letter-spacing:.5px}
-.table{color:var(--text);--bs-table-bg:transparent;--bs-table-striped-bg:rgba(57,255,20,.05);border-color:var(--line)}
-.table thead th{color:var(--cyan);border-color:var(--line);text-shadow:0 0 6px rgba(0,229,255,.5)}
-.table td{border-color:var(--line)}
-.otree-btn-next{background:var(--green)!important;color:#031803!important;border:none!important;font-weight:bold;letter-spacing:1px;text-shadow:none;box-shadow:0 0 12px rgba(57,255,20,.55)}
-.otree-btn-next:hover{background:var(--cyan)!important;color:#001418!important;box-shadow:0 0 16px rgba(0,229,255,.8)}
-.form-range::-webkit-slider-runnable-track{background:#0e211c;border:1px solid var(--line)}
-.form-range::-webkit-slider-thumb{background:var(--orange);border:2px solid #6b3b00;box-shadow:0 0 10px rgba(255,159,28,.9)}
-.form-range::-moz-range-track{background:#0e211c;border:1px solid var(--line)}
-.form-range::-moz-range-thumb{background:var(--orange);border:2px solid #6b3b00;box-shadow:0 0 10px rgba(255,159,28,.9)}
-.retro-header{color:var(--cyan);letter-spacing:2px;font-size:1.05rem;border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:22px;text-shadow:0 0 6px rgba(0,229,255,.6)}
-.retro-screen{background:#030d08;border:1px solid var(--line);box-shadow:inset 0 0 22px rgba(0,0,0,.85);color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.85);letter-spacing:3px;border-radius:6px}
-.retro-label{color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-size:.75rem}
-.retro-value{color:var(--orange);font-weight:bold;text-shadow:0 0 6px rgba(255,159,28,.6)}
-.retro-big{color:var(--cyan);font-size:1.5rem;text-shadow:0 0 8px rgba(0,229,255,.7)}
-.retro-success{background:rgba(57,255,20,.12);border:2px solid var(--green);color:var(--green);text-shadow:0 0 8px rgba(57,255,20,.8);padding:20px;border-radius:8px;letter-spacing:1px}
-.retro-danger{background:rgba(255,59,59,.12);border:2px solid var(--red);color:var(--red);text-shadow:0 0 8px rgba(255,59,59,.8);padding:20px;border-radius:8px;letter-spacing:1px}
-.progress-retro-track{background:#04100c;border:1px solid var(--line);border-radius:4px;height:24px;overflow:hidden;box-shadow:inset 0 0 10px rgba(0,0,0,.9)}
-.progress-retro-bar{background:linear-gradient(90deg, #00e5ff, #39ff14);height:100%;box-shadow:0 0 12px rgba(57,255,20,.8);transition:width .4s ease}
-.alert-info{background:rgba(0,229,255,.08);color:var(--text);border-color:var(--line)}
-a{color:var(--cyan)}
+    :root {
+        --bg: #05080a;
+        --panel: #0a1216;
+        --panel2: #0d191f;
+        --line: #143c3c;
+        --green: #39ff14;
+        --cyan: #00e5ff;
+        --orange: #ff9f1c;
+        --red: #ff3b3b;
+        --text: #cdf5cc;
+        --dim: #7fa393
+    }
+
+    body {
+        background: var(--bg) !important;
+        color: var(--text);
+        font-family: "Courier New", Courier, monospace
+    }
+
+    .otree-body {
+        max-width: 860px
+    }
+
+    .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 0 14px rgba(57, 255, 20, .1), inset 0 0 22px rgba(0, 0, 0, .55);
+        color: var(--text)
+    }
+
+    .card-header,
+    .card-title,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--green);
+        text-shadow: 0 0 8px rgba(57, 255, 20, .55);
+        letter-spacing: .5px
+    }
+
+    .table {
+        color: var(--text);
+        --bs-table-bg: transparent;
+        --bs-table-striped-bg: rgba(57, 255, 20, .05);
+        border-color: var(--line)
+    }
+
+    .table thead th {
+        color: var(--cyan);
+        border-color: var(--line);
+        text-shadow: 0 0 6px rgba(0, 229, 255, .5)
+    }
+
+    .table td {
+        border-color: var(--line)
+    }
+
+    .otree-btn-next {
+        background: var(--green) !important;
+        color: #031803 !important;
+        border: none !important;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-shadow: none;
+        box-shadow: 0 0 12px rgba(57, 255, 20, .55)
+    }
+
+    .otree-btn-next:hover {
+        background: var(--cyan) !important;
+        color: #001418 !important;
+        box-shadow: 0 0 16px rgba(0, 229, 255, .8)
+    }
+
+    .retro-header {
+        color: var(--cyan);
+        letter-spacing: 2px;
+        font-size: 1.05rem;
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        text-shadow: 0 0 6px rgba(0, 229, 255, .6)
+    }
+
+    .retro-label {
+        color: var(--dim);
+        letter-spacing: 1px;
+        font-size: .85rem
+    }
+
+    .retro-value {
+        color: var(--orange);
+        font-weight: bold;
+        text-shadow: 0 0 6px rgba(255, 159, 28, .6)
+    }
+
+    .retro-big {
+        color: var(--cyan);
+        font-size: 1.5rem;
+        text-shadow: 0 0 8px rgba(0, 229, 255, .7)
+    }
+
+    .retro-success {
+        background: rgba(57, 255, 20, .12);
+        border: 2px solid var(--green);
+        color: var(--green);
+        text-shadow: 0 0 8px rgba(57, 255, 20, .8);
+        padding: 20px;
+        border-radius: 8px;
+        letter-spacing: 1px
+    }
+
+    .retro-danger {
+        background: rgba(255, 59, 59, .12);
+        border: 2px solid var(--red);
+        color: var(--red);
+        text-shadow: 0 0 8px rgba(255, 59, 59, .8);
+        padding: 20px;
+        border-radius: 8px;
+        letter-spacing: 1px
+    }
+
+    .progress-retro-track {
+        background: #04100c;
+        border: 2px solid var(--line);
+        border-radius: 6px;
+        height: 26px;
+        overflow: hidden;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, .9)
+    }
+
+    .progress-retro-bar {
+        background: linear-gradient(90deg, #00e5ff, #39ff14);
+        height: 100%;
+        box-shadow: 0 0 14px rgba(57, 255, 20, .9);
+        transition: width .4s ease
+    }
+
+    .alert-info {
+        background: rgba(0, 229, 255, .08);
+        color: var(--text);
+        border: 1px solid var(--cyan);
+        border-radius: 8px
+    }
+
+    .calculation-row {
+        background: transparent;
+        color: var(--text);
+        border-color: var(--line);
+        padding: 10px 16px
+    }
 </style>
 
 <div class="retro-header">:: {{ texts.results_header }} ::</div>
 
 {{ if is_final_round }}
-    <!-- ================================================================= -->
-    <!-- SCHERMATA FINALE: VERDETTO DEL VIAGGIO NEL TEMPO (ROUND 5)         -->
-    <!-- ================================================================= -->
-    <div class="card mb-4 {{ if game_success }}border-success{{ else }}border-danger{{ endif }}">
-        <div class="card-body">
-            <div class="{{ if game_success }}retro-success{{ else }}retro-danger{{ endif }} text-center mb-3">
-                <h2 style="font-size:1.8rem; margin-bottom:10px;">
-                    {{ if game_success }}{{ texts.final_success_badge }}{{ else }}{{ texts.final_paradox_badge }}{{ endif }}
-                </h2>
-                <p class="mb-0" style="font-size:1.05rem; line-height:1.5;">
-                    {{ if game_success }}{{ texts.final_success_desc }}{{ else }}{{ texts.final_paradox_desc }}{{ endif }}
-                </p>
-            </div>
+<!-- ================================================================= -->
+<!-- SCHERMATA FINALE: VERDETTO DEL VIAGGIO NEL TEMPO (ROUND 5)         -->
+<!-- ================================================================= -->
+<div class="card mb-4 {{ if game_success }}border-success{{ else }}border-danger{{ endif }}">
+    <div class="card-body p-4">
+        <div class="{{ if game_success }}retro-success{{ else }}retro-danger{{ endif }} text-center mb-3">
+            <h2 style="font-size:1.7rem; margin-bottom:12px;">
+                {{ if game_success }}{{ texts.final_success_badge }}{{ else }}{{ texts.final_paradox_badge }}{{ endif }}
+            </h2>
+            <p class="mb-0" style="font-size:1.05rem; line-height:1.5;">
+                {{ if game_success }}{{ texts.final_success_desc }}{{ else }}{{ final_paradox_text }}{{ endif }}
+            </p>
+        </div>
 
-            <div class="row text-center mt-3 g-3">
-                <div class="col-md-6">
-                    <div class="p-3" style="background:var(--panel2); border:1px solid var(--line); border-radius:6px;">
-                        <div class="retro-label">{{ texts.final_total_power }}</div>
-                        <div class="retro-big my-1">{{ cumulative_gw }} {{ texts.gw }}</div>
-                        <div class="retro-label">{{ texts.results_flux_target }}: {{ flux_target_gw }} {{ texts.gw }}</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="p-3" style="background:var(--panel2); border:1px solid var(--line); border-radius:6px;">
-                        <div class="retro-label">{{ texts.final_total_energy }}</div>
-                        <div class="retro-big my-1">{{ cumulative_energy }} / {{ cumulative_target_energy }} {{ texts.units }}</div>
-                        <div class="retro-label">Carica finale: {{ energy_progress_pct }}%</div>
-                    </div>
+        <div class="row text-center mt-3 g-3">
+            <div class="col-md-6">
+                <div class="p-3" style="background:var(--panel2); border:1px solid var(--line); border-radius:8px;">
+                    <div class="retro-label">{{ texts.final_total_power }}</div>
+                    <div class="retro-big my-1">{{ cumulative_gw }} {{ texts.gw }}</div>
+                    <div class="retro-label">{{ texts.results_flux_target }}: {{ flux_target_gw }} {{ texts.gw }}</div>
                 </div>
             </div>
-
-            <div class="mt-4 p-3" style="background:#030d08; border:1px solid var(--line); border-radius:6px;">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="retro-label">{{ texts.final_provisional_earnings }}:</span>
-                    <span class="retro-value" style="font-size:1.1rem;">{{ cumulative_marty_payoff }} {{ texts.units }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center pt-2" style="border-top:1px dashed var(--line);">
-                    <strong style="color:var(--cyan); letter-spacing:1px;">{{ texts.final_actual_earnings }}:</strong>
-                    <span style="font-size:1.6rem; font-weight:bold; color:{{ if game_success }}var(--green){{ else }}var(--red){{ endif }};">
-                        {{ final_game_payoff }} {{ texts.units }}
-                    </span>
+            <div class="col-md-6">
+                <div class="p-3" style="background:var(--panel2); border:1px solid var(--line); border-radius:8px;">
+                    <div class="retro-label">{{ texts.final_total_energy }}</div>
+                    <div class="retro-big my-1">{{ cumulative_energy }} / {{ cumulative_target_energy }} {{ texts.units
+                        }}</div>
+                    <div class="retro-label">Carica finale: {{ energy_progress_pct }}%</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- CRONOLOGIA DEI ROUND -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ texts.final_round_history_title }}</h5>
-            <table class="table table-striped mb-0">
+        <div class="mt-4 p-3" style="background:#030d08; border:1px solid var(--line); border-radius:8px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="retro-label">{{ texts.final_provisional_earnings }}:</span>
+                <span class="retro-value" style="font-size:1.15rem;">{{ cumulative_marty_payoff }} {{ texts.units
+                    }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-2"
+                style="border-top:1px dashed var(--line);">
+                <strong style="color:var(--cyan); font-size:1.1rem; letter-spacing:1px;">{{ texts.final_actual_earnings
+                    }}:</strong>
+                <span
+                    style="font-size:1.8rem; font-weight:bold; color:{{ if game_success }}var(--green){{ else }}var(--red){{ endif }};">
+                    {{ final_game_payoff }} {{ texts.units }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CRONOLOGIA DEI 5 ROUND -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3" style="color:var(--cyan);">{{ texts.final_round_history_title }}</h5>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
                 <thead>
                     <tr>
                         <th>{{ texts.col_round }}</th>
@@ -98,46 +233,52 @@ a{color:var(--cyan)}
                 <tbody>
                     {{ for r in round_history }}
                     <tr>
-                        <td>Round {{ r.round }}</td>
-                        <td class="text-end">{{ r.marty_contrib }}</td>
-                        <td class="text-end">{{ r.group_total }}</td>
-                        <td class="text-end">{{ r.marty_payoff }}</td>
+                        <td style="color: azure;">Round {{ r.round }}</td>
+                        <td class="text-end" style="color:var(--orange);">{{ r.marty_contrib }} {{ texts.units }}</td>
+                        <td class="text-end" style="color:var(--cyan);">{{ r.group_total }} {{ texts.units }}</td>
+                        <td class="text-end" style="color:var(--green); font-weight:bold;">{{ r.marty_payoff }} {{
+                            texts.units }}</td>
                     </tr>
                     {{ endfor }}
                 </tbody>
             </table>
         </div>
     </div>
+</div>
 
 {{ else }}
-    <!-- ================================================================= -->
-    <!-- SCHERMATA INTERMEDIA: ACCUMULO ENERGETICO (ROUND 1..4)            -->
-    <!-- ================================================================= -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ texts.results_flux_title }}</h5>
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="retro-label">{{ texts.results_progress_label }}</span>
-                <span class="retro-value" style="font-size:1.2rem;">{{ cumulative_gw }} / {{ flux_target_gw }} {{ texts.gw }} ({{ energy_progress_pct }}%)</span>
-            </div>
-            <div class="progress-retro-track mb-3">
-                <div class="progress-retro-bar" style="width: {{ energy_progress_pct }}%;"></div>
-            </div>
-            <div class="d-flex justify-content-between retro-label mb-2">
-                <span>{{ energy_accumulated_text }}</span>
-                <span>{{ texts.results_flux_target }}: {{ flux_target_gw }} {{ texts.gw }}</span>
-            </div>
-            <div class="alert alert-info mb-0 py-2">
-                <small>{{ interim_status_text }}</small>
-            </div>
+<!-- ================================================================= -->
+<!-- SCHERMATA INTERMEDIA: ACCUMULO MONETE E CARICA (ROUND 1..4)       -->
+<!-- ================================================================= -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3" style="color:var(--cyan);">{{ texts.results_flux_title }}</h5>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="retro-label">{{ texts.results_progress_label }}</span>
+            <span class="retro-value" style="font-size:1.2rem;">
+                {{ cumulative_gw }} / {{ flux_target_gw }} {{ texts.gw }} ({{ energy_progress_pct }}%)
+            </span>
+        </div>
+        <div class="progress-retro-track mb-3">
+            <div class="progress-retro-bar" style="width: {{ energy_progress_pct }}%;"></div>
+        </div>
+        <div class="d-flex justify-content-between retro-label mb-3">
+            <span style="color:var(--green);">{{ energy_accumulated_text }}</span>
+            <span style="color:var(--orange);">{{ texts.results_flux_target }}: 100 {{ texts.units }} ({{ flux_target_gw
+                }} {{ texts.gw }})</span>
+        </div>
+        <div class="alert alert-info mb-0 py-2">
+            <strong>💡 OBIETTIVO:</strong> {{ interim_status_text }}
         </div>
     </div>
+</div>
 
-    {{ if show_bot_results }}
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ texts.results_contrib_title }}</h5>
-            <table class="table table-striped mb-0">
+{{ if show_bot_results }}
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3" style="color:var(--orange);">{{ texts.results_contrib_title }}</h5>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
                 <thead>
                     <tr>
                         <th>{{ texts.col_player }}</th>
@@ -148,89 +289,101 @@ a{color:var(--cyan)}
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{{ texts.you_label }}</td>
+                        <td style="color:var(--green); font-weight:bold;">{{ texts.you_label }}</td>
                         <td>{{ texts.strategy_you }}</td>
-                        <td class="text-end">{{ contribution }}</td>
-                        <td class="text-end">{{ marty_payoff }}</td>
+                        <td class="text-end" style="color:var(--orange); font-weight:bold;">{{ contribution }}</td>
+                        <td class="text-end" style="color:var(--green); font-weight:bold;">{{ marty_payoff }} {{
+                            texts.units }}</td>
                     </tr>
                     <tr>
-                        <td>Doc</td>
+                        <td>Doc Brown</td>
                         <td>{{ texts.strategy_doc }}</td>
                         <td class="text-end">{{ doc_contribution }}</td>
-                        <td class="text-end">{{ doc_payoff }}</td>
+                        <td class="text-end">{{ doc_payoff }} {{ texts.units }}</td>
                     </tr>
                     <tr>
-                        <td>Biff</td>
+                        <td>Biff Tannen</td>
                         <td>{{ texts.strategy_biff }}</td>
                         <td class="text-end">{{ biff_contribution }}</td>
-                        <td class="text-end">{{ biff_payoff }}</td>
+                        <td class="text-end">{{ biff_payoff }} {{ texts.units }}</td>
                     </tr>
                     <tr>
                         <td>Jennifer</td>
                         <td>{{ texts.strategy_jennifer }}</td>
                         <td class="text-end">{{ jennifer_contribution }}</td>
-                        <td class="text-end">{{ jennifer_payoff }}</td>
+                        <td class="text-end">{{ jennifer_payoff }} {{ texts.units }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    {{ else }}
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ texts.results_your_decision }}</h5>
-            <table class="table table-striped mb-0">
-                <thead>
-                    <tr>
-                        <th>{{ texts.col_player }}</th>
-                        <th class="text-end">{{ texts.col_contribution }}</th>
-                        <th class="text-end">{{ texts.col_payoff }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ texts.you_label }}</td>
-                        <td class="text-end">{{ contribution }}</td>
-                        <td class="text-end">{{ marty_payoff }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+</div>
+{{ else }}
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3" style="color:var(--orange);">{{ texts.results_your_decision }}</h5>
+        <table class="table table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>{{ texts.col_player }}</th>
+                    <th class="text-end">{{ texts.col_contribution }}</th>
+                    <th class="text-end">{{ texts.col_payoff }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="color:var(--green); font-weight:bold;">{{ texts.you_label }}</td>
+                    <td class="text-end" style="color:var(--orange); font-weight:bold;">{{ contribution }} {{
+                        texts.units }}</td>
+                    <td class="text-end" style="color:var(--green); font-weight:bold;">{{ marty_payoff }} {{ texts.units
+                        }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    {{ endif }}
+</div>
+{{ endif }}
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ texts.results_summary_title }}</h5>
-            <ul class="list-group list-group-flush" style="background:transparent;">
-                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
-                    <span>{{ texts.results_total }}</span>
-                    <span class="retro-value">{{ total_contribution }} {{ texts.units }}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
-                    <span>{{ texts.results_fund }}</span>
-                    <span class="retro-value">{{ fund_energy }} {{ texts.units }}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
-                    <span>{{ texts.results_share }}</span>
-                    <span class="retro-value">{{ individual_share }} {{ texts.units }}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--text); border-color:var(--line);">
-                    <span>{{ texts.results_payoff_you }}</span>
-                    <span class="retro-big">{{ marty_payoff }} {{ texts.units }}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" style="background:transparent; color:var(--cyan); border-color:var(--line);">
-                    <span>{{ texts.results_cumulative_payoff }}</span>
-                    <span class="retro-big" style="color:var(--green);">{{ cumulative_marty_payoff }} {{ texts.units }}</span>
-                </li>
-            </ul>
-        </div>
+<!-- DETTAGLIO CALCOLO DEL GUADAGNO -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3" style="color:var(--cyan);">{{ texts.results_summary_title }}</h5>
+        <ul class="list-group list-group-flush" style="background:transparent;">
+            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
+                <span>🪙 {{ texts.results_kept }}</span>
+                <span class="retro-value" style="color:var(--green);">{{ marty_kept }} {{ texts.units }}</span>
+            </li>
+            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
+                <span>⚡ {{ texts.results_total }}</span>
+                <span class="retro-value">{{ total_contribution }} {{ texts.units }}</span>
+            </li>
+            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
+                <span>🚀 {{ texts.results_fund }}</span>
+                <span class="retro-value">{{ fund_energy }} {{ texts.units }}</span>
+            </li>
+            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
+                <span>🎁 {{ texts.results_share }}</span>
+                <span class="retro-value" style="color:var(--cyan);">+ {{ individual_share }} {{ texts.units }}</span>
+            </li>
+            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center"
+                style="border-top:1px dashed var(--line);">
+                <strong style="color:var(--green);">💰 {{ texts.results_payoff_you }}</strong>
+                <span class="retro-big" style="color:var(--green);">{{ marty_payoff }} {{ texts.units }}</span>
+            </li>
+            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center"
+                style="border-top:2px solid var(--line); background:rgba(0,229,255,0.04);">
+                <strong style="color:var(--cyan); letter-spacing:1px;">🔒 {{ texts.results_cumulative_payoff }}</strong>
+                <span class="retro-big" style="color:var(--cyan); font-weight:bold;">{{ cumulative_marty_payoff }} {{
+                    texts.units }}</span>
+            </li>
+        </ul>
     </div>
+</div>
 {{ endif }}
 
 <div class="mt-4">
-    <button type="submit" class="otree-btn-next btn btn-primary btn-lg px-5">
-        {{ if is_final_round }}{{ texts.final_finish_btn }}{{ else }}{{ texts.results_continue }}{{ endif }}
+    <button type="submit" class="otree-btn-next btn btn-primary btn-lg px-5 py-3" style="font-size:1.2rem;">
+        {{ if is_final_round }}{{ texts.final_finish_btn }}{{ else }}{{ texts.results_continue }} &rarr;{{ endif }}
     </button>
 </div>
 

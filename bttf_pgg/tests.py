@@ -13,13 +13,15 @@ from . import (
 class PlayerBot(Bot):
     """Bot per i test automatici (otree test bttf_pgg_auto).
 
-    Marty e' simulato con la strategia tit-for-tat: 5 unita' al primo round,
-    poi la media dei contributi degli altri tre giocatori del round precedente.
+    Testa sia il percorso in lingua italiana ('it') che in lingua inglese ('en').
+    Marty e' simulato con la strategia tit-for-tat.
     """
+
+    cases = ['it', 'en']
 
     def play_round(self):
         if self.player.round_number == 1:
-            yield Submission(LanguagePage, dict(lang='it'))
+            yield Submission(LanguagePage, dict(lang=self.case))
             yield Submission(IntroPage)
         yield Submission(
             DecisionPage,

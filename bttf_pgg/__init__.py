@@ -6,25 +6,27 @@ import random
 doc = """
 Public Goods Game (PGG) a 4 ruoli, tema "Ritorno al Futuro", strutturato come
 Collective-Risk Social Dilemma (Milinski et al., 2008, Nature).
+Versione didattica ed intuitiva adattata per ragazzi dai 10 ai 18 anni con
+dotazione monetaria tangibile (Monete / Salvadanaio personale).
 
-Un partecipante umano (Marty McFly) gioca contro tre bot comportamentali
-(ispirati a Fischbacher, Gächter & Fehr, 2001):
-    * Doc      -> "Altruistic / Target-Pacer": versa sempre 10 unita'
-    * Biff     -> "Pure Free Rider": versa sempre 0 unita'
-    * Jennifer -> "Conditional Cooperator": al Round 1 versa 5 unita',
-                  poi risponde alla media dei contributi degli altri partecipanti.
+Un partecipante umano (Marty McFly) gioca contro tre bot con caratteri ben distinti:
+    * Doc      -> Generoso / Altruista: dona sempre 10 monete
+    * Biff     -> Egoista / Free Rider: tiene tutto per sé e dona 0 monete
+    * Jennifer -> Reciproca / Cooperatrice Condizionata: al Round 1 dona 5 monete,
+                  poi osserva cosa fanno gli altri e dona quanto la media del gruppo.
 
-Regole: dotazione di 10 unita' di energia a testa per 5 round.
-In ogni round il fondo comune viene moltiplicato per 1.6 e ridistribuito in parti
-uguali tra i 4 giocatori: Payoff = 10 - contributo + (1.6 * fondo) / 4.
+Regole: dotazione di 10 Monete a testa per 5 round.
+Le monete NON donate rimangono al sicuro nel Salvadanaio personale del giocatore.
+Le monete donate alla Cassa comune per la DeLorean vengono moltiplicate per 1.6
+grazie alle invenzioni di Doc e divise equamente tra i 4 giocatori.
+Guadagno round = (10 - monete donate) + (1.6 * cassa comune) / 4.
 
-VERDETTO DEL VIAGGIO NEL TEMPO (fine gioco):
-L'energia versata da tutti i partecipanti si accumula round dopo round nel Flusso
-Canalizzatore verso l'obiettivo finale di 1.21 GW (soglia cumulativa di 100 unita').
-- Al termine del 5° round, se la carica complessiva >= 1.21 GW, il viaggio nel
-  tempo riesce ("88 MPH!") e Marty conserva tutti i guadagni accumulati.
-- Se la carica e' inferiore a 1.21 GW, si innesca il Paradosso Temporale: la linea
-  temporale collassa e i guadagni vengono azzerati (Collective-Risk failure).
+VERDETTO FINALE DEL VIAGGIO NEL TEMPO:
+Tutte le monete donate dal gruppo servono a caricare la DeLorean (100 monete = 1.21 GW).
+- Se al 5° round il gruppo ha raccolto almeno 100 monete (1.21 GW), la DeLorean
+  raggiunge le 88 MPH: viaggio riuscito e Marty incassa tutte le monete del suo salvadanaio!
+- Se il gruppo ha raccolto meno di 100 monete, scatta il Paradosso Temporale:
+  la DeLorean resta bloccata e tutti i guadagni vengono azzerati (rischio collettivo).
 """
 
 
@@ -36,16 +38,17 @@ class C(BaseConstants):
 
     # --- Parametri economici del PGG ---
     N_PLAYERS = 4           # 1 umano (Marty) + 3 bot
-    ENDOWMENT = 10          # unita' di energia iniziali per giocatore a round
-    MULTIPLIER = 1.6        # fattore moltiplicativo del fondo comune di round
+    ENDOWMENT = 10          # Monete iniziali per giocatore a ogni round
+    MULTIPLIER = 1.6        # Fattore moltiplicativo della cassa comune
 
     # --- Narrativa "Ritorno al Futuro" & Collective-Risk Threshold ---
-    FLUX_TARGET_GW = 1.21   # potenza necessaria al viaggio nel tempo
-    # Contributo cumulativo minimo su 5 round da parte dell'intero gruppo (4x10x5 = 200 max)
-    # per raggiungere 1.21 GW. 100 unita' corrisponde al 50% di cooperazione complessiva.
-    CUMULATIVE_TARGET_ENERGY = 100
+    FLUX_TARGET_GW = 1.21   # Potenza necessaria al viaggio nel tempo
+    # Monete complessive da donare in 5 round dall'intero gruppo (4x10x5 = 200 max)
+    # per raggiungere 1.21 GW. 100 monete corrisponde al 50% di cooperazione complessiva.
+    CUMULATIVE_TARGET_MONEY = 100
+    CUMULATIVE_TARGET_ENERGY = 100  # Alias per retrocompatibilità
 
-    # Percentuale del payoff conservata in caso di paradosso temporale (0.0 = collasso totale)
+    # Percentuale del payoff conservata in caso di paradosso temporale (0.0 = perdita totale)
     PARADOX_PAYOFF_RATIO = 0.0
 
     # Tit-for-tat (Marty bot per test automatici): contributo del primo round.
@@ -107,6 +110,7 @@ class Player(BasePlayer):
 
 # ---------------------------------------------------------------------------
 # INTERNAZIONALIZZAZIONE (italiano / inglese)
+# Linguaggio semplice, chiaro ed intuitivo per ragazzi di 10-18 anni.
 # ---------------------------------------------------------------------------
 
 TEXTS = {
@@ -116,100 +120,109 @@ TEXTS = {
 
         'intro_title': 'Benvenuto a Hill Valley, 1985!',
         'intro_1': (
-            "Sei Marty McFly. La DeLorean e' ferma e il Flusso Canalizzatore e' "
-            "scarico: per viaggiare nel tempo e tornare al futuro serve una potenza di almeno 1.21 GW. "
-            "Insieme a te giocano altri tre abitanti di Hill Valley: Doc, Biff e Jennifer."
+            "Sei Marty McFly! La DeLorean è ferma e il Flusso Canalizzatore è scarico: "
+            "per far partire la macchina del tempo e tornare al futuro serve una carica di 1.21 GW. "
+            "Per riuscirci, Doc Brown ha bisogno di fondi per alimentare l'esperimento. "
+            "Insieme a te partecipano altri tre ragazzi di Hill Valley: Doc, Biff e Jennifer."
         ),
         'intro_2': (
-            "In ciascuno dei {n} round ogni giocatore riceve 10 unita' di energia e decide "
-            "quante versarne nel fondo comune per caricare il Flusso Canalizzatore."
+            "Il gioco dura {n} round. All'inizio di ogni round ricevi 10 Monete personali (🪙). "
+            "Sei tu a scegliere quante monete tenere nel tuo Salvadanaio e quante donarne alla "
+            "Cassa comune per la DeLorean!"
         ),
-        'intro_rules_title': 'Regole economiche e ricarica cumulativa',
-        'rule_1': 'Ogni giocatore riceve 10 unita\' di energia per round (totale 50 unita\' a testa nei 5 round).',
-        'rule_2': 'In ogni round puoi versare da 0 a 10 unita\' nel Flusso Canalizzatore; il resto resta nel tuo conto privato.',
-        'rule_3': 'Il fondo di ciascun round viene moltiplicato per 1.6 e diviso in parti uguali tra i 4 giocatori.',
-        'rule_4': 'Il tuo guadagno del round e\': 10 meno quota versata, piu\' la tua quota del fondo comune.',
-        'rule_5': 'L\'energia versata da tutti si accumula round dopo round verso l\'obiettivo finale di 1.21 GW.',
+        'intro_rules_title': 'Come funziona il gioco: Monete e Macchina del Tempo',
+        'rule_1': "🪙 La tua dotazione: a ogni round ricevi 10 Monete. Sono tue!",
+        'rule_2': "🔒 Il tuo Salvadanaio: le monete che decidi di NON donare restano al sicuro nel tuo salvadanaio personale.",
+        'rule_3': "⚡ Cassa della DeLorean: le monete donate da te e dagli altri vengono messe insieme e moltiplicate per 1.6 da Doc (crescono del 60%!). Il totale viene poi diviso in 4 parti uguali tra tutti i giocatori.",
+        'rule_4': "💰 Il tuo guadagno a ogni round: Monete che hai tenuto per te + la tua parte della cassa comune.",
+        'rule_5': "🚀 Ricarica collettiva: tutte le monete donate dal gruppo si sommano per caricare la DeLorean fino all'obiettivo di 1.21 GW (100 monete in totale).",
         'intro_goal': (
-            "Obiettivo finale: accumulare complessivamente almeno {target} unita' di energia (pari a 1.21 GW) "
-            "entro il 5° round. Se a fine gioco la soglia e' raggiunta, il viaggio riesce a 88 MPH e conservi tutti "
-            "i guadagni accumulati. Se la soglia non viene raggiunta, si innesca il Paradosso Temporale: la linea "
-            "temporale collassa e tutti i guadagni vengono azzerati!"
+            "Obiettivo di squadra: donare almeno {target} Monete in totale entro la fine del 5° round per raggiungere 1.21 GW. "
+            "Se il gruppo ce la fa, la DeLorean sfreccia a 88 MPH nel tempo e porti a casa tutte le monete del tuo salvadanaio! "
+            "Ma attenzione: se il gruppo dona meno di {target} monete, scatta il Paradosso Temporale: la macchina non parte e tutte le monete accumulate svaniscono!"
         ),
-        'intro_rounds': 'Il gioco dura {n} round. Gli altri tre giocatori sono controllati dal computer.',
-        'intro_start': 'Inizia la missione',
+        'intro_rounds': "Giocherai per {n} round. Doc, Biff e Jennifer sono guidati dal computer, ciascuno con il proprio carattere:",
+        'intro_chars_title': "I tuoi compagni di gioco a Hill Valley",
+        'char_doc': "Doc Brown (Generoso): crede nella scienza e dona sempre tutte le sue 10 monete.",
+        'char_biff': "Biff Tannen (Egoista): pensa solo a sé, tiene tutto e dona sempre 0 monete.",
+        'char_jennifer': "Jennifer Parker (Reciproca): parte donando 5 monete, poi dona quanto vede fare agli altri.",
+        'intro_start': "Inizia l'avventura!",
 
-        'decision_header': 'ENERGIA PER IL FLUSSO CANALIZZATORE',
-        'decision_title': 'Round {r} di {n} - La tua scelta',
+        'decision_header': 'MISSIONE DE LOREAN: LA TUA SCELTA',
+        'decision_title': 'Round {r} di {n} - Quante monete doni?',
         'decision_intro': (
-            "Marty, hai 10 unita' di energia per questo round. Quante ne versi nel Flusso "
-            "Canalizzatore? Il resto va nel tuo conto privato."
+            "Marty, hai 10 Monete per questo round! Decidi quante tenerne nel tuo Salvadanaio "
+            "e quante donarne alla Cassa comune per caricare la DeLorean."
         ),
-        'decision_charge_status': 'Carica attuale Flusso Canalizzatore: {gw} GW / 1.21 GW ({pct}%)',
-        'decision_slider_label': 'Unita\' versate nel fondo comune questo round',
-        'decision_min': '0 - tengo tutto',
-        'decision_max': '10 - verso tutto',
-        'decision_current': 'Unita\' versate',
-        'decision_quick': 'Scelte rapide',
-        'decision_quick_all': 'Tutto (10)',
-        'decision_quick_half': 'Meta\' (5)',
-        'decision_quick_none': 'Niente (0)',
-        'decision_submit': 'Versa nel fondo',
+        'decision_charge_status': 'Carica attuale della DeLorean: {gw} GW / 1.21 GW ({pct}% - {cumul}/{target} monete raccolte finora)',
+        'decision_box_keep_title': 'Nel tuo Salvadanaio',
+        'decision_box_keep_desc': 'Monete sicure che tieni per te',
+        'decision_box_give_title': 'Nella Cassa per la DeLorean',
+        'decision_box_give_desc': 'Monete che doni alla missione comune',
+        'decision_slider_label': 'Trascina il cursore per scegliere quante monete donare:',
+        'decision_min': '0 monete (tieni tutto)',
+        'decision_max': '10 monete (dona tutto)',
+        'decision_quick': 'Scelte veloci',
+        'decision_quick_none': 'Tieni tutto (0)',
+        'decision_quick_half': 'Metà e metà (5)',
+        'decision_quick_all': 'Dona tutto (10)',
+        'decision_submit': 'Conferma la scelta',
 
         'wait_title': 'Calcolo in corso...',
-        'wait_body': 'Doc sta incanalando l\'energia nel Flusso Canalizzatore...',
+        'wait_body': 'Doc Brown sta raccogliendo le monete e alimentando il Flusso Canalizzatore...',
 
         'results_header': 'RISULTATI DEL ROUND {r} DI {n}',
-        'results_title': 'Round {r} di {n} - Risultati',
+        'results_title': 'Round {r} di {n} - Resoconto',
         'col_player': 'Giocatore',
-        'col_strategy': 'Profilo',
-        'col_contribution': 'Versato',
+        'col_strategy': 'Carattere',
+        'col_contribution': 'Monete donate',
         'col_payoff': 'Guadagno round',
         'you_label': 'Tu (Marty)',
-        'strategy_you': 'Scelta libera',
-        'strategy_doc': 'Coopera sempre (Altruista)',
-        'strategy_biff': 'Tradisce sempre (Free Rider)',
-        'strategy_jennifer': 'Cooperatore Condizionato',
-        'results_flux_title': 'Accumulo Energetico verso 1.21 GW',
+        'strategy_you': 'La tua scelta',
+        'strategy_doc': 'Generoso (dona sempre 10)',
+        'strategy_biff': 'Egoista (dona sempre 0)',
+        'strategy_jennifer': 'Reciproca (segue il gruppo)',
+        'results_flux_title': 'Carica della DeLorean verso 1.21 GW',
         'results_flux_target': 'Obiettivo finale',
-        'results_contrib_title': 'Contributi al fondo comune in questo round',
-        'results_your_decision': 'La tua decisione di questo round',
-        'results_summary_title': 'Riepilogo del round corrente',
-        'results_total': 'Fondo del round (prima della moltiplicazione)',
-        'results_fund': 'Fondo moltiplicato (x 1.6)',
-        'results_share': 'La tua quota del fondo (diviso 4)',
-        'results_payoff_you': 'Il tuo guadagno in questo round',
-        'results_cumulative_payoff': 'Guadagno totale provvisorio (somma dei round)',
+        'results_contrib_title': 'Le decisioni del gruppo in questo round',
+        'results_your_decision': 'La tua decisione in questo round',
+        'results_summary_title': 'Come è stato calcolato il tuo guadagno',
+        'results_kept': 'Monete tenute nel tuo salvadanaio (10 - donate)',
+        'results_total': 'Monete totali donate da tutti i 4 giocatori',
+        'results_fund': 'Cassa comune moltiplicata da Doc (x 1.6)',
+        'results_share': 'La tua quota della cassa comune (diviso 4)',
+        'results_payoff_you': 'Totale guadagnato in questo round',
+        'results_cumulative_payoff': 'Monete totali nel tuo salvadanaio finora',
         'results_progress_label': 'Carica Flusso Canalizzatore:',
-        'results_energy_accumulated': 'Energia totale accumulata dal gruppo: {cumul} / {target} unita\'',
-        'results_interim_status': 'Doc e Marty stanno caricando il Flusso Canalizzatore. Mancano {rem_rounds} round per raggiungere 1.21 GW.',
+        'results_energy_accumulated': 'Monete totali donate dal gruppo: {cumul} / {target} monete',
+        'results_interim_status': 'Mancano {rem_rounds} round per raggiungere le 100 monete (1.21 GW) per far partire la DeLorean.',
         'results_continue': 'Prossimo round',
 
         # Fine gioco (Round 5)
-        'final_header': 'VERDETTO FINALE DEL VIAGGIO NEL TEMPO',
+        'final_header': 'VERDETTO FINALE: LA DE LOREAN PARTE?',
         'final_success_badge': '88 MPH - VIAGGIO NEL TEMPO RIUSCITO!',
-        'final_paradox_badge': 'PARADOSSO TEMPORALE INNESCATO!',
+        'final_paradox_badge': 'PARADOSSO TEMPORALE! LA MACCHINA NON PARTE!',
         'final_success_desc': (
-            "Grande Giove! Il Flusso Canalizzatore ha raggiunto e superato la soglia di 1.21 GW! "
-            "La DeLorean ha raggiunto le 88 miglia orarie e siete tornati sani e salvi nel 1985. "
-            "Tutti i tuoi punti accumulati sono confermati!"
+            "Grande Giove! Il gruppo ha collaborato e la DeLorean ha superato 1.21 GW di potenza! "
+            "La macchina ha raggiunto le 88 miglia orarie e siete tornati sani e salvi nel futuro. "
+            "Tutte le monete accumulate nel tuo salvadanaio sono tue!"
         ),
         'final_paradox_desc': (
-            "Energia insufficiente! Il Flusso Canalizzatore non ha raggiunto la soglia di 1.21 GW ({gw} GW ottenuti). "
-            "La DeLorean e' rimasta bloccata, la linea temporale e' collassata e i tuoi guadagni sono stati cancellati!"
+            "Energia insufficiente! Il gruppo ha donato {cumul} monete su 100 ({gw} GW ottenuti), senza raggiungere 1.21 GW. "
+            "La DeLorean è rimasta a secco, il tempo è collassato e purtroppo tutte le monete accumulate sono andate perdute!"
         ),
         'final_total_power': 'Potenza finale raggiunta',
-        'final_total_energy': 'Energia totale raccolta dal gruppo',
-        'final_provisional_earnings': 'Punti accumulati nei 5 round',
-        'final_actual_earnings': 'Punti finali effettivi incassati',
+        'final_total_energy': 'Monete totali raccolte dal gruppo',
+        'final_provisional_earnings': 'Monete accumulate nei 5 round',
+        'final_actual_earnings': 'Monete finali che porti a casa',
         'final_round_history_title': 'Cronologia completa dei 5 round',
         'col_round': 'Round',
-        'col_marty_contrib': 'Tuo contributo',
-        'col_group_contrib': 'Totale gruppo',
-        'col_marty_round_payoff': 'Tuo payoff round',
-        'final_finish_btn': 'Concludi esperimento',
+        'col_marty_contrib': 'Monete donate da te',
+        'col_group_contrib': 'Totale donato dal gruppo',
+        'col_marty_round_payoff': 'Tuo guadagno round',
+        'final_finish_btn': 'Concludi la missione',
 
-        'units': 'unita\'',
+        'units': 'monete',
         'gw': 'GW',
     },
     'en': {
@@ -218,100 +231,109 @@ TEXTS = {
 
         'intro_title': 'Welcome to Hill Valley, 1985!',
         'intro_1': (
-            "You are Marty McFly. The DeLorean is stuck and the Flux Capacitor "
-            "is drained: time travel requires at least 1.21 GW of power to return to the future. "
-            "Three other residents of Hill Valley are playing with you: Doc, Biff and Jennifer."
+            "You are Marty McFly! The DeLorean is stranded and the Flux Capacitor is empty: "
+            "to power the time machine and get back to the future, you need 1.21 GW of power. "
+            "Doc Brown needs funding to fuel the experiment. "
+            "Three other Hill Valley friends are playing with you: Doc, Biff, and Jennifer."
         ),
         'intro_2': (
-            "In each of the {n} rounds, every player receives 10 Energy Units and decides how "
-            "many to contribute to the common fund to charge the Flux Capacitor."
+            "The game lasts {n} rounds. At the start of each round, you receive 10 personal Coins (🪙). "
+            "You decide how many coins to keep safely in your Piggy Bank and how many to donate "
+            "to the DeLorean Fund!"
         ),
-        'intro_rules_title': 'Economic rules and cumulative charging',
-        'rule_1': 'Each player receives 10 Energy Units per round (50 units total across 5 rounds).',
-        'rule_2': 'Each round you can contribute between 0 and 10 units to the Flux Capacitor; the rest stays in your private account.',
-        'rule_3': 'Each round\'s fund is multiplied by 1.6 and divided equally among the 4 players.',
-        'rule_4': 'Your round payoff is: 10 minus your contribution, plus your equal share of the common fund.',
-        'rule_5': 'The energy contributed by everyone accumulates round after round towards the 1.21 GW goal.',
+        'intro_rules_title': 'How the game works: Coins and the Time Machine',
+        'rule_1': "🪙 Your endowment: each round you receive 10 Coins. They are yours!",
+        'rule_2': "🔒 Your Piggy Bank: coins you choose NOT to donate stay safe in your personal piggy bank.",
+        'rule_3': "⚡ DeLorean Fund: coins donated by you and the others are combined and multiplied by 1.6 by Doc (a 60% boost!). The total is split equally among all 4 players.",
+        'rule_4': "💰 Your earnings each round: Coins kept in your piggy bank + your equal share of the DeLorean fund.",
+        'rule_5': "🚀 Team target: all coins donated by the group accumulate across rounds towards the 1.21 GW goal (100 coins in total).",
         'intro_goal': (
-            "Final Goal: collectively accumulate at least {target} Energy Units (equivalent to 1.21 GW) "
-            "by the end of Round 5. If the threshold is reached, time travel succeeds at 88 MPH and you keep all "
-            "your accumulated earnings. If the threshold is missed, a Time Paradox is triggered: the timeline "
-            "collapses and all your earnings are wiped out!"
+            "Team Goal: donate at least {target} Coins in total by the end of Round 5 to reach 1.21 GW. "
+            "If the team succeeds, the DeLorean hits 88 MPH and you take home all coins saved in your piggy bank! "
+            "Warning: if the group donates fewer than {target} coins, a Time Paradox triggers: the car is stranded and all saved coins are wiped out!"
         ),
-        'intro_rounds': 'The game lasts {n} rounds. The other three players are computer-controlled.',
-        'intro_start': 'Start the mission',
+        'intro_rounds': "You play for {n} rounds. Doc, Biff, and Jennifer are computer-controlled, each with their own personality:",
+        'intro_chars_title': "Your fellow players in Hill Valley",
+        'char_doc': "Doc Brown (Generous): believes in science and always donates all his 10 coins.",
+        'char_biff': "Biff Tannen (Selfish): thinks only of himself, keeps everything and donates 0 coins.",
+        'char_jennifer': "Jennifer Parker (Reciprocal): starts by donating 5 coins, then copies what the group does.",
+        'intro_start': "Start the Adventure!",
 
-        'decision_header': 'FLUX CAPACITOR POWER',
-        'decision_title': 'Round {r} of {n} - Your choice',
+        'decision_header': 'DELOREAN MISSION: YOUR CHOICE',
+        'decision_title': 'Round {r} of {n} - How many coins do you donate?',
         'decision_intro': (
-            "Marty, you have 10 Energy Units for this round. How many will you contribute to the "
-            "Flux Capacitor? The rest stays in your private account."
+            "Marty, you received 10 Coins for this round! Decide how many to keep in your Piggy Bank "
+            "and how many to contribute to the DeLorean Fund."
         ),
-        'decision_charge_status': 'Current Flux Capacitor charge: {gw} GW / 1.21 GW ({pct}%)',
-        'decision_slider_label': 'Units contributed to the common fund this round',
-        'decision_min': '0 - keep all',
-        'decision_max': '10 - contribute all',
-        'decision_current': 'Units contributed',
+        'decision_charge_status': 'Current DeLorean charge: {gw} GW / 1.21 GW ({pct}% - {cumul}/{target} coins collected so far)',
+        'decision_box_keep_title': 'In your Piggy Bank',
+        'decision_box_keep_desc': 'Coins kept safely for yourself',
+        'decision_box_give_title': 'In the DeLorean Fund',
+        'decision_box_give_desc': 'Coins contributed to the team mission',
+        'decision_slider_label': 'Move the slider to choose how many coins to donate:',
+        'decision_min': '0 coins (keep all)',
+        'decision_max': '10 coins (donate all)',
         'decision_quick': 'Quick choices',
-        'decision_quick_all': 'All (10)',
-        'decision_quick_half': 'Half (5)',
-        'decision_quick_none': 'None (0)',
-        'decision_submit': 'Contribute to fund',
+        'decision_quick_none': 'Keep all (0)',
+        'decision_quick_half': 'Half & Half (5)',
+        'decision_quick_all': 'Donate all (10)',
+        'decision_submit': 'Confirm choice',
 
-        'wait_title': 'Computing...',
-        'wait_body': 'Doc is channeling energy into the Flux Capacitor...',
+        'wait_title': 'Calculating...',
+        'wait_body': 'Doc Brown is collecting the coins and powering up the Flux Capacitor...',
 
         'results_header': 'ROUND {r} OF {n} RESULTS',
-        'results_title': 'Round {r} of {n} - Results',
+        'results_title': 'Round {r} of {n} - Summary',
         'col_player': 'Player',
-        'col_strategy': 'Profile',
-        'col_contribution': 'Contributed',
-        'col_payoff': 'Round Payoff',
+        'col_strategy': 'Personality',
+        'col_contribution': 'Coins donated',
+        'col_payoff': 'Round earnings',
         'you_label': 'You (Marty)',
-        'strategy_you': 'Free choice',
-        'strategy_doc': 'Always Cooperate (Altruist)',
-        'strategy_biff': 'Always Defect (Free Rider)',
-        'strategy_jennifer': 'Conditional Cooperator',
-        'results_flux_title': 'Energy Accumulation towards 1.21 GW',
+        'strategy_you': 'Your choice',
+        'strategy_doc': 'Generous (always donates 10)',
+        'strategy_biff': 'Selfish (always donates 0)',
+        'strategy_jennifer': 'Reciprocal (follows group)',
+        'results_flux_title': 'DeLorean Charge towards 1.21 GW',
         'results_flux_target': 'Final Target',
-        'results_contrib_title': 'Contributions to the common fund this round',
-        'results_your_decision': 'Your decision this round',
-        'results_summary_title': 'Current round summary',
-        'results_total': 'Round fund (before multiplication)',
-        'results_fund': 'Multiplied fund (x 1.6)',
+        'results_contrib_title': 'Group decisions in this round',
+        'results_your_decision': 'Your decision in this round',
+        'results_summary_title': 'How your earnings were calculated',
+        'results_kept': 'Coins kept in your piggy bank (10 - donated)',
+        'results_total': 'Total coins donated by all 4 players',
+        'results_fund': 'DeLorean fund multiplied by Doc (x 1.6)',
         'results_share': 'Your share of the fund (divided by 4)',
-        'results_payoff_you': 'Your payoff this round',
-        'results_cumulative_payoff': 'Provisional total payoff (sum of rounds)',
+        'results_payoff_you': 'Total earned in this round',
+        'results_cumulative_payoff': 'Total coins in your piggy bank so far',
         'results_progress_label': 'Flux Capacitor Charge:',
-        'results_energy_accumulated': 'Total group energy accumulated: {cumul} / {target} units',
-        'results_interim_status': 'Doc and Marty are charging the Flux Capacitor. {rem_rounds} rounds remaining to reach 1.21 GW.',
+        'results_energy_accumulated': 'Total group coins donated: {cumul} / {target} coins',
+        'results_interim_status': '{rem_rounds} rounds left to collect the 100 coins (1.21 GW) required to start the DeLorean.',
         'results_continue': 'Next round',
 
         # End of game (Round 5)
-        'final_header': 'FINAL TIME TRAVEL VERDICT',
+        'final_header': 'FINAL VERDICT: DOES THE DELOREAN START?',
         'final_success_badge': '88 MPH - TIME TRAVEL SUCCESSFUL!',
-        'final_paradox_badge': 'TIME PARADOX TRIGGERED!',
+        'final_paradox_badge': 'TIME PARADOX! THE CAR DOES NOT START!',
         'final_success_desc': (
-            "Great Scott! The Flux Capacitor reached and exceeded the 1.21 GW threshold! "
-            "The DeLorean hit 88 MPH and you made it safely back to 1985. "
-            "All your accumulated earnings are safely preserved!"
+            "Great Scott! The group worked together and the DeLorean exceeded 1.21 GW of power! "
+            "The car reached 88 MPH and you safely returned to the future. "
+            "All the coins accumulated in your piggy bank are yours!"
         ),
         'final_paradox_desc': (
-            "Insufficient energy! The Flux Capacitor did not reach the 1.21 GW threshold ({gw} GW attained). "
-            "The DeLorean remains stranded, the timeline collapsed, and your earnings have been wiped out!"
+            "Not enough power! The group contributed {cumul} out of 100 coins ({gw} GW attained), falling short of 1.21 GW. "
+            "The DeLorean was stranded, time collapsed, and all your saved coins were lost!"
         ),
         'final_total_power': 'Final power reached',
-        'final_total_energy': 'Total group energy collected',
-        'final_provisional_earnings': 'Points accumulated over 5 rounds',
-        'final_actual_earnings': 'Final actual points received',
-        'final_round_history_title': 'Complete history of the 5 rounds',
+        'final_total_energy': 'Total coins gathered by the team',
+        'final_provisional_earnings': 'Coins accumulated over 5 rounds',
+        'final_actual_earnings': 'Final coins you take home',
+        'final_round_history_title': 'Complete history of all 5 rounds',
         'col_round': 'Round',
-        'col_marty_contrib': 'Your contribution',
-        'col_group_contrib': 'Group total',
-        'col_marty_round_payoff': 'Your round payoff',
-        'final_finish_btn': 'Finish experiment',
+        'col_marty_contrib': 'Coins you donated',
+        'col_group_contrib': 'Total team donated',
+        'col_marty_round_payoff': 'Your round earnings',
+        'final_finish_btn': 'Complete Mission',
 
-        'units': 'units',
+        'units': 'coins',
         'gw': 'GW',
     },
 }
@@ -335,20 +357,20 @@ def get_texts(player):
 
 def doc_contribution(player):
     """Doc: Altruistic Cooperator / Target-Pacer (Milinski et al. 2008).
-    Versa costantemente 10 unita' per assicurare la base energetica della DeLorean."""
+    Dona costantemente 10 monete per assicurare la missione della DeLorean."""
     return C.ENDOWMENT
 
 
 def biff_contribution(player):
     """Biff: Pure Free Rider (Fischbacher et al. 2001).
-    Versa costantemente 0 unita' per massimizzare il proprio tornaconto privato."""
+    Dona costantemente 0 monete per tenere tutto nel proprio salvadanaio."""
     return 0
 
 
 def jennifer_conditional_contribution(player):
     """Jennifer: Conditional Cooperator (Fischbacher, Gächter & Fehr 2001).
 
-    Round 1 -> 5 unita' (cooperazione iniziale benevola).
+    Round 1 -> 5 monete (cooperazione iniziale amichevole).
     Dal round 2 -> osserva i contributi degli altri partecipanti (Marty, Doc, Biff)
     nel round precedente e risponde alla media dei loro contributi.
     """
@@ -365,7 +387,7 @@ def jennifer_conditional_contribution(player):
 def marty_tit_for_tat_contribution(player):
     """Tit-for-tat per Marty-bot (sessioni/test automatici).
 
-    Round 1 -> C.TFT_FIRST_ROUND (5 unita').
+    Round 1 -> C.TFT_FIRST_ROUND (5 monete).
     Dal round 2 -> media (arrotondata) dei contributi degli ALTRI tre giocatori
     (Doc, Biff, Jennifer) nel round precedente.
     """
@@ -386,7 +408,7 @@ def marty_tit_for_tat_contribution(player):
 # ---------------------------------------------------------------------------
 
 def simulate(group):
-    """Calcola contributi, fondo di round, accumulo energetico e verdetto finale."""
+    """Calcola contributi, cassa di round, carica DeLorean e verdetto finale."""
     for player in group.get_players():
         player.marty_strategy = group.session.config.get('marty_strategy', 'human')
 
@@ -420,7 +442,7 @@ def simulate(group):
         player.biff_payoff = round(C.ENDOWMENT - biff + share, 2)
         player.jennifer_payoff = round(C.ENDOWMENT - jennifer + share, 2)
 
-        # Accumulo energetico progressivo
+        # Accumulo monete progressivo (carica della DeLorean)
         prev_rounds = player.in_previous_rounds()
         cumul_energy = sum(p.total_contribution for p in prev_rounds) + total
         player.cumulative_energy = round(cumul_energy, 2)
@@ -431,7 +453,7 @@ def simulate(group):
         player.round_flux_gw = player.cumulative_gw
         player.energy_progress_pct = round(min(100.0, gw_ratio * 100.0), 1)
 
-        # Somma provvisoria dei payoff di Marty nei round giocati
+        # Somma provvisoria dei payoff di Marty nei round giocati (Salvadanaio)
         cumul_marty_payoff = sum(p.marty_payoff for p in prev_rounds) + player.marty_payoff
         player.cumulative_marty_payoff = round(cumul_marty_payoff, 2)
 
@@ -499,8 +521,9 @@ class IntroPage(Page):
             title=t['intro_title'],
             intro_1=t['intro_1'],
             intro_2=t['intro_2'].format(n=C.NUM_ROUNDS),
-            intro_goal=t['intro_goal'].format(target=C.CUMULATIVE_TARGET_ENERGY),
+            intro_goal=t['intro_goal'].format(target=C.CUMULATIVE_TARGET_MONEY),
             intro_rounds=t['intro_rounds'].format(n=C.NUM_ROUNDS),
+            target_money=C.CUMULATIVE_TARGET_MONEY,
         )
 
 
@@ -514,25 +537,34 @@ class DecisionPage(Page):
         prev_rounds = player.in_previous_rounds()
         current_cumul_gw = 0.0
         current_pct = 0.0
+        current_cumul_coins = 0
         if prev_rounds:
             last_round = prev_rounds[-1]
             current_cumul_gw = last_round.cumulative_gw
             current_pct = last_round.energy_progress_pct
+            current_cumul_coins = int(last_round.cumulative_energy)
 
         status_text = t['decision_charge_status'].format(
-            gw=current_cumul_gw, pct=current_pct
+            gw=current_cumul_gw,
+            pct=current_pct,
+            cumul=current_cumul_coins,
+            target=C.CUMULATIVE_TARGET_MONEY,
         )
+
+        contrib_val = player.field_maybe_none('contribution')
+        if contrib_val is None:
+            contrib_val = 0
+        kept_val = C.ENDOWMENT - contrib_val
 
         return dict(
             texts=t,
             title=t['decision_title'].format(r=player.round_number, n=C.NUM_ROUNDS),
             decision_charge_status=status_text,
             show_charge_status=(player.round_number > 1),
-            contribution_value=(
-                player.field_maybe_none('contribution')
-                if player.field_maybe_none('contribution') is not None else 0
-            ),
+            contribution_value=contrib_val,
+            kept_value=kept_val,
             max_contribution=C.ENDOWMENT,
+            endowment=C.ENDOWMENT,
         )
 
 
@@ -562,6 +594,14 @@ class ResultsPage(Page):
                     'marty_payoff': r.marty_payoff,
                 })
 
+        marty_contrib = player.contribution if player.contribution is not None else 0
+        marty_kept = round(C.ENDOWMENT - marty_contrib, 2)
+
+        final_paradox_text = t['final_paradox_desc'].format(
+            gw=player.cumulative_gw,
+            cumul=int(player.cumulative_energy),
+        )
+
         return dict(
             texts=t,
             title=t['results_title'].format(r=player.round_number, n=C.NUM_ROUNDS),
@@ -569,7 +609,8 @@ class ResultsPage(Page):
             show_bot_results=player.session.config.get('show_bot_results', False),
 
             # Round corrente
-            contribution=player.contribution,
+            contribution=marty_contrib,
+            marty_kept=marty_kept,
             doc_contribution=player.doc_contribution,
             biff_contribution=player.biff_contribution,
             jennifer_contribution=player.jennifer_contribution,
@@ -582,8 +623,8 @@ class ResultsPage(Page):
             jennifer_payoff=player.jennifer_payoff,
 
             # Progresso cumulativo
-            cumulative_energy=player.cumulative_energy,
-            cumulative_target_energy=C.CUMULATIVE_TARGET_ENERGY,
+            cumulative_energy=int(player.cumulative_energy),
+            cumulative_target_energy=C.CUMULATIVE_TARGET_MONEY,
             cumulative_gw=player.cumulative_gw,
             flux_target_gw=C.FLUX_TARGET_GW,
             energy_progress_pct=player.energy_progress_pct,
@@ -591,11 +632,12 @@ class ResultsPage(Page):
             rounds_remaining=rounds_remaining,
             interim_status_text=t['results_interim_status'].format(rem_rounds=rounds_remaining),
             energy_accumulated_text=t['results_energy_accumulated'].format(
-                cumul=player.cumulative_energy, target=C.CUMULATIVE_TARGET_ENERGY
+                cumul=int(player.cumulative_energy), target=C.CUMULATIVE_TARGET_MONEY
             ),
 
             # Esito finale
             game_success=player.game_success,
+            final_paradox_text=final_paradox_text,
             final_game_payoff=player.final_game_payoff,
             round_history=round_history,
         )
