@@ -39,9 +39,13 @@ The game blends a repeated public goods game with an intertemporal **Collective-
 
 ### Final Verdict (Round 5)
 - If the team donates **at least 100 Coins (1.21 GW)**:
-  **"88 MPH - Time travel successful!"** The DeLorean hits 88 MPH and Marty takes home **all coins accumulated in his personal piggy bank**.
+  **"88 MPH - Time travel successful!"** The DeLorean hits 88 MPH.
 - If the team donates **fewer than 100 Coins**:
-  **"Time Paradox!"** The car does not start, time collapses, and all accumulated earnings are lost (`PARADOX_PAYOFF_RATIO = 0.0`).
+  **"Time Paradox!"** The car runs dry and does not start.
+
+> **No loss possible**: in both cases the participant **always** keeps all the coins
+> accumulated in their piggy bank (`final_game_payoff` = accumulated total). The
+> success/failure verdict is narrative only and never wipes out any earnings.
 
 ---
 

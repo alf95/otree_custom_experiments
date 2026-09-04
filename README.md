@@ -117,7 +117,7 @@ Public Goods Game** (1 human **Marty** + 3 bots **Doc**, **Biff** and
 - Endowment: **10 Energy Units** per player per round (5 rounds).
 - Multiplier of each round's common fund: **1.6x**, split equally among 4 players.
 - **Collective-Risk Threshold**: Energy accumulates across 5 rounds toward **1.21 GW** (100 units total).
-- Final outcome at **Round 5**: **"88 MPH - Time travel successful!"** (keep all earnings) vs **"Time Paradox Triggered!"** (earnings wiped out if threshold is missed).
+- Final outcome at **Round 5**: **"88 MPH - Time travel successful!"** vs **"Time Paradox Triggered!"** — narrative only: the participant always keeps all accumulated earnings (no loss).
 - **Behavioral bots**: Doc (Altruist/Target-Pacer), Biff (Pure Free Rider), Jennifer (Conditional Cooperator).
 - Fully **bilingual (IT/EN)** with a language selector, 80s neon-dashboard theme.
 - Two session configs: `bttf_pgg_human` (Marty human) and `bttf_pgg_auto`

@@ -39,9 +39,14 @@ Il gioco combina la dinamica dei beni pubblici ripetuta con un **Collective-Risk
 
 ### Verdetto finale (Round 5)
 - Se a fine gioco il gruppo ha donato **almeno 100 Monete (1.21 GW)**:
-  **"88 MPH - Viaggio nel tempo riuscito!"** La DeLorean parte e Marty porta a casa **tutte le monete accumulate nel suo salvadanaio**.
+  **"88 MPH - Viaggio nel tempo riuscito!"** La DeLorean parte e raggiunge le 88 MPH.
 - Se il gruppo ha donato **meno di 100 Monete**:
-  **"Paradosso Temporale!"** La macchina non parte, il tempo collassa e le monete accumulate vengono azzerate (`PARADOX_PAYOFF_RATIO = 0.0`).
+  **"Paradosso Temporale!"** La macchina resta a secco e non parte.
+
+> **Nessuna perdita possibile**: in entrambi i casi il partecipante tiene **sempre**
+> tutte le monete accumulate nel proprio salvadanaio (`final_game_payoff` = totale
+> accumulato). Il verdetto successo/fallimento ha solo valore narrativo e non azzera
+> alcun guadagno.
 
 ---
 

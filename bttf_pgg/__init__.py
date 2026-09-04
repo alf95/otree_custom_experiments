@@ -21,12 +21,12 @@ Le monete donate alla Cassa comune per la DeLorean vengono moltiplicate per 1.6
 grazie alle invenzioni di Doc e divise equamente tra i 4 giocatori.
 Guadagno round = (10 - monete donate) + (1.6 * cassa comune) / 4.
 
-VERDETTO FINALE DEL VIAGGIO NEL TEMPO:
+VERDETTO FINALE DEL VIAGGIO NEL TEMPO (solo narrativo, nessuna perdita):
 Tutte le monete donate dal gruppo servono a caricare la DeLorean (100 monete = 1.21 GW).
 - Se al 5° round il gruppo ha raccolto almeno 100 monete (1.21 GW), la DeLorean
-  raggiunge le 88 MPH: viaggio riuscito e Marty incassa tutte le monete del suo salvadanaio!
-- Se il gruppo ha raccolto meno di 100 monete, scatta il Paradosso Temporale:
-  la DeLorean resta bloccata e tutti i guadagni vengono azzerati (rischio collettivo).
+  raggiunge le 88 MPH: viaggio riuscito!
+- Se il gruppo ha raccolto meno di 100 monete, la DeLorean resta a secco (storia):
+  in OGNI caso Marty tiene tutte le monete accumulate nel suo salvadanaio.
 """
 
 
@@ -47,9 +47,6 @@ class C(BaseConstants):
     # per raggiungere 1.21 GW. 100 monete corrisponde al 50% di cooperazione complessiva.
     CUMULATIVE_TARGET_MONEY = 100
     CUMULATIVE_TARGET_ENERGY = 100  # Alias per retrocompatibilità
-
-    # Percentuale del payoff conservata in caso di paradosso temporale (0.0 = perdita totale)
-    PARADOX_PAYOFF_RATIO = 0.0
 
     # Tit-for-tat (Marty bot per test automatici): contributo del primo round.
     TFT_FIRST_ROUND = 5
@@ -138,8 +135,9 @@ TEXTS = {
         'rule_5': "🚀 Ricarica collettiva: tutte le monete donate dal gruppo si sommano per caricare la DeLorean fino all'obiettivo di 1.21 GW (100 monete in totale).",
         'intro_goal': (
             "Obiettivo di squadra: donare almeno {target} Monete in totale entro la fine del 5° round per raggiungere 1.21 GW. "
-            "Se il gruppo ce la fa, la DeLorean sfreccia a 88 MPH nel tempo e porti a casa tutte le monete del tuo salvadanaio! "
-            "Ma attenzione: se il gruppo dona meno di {target} monete, scatta il Paradosso Temporale: la macchina non parte e tutte le monete accumulate svaniscono!"
+            "Se il gruppo ce la fa, la DeLorean sfreccia a 88 MPH nel tempo: che missione! "
+            "Se invece il gruppo dona meno di {target} monete, la DeLorean resta a secco e non parte. "
+            "In ogni caso, tutte le monete che hai messo nel tuo salvadanaio restano tue!"
         ),
         'intro_rounds': "Giocherai per {n} round. Doc, Biff e Jennifer sono guidati dal computer, ciascuno con il proprio carattere:",
         'intro_chars_title': "I tuoi compagni di gioco a Hill Valley",
@@ -209,12 +207,12 @@ TEXTS = {
         ),
         'final_paradox_desc': (
             "Energia insufficiente! Il gruppo ha donato {cumul} monete su 100 ({gw} GW ottenuti), senza raggiungere 1.21 GW. "
-            "La DeLorean è rimasta a secco, il tempo è collassato e purtroppo tutte le monete accumulate sono andate perdute!"
+            "La DeLorean è rimasta a secco e non ha raggiunto le 88 MPH. "
+            "Nessun problema: tutte le monete che hai accumulato nel tuo salvadanaio restano tue!"
         ),
         'final_total_power': 'Potenza finale raggiunta',
         'final_total_energy': 'Monete totali raccolte dal gruppo',
-        'final_provisional_earnings': 'Monete accumulate nei 5 round',
-        'final_actual_earnings': 'Monete finali che porti a casa',
+        'final_total_accumulated': 'Totale monete accumulate nei 5 round',
         'final_round_history_title': 'Cronologia completa dei 5 round',
         'col_round': 'Round',
         'col_marty_contrib': 'Monete donate da te',
@@ -249,8 +247,9 @@ TEXTS = {
         'rule_5': "🚀 Team target: all coins donated by the group accumulate across rounds towards the 1.21 GW goal (100 coins in total).",
         'intro_goal': (
             "Team Goal: donate at least {target} Coins in total by the end of Round 5 to reach 1.21 GW. "
-            "If the team succeeds, the DeLorean hits 88 MPH and you take home all coins saved in your piggy bank! "
-            "Warning: if the group donates fewer than {target} coins, a Time Paradox triggers: the car is stranded and all saved coins are wiped out!"
+            "If the team succeeds, the DeLorean hits 88 MPH: what a ride! "
+            "If the group donates fewer than {target} coins, the DeLorean runs dry and stays stranded. "
+            "Either way, all the coins you saved in your piggy bank remain yours!"
         ),
         'intro_rounds': "You play for {n} rounds. Doc, Biff, and Jennifer are computer-controlled, each with their own personality:",
         'intro_chars_title': "Your fellow players in Hill Valley",
@@ -320,12 +319,12 @@ TEXTS = {
         ),
         'final_paradox_desc': (
             "Not enough power! The group contributed {cumul} out of 100 coins ({gw} GW attained), falling short of 1.21 GW. "
-            "The DeLorean was stranded, time collapsed, and all your saved coins were lost!"
+            "The DeLorean ran dry and never reached 88 MPH. "
+            "No worries: all the coins you accumulated in your piggy bank are still yours!"
         ),
         'final_total_power': 'Final power reached',
         'final_total_energy': 'Total coins gathered by the team',
-        'final_provisional_earnings': 'Coins accumulated over 5 rounds',
-        'final_actual_earnings': 'Final coins you take home',
+        'final_total_accumulated': 'Total coins accumulated over 5 rounds',
         'final_round_history_title': 'Complete history of all 5 rounds',
         'col_round': 'Round',
         'col_marty_contrib': 'Coins you donated',
@@ -461,25 +460,20 @@ def simulate(group):
         is_final = (player.round_number == C.NUM_ROUNDS)
         player.is_final_round = is_final
 
+        # Il payoff del round viene sempre accreditato: `participant.payoff`
+        # somma automaticamente al totale accumulato (nessuna perdita possibile).
+        player.payoff = player.marty_payoff
+
         if is_final:
             success = (cumul_energy >= C.CUMULATIVE_TARGET_ENERGY)
             player.game_success = success
             player.goal_reached = success
-
-            if success:
-                player.final_game_payoff = player.cumulative_marty_payoff
-                player.payoff = player.marty_payoff
-            else:
-                player.final_game_payoff = round(player.cumulative_marty_payoff * C.PARADOX_PAYOFF_RATIO, 2)
-                # Collasso da Paradosso Temporale: azzera i payoff accumulati nei round precedenti
-                for p in prev_rounds:
-                    p.payoff = 0.0
-                player.payoff = player.final_game_payoff
+            # Nessuna perdita: il partecipante tiene sempre tutto il totale accumulato.
+            player.final_game_payoff = player.cumulative_marty_payoff
         else:
             player.game_success = False
             player.goal_reached = False
             player.final_game_payoff = 0.0
-            player.payoff = player.marty_payoff
 
 
 # ---------------------------------------------------------------------------

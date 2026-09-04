@@ -198,17 +198,10 @@
         </div>
 
         <div class="mt-4 p-3" style="background:#030d08; border:1px solid var(--line); border-radius:8px;">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="retro-label">{{ texts.final_provisional_earnings }}:</span>
-                <span class="retro-value" style="font-size:1.15rem;">{{ cumulative_marty_payoff }} {{ texts.units
-                    }}</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center pt-2"
-                style="border-top:1px dashed var(--line);">
-                <strong style="color:var(--cyan); font-size:1.1rem; letter-spacing:1px;">{{ texts.final_actual_earnings
+            <div class="d-flex justify-content-between align-items-center">
+                <strong style="color:var(--cyan); font-size:1.1rem; letter-spacing:1px;">💰 {{ texts.final_total_accumulated
                     }}:</strong>
-                <span
-                    style="font-size:1.8rem; font-weight:bold; color:{{ if game_success }}var(--green){{ else }}var(--red){{ endif }};">
+                <span style="font-size:1.9rem; font-weight:bold; color:var(--green); text-shadow:0 0 10px rgba(57,255,20,.6);">
                     {{ final_game_payoff }} {{ texts.units }}
                 </span>
             </div>
