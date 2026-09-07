@@ -1,0 +1,203 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    La Festa della Pizza! 🍕
+{{ endblock }}
+
+{{ block content }}
+
+<style>
+    :root {
+        --bg: #fff6e5;
+        --card: #ffffff;
+        --red: #e63946;
+        --orange: #fb8500;
+        --yellow: #ffb703;
+        --green: #2a9d8f;
+        --blue: #457b9d;
+        --text: #5c3a21;
+        --dim: #9c7a5c;
+    }
+
+    body {
+        background: var(--bg) !important;
+        color: var(--text);
+        font-family: "Comic Sans MS", "Chalkboard SE", "Baloo 2", "Segoe UI", sans-serif;
+    }
+
+    .otree-body {
+        max-width: 860px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--red);
+        font-weight: bold;
+    }
+
+    .card {
+        background: var(--card);
+        border: 3px solid var(--yellow);
+        border-radius: 22px;
+        box-shadow: 0 6px 18px rgba(251, 133, 0, 0.18);
+        color: var(--text);
+    }
+
+    .card-title {
+        color: var(--red);
+        font-size: 1.35rem;
+        font-weight: bold;
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, #ffb703, #fb8500);
+        color: #fff;
+        border-radius: 22px;
+        padding: 26px 22px;
+        text-align: center;
+        box-shadow: 0 6px 18px rgba(251, 133, 0, 0.35);
+    }
+
+    .welcome-banner h2 {
+        color: #fff;
+        font-size: 1.9rem;
+        margin-bottom: 8px;
+    }
+
+    .welcome-banner p {
+        font-size: 1.15rem;
+        margin-bottom: 0;
+    }
+
+    .rule-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 6px;
+        border-bottom: 2px dashed #ffe3b3;
+        font-size: 1.1rem;
+        line-height: 1.45;
+    }
+
+    .rule-item:last-child {
+        border-bottom: none;
+    }
+
+    .rule-emoji {
+        font-size: 1.9rem;
+        line-height: 1.2;
+    }
+
+    .friend-card {
+        background: #fff;
+        border: 3px solid var(--yellow);
+        border-radius: 18px;
+        padding: 16px 12px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(251, 133, 0, 0.15);
+    }
+
+    .friend-avatar {
+        font-size: 3.2rem;
+        line-height: 1.2;
+    }
+
+    .friend-name {
+        font-size: 1.15rem;
+        font-weight: bold;
+        color: var(--red);
+        margin-top: 6px;
+    }
+
+    .friend-desc {
+        font-size: 0.95rem;
+        color: var(--dim);
+        margin-top: 4px;
+    }
+
+    .otree-btn-next {
+        background: var(--green) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 40px !important;
+        font-weight: bold;
+        font-size: 1.3rem;
+        padding: 14px 40px !important;
+        box-shadow: 0 6px 14px rgba(42, 157, 143, 0.4);
+    }
+
+    .otree-btn-next:hover {
+        background: #21867a !important;
+    }
+</style>
+
+<div class="welcome-banner mb-4">
+    <h2>🎉 Ciao! Oggi prepariamo una grande festa della pizza! 🎉</h2>
+    <p>Tu e i tuoi amici avete una pizza tutta per voi. Giochiamo insieme per {{ num_rounds }} round!</p>
+</div>
+
+<!-- LE REGOLE DEL GIOCO -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3">📖 Le regole del gioco</h5>
+
+        <div class="rule-item">
+            <span class="rule-emoji">🍕</span>
+            <span>All'inizio di ogni round ricevi <strong>{{ endowment }} fette di pizza</strong>. Sono tue!</span>
+        </div>
+        <div class="rule-item">
+            <span class="rule-emoji">🍽️</span>
+            <span>Puoi mettere alcune fette nel <strong>Piatto Condiviso</strong> per la festa, e tenere le altre per te.</span>
+        </div>
+        <div class="rule-item">
+            <span class="rule-emoji">✨</span>
+            <span>Le fette nel Piatto Condiviso vengono <strong>RADDOPPIATE</strong> (x{{ multiplier }})! Magia della festa!</span>
+        </div>
+        <div class="rule-item">
+            <span class="rule-emoji">🧑‍🤝‍🧑</span>
+            <span>Poi le fette raddoppiate vengono divise in <strong>{{ n_players }} parti uguali</strong> tra tutti i bambini.</span>
+        </div>
+        <div class="rule-item">
+            <span class="rule-emoji">😋</span>
+            <span>Alla fine mangi: le fette che hai tenuto <strong>+</strong> la tua parte del Piatto Condiviso.</span>
+        </div>
+    </div>
+</div>
+
+<!-- I TUOI AMICI ALLA FESTA -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3">🧑‍🤝‍🧑 I tuoi amici alla festa</h5>
+        <p style="font-size:1.05rem;">Questi sono i tuoi amici! Anche loro scelgono quante fette mettere nel Piatto Condiviso, proprio come te.</p>
+        <div class="row g-3 mt-1">
+            <div class="col-md-4">
+                <div class="friend-card">
+                    <div class="friend-avatar">😋</div>
+                    <div class="friend-name">Il Goloso</div>
+                    <div class="friend-desc">Ama tantissimo la pizza!</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="friend-card">
+                    <div class="friend-avatar">😊</div>
+                    <div class="friend-name">Il Generoso</div>
+                    <div class="friend-desc">Vuole che la festa sia bellissima!</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="friend-card">
+                    <div class="friend-avatar">🤝</div>
+                    <div class="friend-name">L'Amico Reciproco</div>
+                    <div class="friend-desc">Osserva gli altri e fa come loro!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <button type="submit" class="otree-btn-next btn btn-primary btn-lg">
+        Inizia la festa! 🎉
+    </button>
+</div>
+
+{{ endblock }}

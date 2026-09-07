@@ -1,0 +1,261 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    Round {{ round_number }} di {{ num_rounds }} — Risultati! 🎉
+{{ endblock }}
+
+{{ block content }}
+
+<style>
+    :root {
+        --bg: #fff6e5;
+        --card: #ffffff;
+        --red: #e63946;
+        --orange: #fb8500;
+        --yellow: #ffb703;
+        --green: #2a9d8f;
+        --blue: #457b9d;
+        --text: #5c3a21;
+        --dim: #9c7a5c;
+    }
+
+    body {
+        background: var(--bg) !important;
+        color: var(--text);
+        font-family: "Comic Sans MS", "Chalkboard SE", "Baloo 2", "Segoe UI", sans-serif;
+    }
+
+    .otree-body {
+        max-width: 860px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--red);
+        font-weight: bold;
+    }
+
+    .card {
+        background: var(--card);
+        border: 3px solid var(--yellow);
+        border-radius: 22px;
+        box-shadow: 0 6px 18px rgba(251, 133, 0, 0.18);
+        color: var(--text);
+    }
+
+    .card-title {
+        color: var(--red);
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    .plate-banner {
+        background: linear-gradient(135deg, #ffb703, #fb8500);
+        color: #fff;
+        border-radius: 22px;
+        padding: 22px 18px;
+        text-align: center;
+        box-shadow: 0 6px 18px rgba(251, 133, 0, 0.35);
+    }
+
+    .plate-banner .plate-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .plate-banner .plate-big {
+        font-size: 2.6rem;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+
+    .plate-banner .plate-desc {
+        font-size: 1rem;
+    }
+
+    .math-step {
+        background: #fff;
+        border: 3px solid var(--yellow);
+        border-radius: 18px;
+        padding: 14px 10px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(251, 133, 0, 0.12);
+    }
+
+    .math-step .step-emoji {
+        font-size: 1.8rem;
+    }
+
+    .math-step .step-label {
+        font-size: 0.95rem;
+        color: var(--dim);
+        margin-top: 4px;
+    }
+
+    .math-step .step-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--orange);
+    }
+
+    .kid-card {
+        background: #fff;
+        border: 3px solid var(--yellow);
+        border-radius: 18px;
+        padding: 14px 10px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(251, 133, 0, 0.12);
+    }
+
+    .kid-card.you {
+        border-color: var(--green);
+        background: #e8f7f4;
+    }
+
+    .kid-avatar {
+        font-size: 2.8rem;
+        line-height: 1.2;
+    }
+
+    .kid-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--red);
+        margin-top: 4px;
+    }
+
+    .kid-you-tag {
+        display: inline-block;
+        background: var(--green);
+        color: #fff;
+        border-radius: 20px;
+        padding: 2px 10px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-top: 2px;
+    }
+
+    .kid-row {
+        font-size: 0.95rem;
+        margin-top: 6px;
+        color: var(--text);
+    }
+
+    .kid-row .big {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--orange);
+    }
+
+    .final-banner {
+        background: linear-gradient(135deg, #2a9d8f, #21867a);
+        color: #fff;
+        border-radius: 22px;
+        padding: 22px 18px;
+        text-align: center;
+        box-shadow: 0 6px 18px rgba(42, 157, 143, 0.35);
+    }
+
+    .final-banner h3 {
+        color: #fff;
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+    }
+
+    .final-banner .final-big {
+        font-size: 2.4rem;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+
+    .otree-btn-next {
+        background: var(--green) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 40px !important;
+        font-weight: bold;
+        font-size: 1.3rem;
+        padding: 14px 40px !important;
+        box-shadow: 0 6px 14px rgba(42, 157, 143, 0.4);
+    }
+
+    .otree-btn-next:hover {
+        background: #21867a !important;
+    }
+</style>
+
+<!-- IL PIATTO CONDIVISO -->
+<div class="plate-banner mb-4">
+    <div class="plate-title">🍕 Il Piatto Condiviso della festa</div>
+    <div class="plate-big">{{ total_contribution }} fette</div>
+    <div class="plate-desc">messe da tutti i {{ n_players }} bambini insieme</div>
+</div>
+
+<!-- I PASSAGGI DEL CALCOLO -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="math-step">
+            <div class="step-emoji">🍕</div>
+            <div class="step-value">{{ total_contribution }}</div>
+            <div class="step-label">fette nel piatto</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="math-step">
+            <div class="step-emoji">✨</div>
+            <div class="step-value">x{{ multiplier }}</div>
+            <div class="step-label">raddoppiate dalla festa!</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="math-step">
+            <div class="step-emoji">🧑‍🤝‍🧑</div>
+            <div class="step-value">{{ fund }}</div>
+            <div class="step-label">fette raddoppiate in tutto</div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-1">🧑‍🤝‍🧑 Quante fette mangia ogni bambino?</h5>
+        <p style="color: var(--dim); font-size: 0.95rem;">
+            Ogni bambino riceve {{ individual_share }} fette dal Piatto Condiviso ({{ fund }} ÷ {{ n_players }}),
+            più le fette che ha tenuto per sé.
+        </p>
+        <div class="row g-3 mt-1">
+            {{ for kid in kids }}
+            <div class="col-6 col-md-3">
+                <div class="kid-card {{ if kid.is_you }}you{{ endif }}">
+                    <div class="kid-avatar">{{ kid.avatar }}</div>
+                    <div class="kid-name">{{ kid.name }}</div>
+                    {{ if kid.is_you }}
+                    <div class="kid-you-tag">Sei tu!</div>
+                    {{ endif }}
+                    <div class="kid-row">messe nel piatto: <strong>{{ kid.contribution }}</strong></div>
+                    <div class="kid-row">mangia: <span class="big">{{ kid.payoff_text }}</span></div>
+                </div>
+            </div>
+            {{ endfor }}
+        </div>
+    </div>
+</div>
+
+<!-- RIEPILOGO FINALE (ROUND 5) -->
+{{ if is_final_round }}
+<div class="final-banner mb-4">
+    <h3>🎊 Festa finita! 🎊</h3>
+    <div class="final-big">Hai mangiato {{ cumulative_human_text }} in tutto!</div>
+    <p style="font-size:1.05rem; margin-bottom:0;">
+        Insieme avete messo {{ cumulative_group }} fette nel Piatto Condiviso in {{ num_rounds }} round. Che festa!
+    </p>
+</div>
+{{ endif }}
+
+<div class="text-center mt-4">
+    <button type="submit" class="otree-btn-next btn btn-primary btn-lg">
+        {{ if is_final_round }}Fine! 🎉{{ else }}Prossimo round! 🍕{{ endif }}
+    </button>
+</div>
+
+{{ endblock }}

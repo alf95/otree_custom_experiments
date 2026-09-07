@@ -100,6 +100,22 @@ SESSION_CONFIGS = [
         default_language='it',
         show_bot_results=False,
     ),
+    # -------------------------------------------------------------------------
+    # PIZZAGAME - Public Goods Game per bambini (1 umano "Tu" + 3 bot)
+    # -------------------------------------------------------------------------
+    #  * Dotazione: 5 fette di pizza a testa a ogni round.
+    #  * Piatto Condiviso: le fette donate vengono raddoppiate (x2) e divise
+    #    in 4 parti uguali tra tutti i bambini.
+    #  * Bot: Il Goloso (0 fette), Il Generoso (5 fette), L'Amico Reciproco
+    #    (3 fette al round 1, poi media delle fette degli altri).
+    # -------------------------------------------------------------------------
+    dict(
+        name='pizza_pgg_5round',
+        display_name='Pizzagame - La Festa della Pizza (bambini, 5 round)',
+        doc='PGG classico adattato per bambini (6-9 anni): 1 umano + 3 bot, 5 fette a testa, Piatto Condiviso x2.',
+        num_demo_participants=1,
+        app_sequence=['pizza_pgg'],
+    ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(
@@ -135,6 +151,10 @@ Scegli una sessione qui sotto in base al comportamento che vuoi dare al bot
 Sono disponibili anche due sessioni del gioco dei beni pubblici (PGG) a tema
 <em>Ritorno al Futuro</em>: una in cui Marty e' giocato da un umano e una in
 simulazione automatica (Marty gioca tit-for-tat).</p>
+<p><strong>Pizzagame &mdash; La Festa della Pizza (bambini).</strong>
+PGG classico adattato per bambini (6-9 anni): 1 bambino umano + 3 bot, 5 fette
+di pizza a testa a ogni round, Piatto Condiviso raddoppiato (x2) e diviso in 4
+parti uguali. Interfaccia colorata con bottoni-pizza.</p>
 """
 
 SECRET_KEY = environ.get('OTREE_SECRET_KEY', 'quantum-pd-dev-secret-key')

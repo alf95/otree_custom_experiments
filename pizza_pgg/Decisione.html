@@ -1,0 +1,231 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    Round {{ round_number }} di {{ num_rounds }} — Quante fette metti nel piatto?
+{{ endblock }}
+
+{{ block content }}
+
+<style>
+    :root {
+        --bg: #fff6e5;
+        --card: #ffffff;
+        --red: #e63946;
+        --orange: #fb8500;
+        --yellow: #ffb703;
+        --green: #2a9d8f;
+        --blue: #457b9d;
+        --text: #5c3a21;
+        --dim: #9c7a5c;
+    }
+
+    body {
+        background: var(--bg) !important;
+        color: var(--text);
+        font-family: "Comic Sans MS", "Chalkboard SE", "Baloo 2", "Segoe UI", sans-serif;
+    }
+
+    .otree-body {
+        max-width: 860px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--red);
+        font-weight: bold;
+    }
+
+    .card {
+        background: var(--card);
+        border: 3px solid var(--yellow);
+        border-radius: 22px;
+        box-shadow: 0 6px 18px rgba(251, 133, 0, 0.18);
+        color: var(--text);
+    }
+
+    .intro-line {
+        font-size: 1.2rem;
+        line-height: 1.5;
+    }
+
+    .counter-box {
+        border-radius: 20px;
+        padding: 18px 12px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .counter-box .counter-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .counter-box .counter-value {
+        font-size: 3.4rem;
+        font-weight: bold;
+        line-height: 1.1;
+        margin: 4px 0;
+    }
+
+    .counter-box .counter-desc {
+        font-size: 0.95rem;
+    }
+
+    .box-keep {
+        background: #e8f7f4;
+        border: 3px solid var(--green);
+    }
+
+    .box-keep .counter-title, .box-keep .counter-value {
+        color: var(--green);
+    }
+
+    .box-share {
+        background: #fff1e0;
+        border: 3px solid var(--orange);
+    }
+
+    .box-share .counter-title, .box-share .counter-value {
+        color: var(--orange);
+    }
+
+    .pizza-btn {
+        background: #fff;
+        border: 3px solid #ffd9a0;
+        border-radius: 20px;
+        padding: 14px 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        width: 100%;
+    }
+
+    .pizza-btn:hover {
+        transform: translateY(-3px);
+        border-color: var(--orange);
+        box-shadow: 0 6px 14px rgba(251, 133, 0, 0.25);
+    }
+
+    .pizza-btn.selected {
+        border-color: var(--red);
+        background: #ffe8e8;
+        box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .pizza-emoji {
+        font-size: 1.7rem;
+        line-height: 1.3;
+        min-height: 2.2rem;
+    }
+
+    .pizza-label {
+        font-size: 1.05rem;
+        font-weight: bold;
+        color: var(--text);
+        margin-top: 4px;
+    }
+
+    .otree-btn-next {
+        background: var(--green) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 40px !important;
+        font-weight: bold;
+        font-size: 1.3rem;
+        padding: 14px 40px !important;
+        box-shadow: 0 6px 14px rgba(42, 157, 143, 0.4);
+    }
+
+    .otree-btn-next:hover {
+        background: #21867a !important;
+    }
+
+    .cumulative-badge {
+        background: #fff1e0;
+        border: 2px solid var(--yellow);
+        border-radius: 40px;
+        padding: 8px 18px;
+        font-size: 1.05rem;
+        font-weight: bold;
+        color: var(--orange);
+        display: inline-block;
+    }
+</style>
+
+<p class="intro-line mb-4">
+    Hai <strong>{{ endowment }} fette di pizza</strong>! 🍕
+    Scegli quante mettere nel <strong>Piatto Condiviso</strong> per la festa.
+</p>
+
+{{ if round_number > 1 }}
+<div class="text-center mb-4">
+    <span class="cumulative-badge">😋 Fette mangiate finora: {{ cumulative_human_text }}</span>
+</div>
+{{ endif }}
+
+<!-- CONTATORI: PER TE / PIATTO CONDIVISO -->
+<div class="row g-3 mb-4">
+    <div class="col-6">
+        <div class="counter-box box-keep">
+            <div class="counter-title">🍽️ Per te</div>
+            <div id="keep-display" class="counter-value">{{ kept_value }}</div>
+            <div class="counter-desc">fette che tieni per te</div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="counter-box box-share">
+            <div class="counter-title">🍕 Nel Piatto Condiviso</div>
+            <div id="contrib-display" class="counter-value">{{ contribution_value }}</div>
+            <div class="counter-desc">fette per la festa</div>
+        </div>
+    </div>
+</div>
+
+<!-- BOTTONI PIZZA -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-3">👆 Tocca quante fette vuoi mettere nel piatto!</h5>
+        <div class="row g-3">
+            {{ for opt in options }}
+            <div class="col-4 col-md-2">
+                <button type="button" class="pizza-btn" data-value="{{ opt.value }}" onclick="setContrib({{ opt.value }})">
+                    <div class="pizza-emoji">{{ opt.emoji }}</div>
+                    <div class="pizza-label">{{ opt.label }}</div>
+                </button>
+            </div>
+            {{ endfor }}
+        </div>
+
+        <!-- Campo nascosto che salva la scelta (nome = campo del modello) -->
+        <input type="hidden" name="contribution" id="contribution" value="{{ contribution_value }}">
+        {{ formfield_errors 'contribution' }}
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <button type="submit" class="otree-btn-next btn btn-primary btn-lg">
+        Conferma! 🍕
+    </button>
+</div>
+
+<script>
+    const ENDOWMENT = {{ endowment }};
+    const contribInput = document.getElementById('contribution');
+    const contribDisplay = document.getElementById('contrib-display');
+    const keepDisplay = document.getElementById('keep-display');
+
+    function setContrib(v) {
+        contribInput.value = v;
+        contribDisplay.textContent = v;
+        keepDisplay.textContent = ENDOWMENT - v;
+        document.querySelectorAll('.pizza-btn').forEach(function (btn) {
+            btn.classList.toggle('selected', parseInt(btn.dataset.value, 10) === v);
+        });
+    }
+
+    // Evidenzia il bottone della scelta iniziale (se presente)
+    const initial = parseInt(contribInput.value, 10) || 0;
+    setContrib(initial);
+</script>
+
+{{ endblock }}
