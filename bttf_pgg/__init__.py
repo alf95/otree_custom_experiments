@@ -731,4 +731,4 @@ class ResultsPage(Page):
         )
 
 
-page_sequence = [LanguagePage, FormIniziale, IntroPage, DecisionPage, ResultsPage]
+page_sequence = [FormIniziale, IntroPage, DecisionPage, ResultsPage]
