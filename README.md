@@ -78,7 +78,7 @@ quantum_pgg/
 ├── requirements.txt         # otree, numpy
 └── quantum_pd/              # The experiment app
     ├── __init__.py          # Models, EWL math, bot logic, pages
-    ├── DecisionePage.html   # Theta/Phi sliders with live preview
+    ├── DecisionPage.html    # Theta/Phi sliders with live preview
     └── ResultsPage.html     # Outcome probabilities and round payoffs
 ```
 

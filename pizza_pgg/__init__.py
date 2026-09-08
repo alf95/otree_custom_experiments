@@ -178,7 +178,7 @@ def simulate(player):
 # PAGINE
 # ---------------------------------------------------------------------------
 
-class Istruzioni(Page):
+class InstructionsPage(Page):
     @staticmethod
     def is_displayed(player):
         return player.round_number == 1
@@ -193,7 +193,7 @@ class Istruzioni(Page):
         )
 
 
-class Decisione(Page):
+class DecisionPage(Page):
     form_model = 'player'
     form_fields = ['contribution']
 
@@ -228,7 +228,7 @@ class Decisione(Page):
         )
 
 
-class Risultati(Page):
+class ResultsPage(Page):
     @staticmethod
     def vars_for_template(player):
         # La simulazione va eseguita QUI (prima del rendering), perche'
@@ -294,4 +294,4 @@ class Risultati(Page):
         )
 
 
-page_sequence = [Istruzioni, Decisione, Risultati]
+page_sequence = [InstructionsPage, DecisionPage, ResultsPage]

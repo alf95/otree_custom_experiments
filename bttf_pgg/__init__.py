@@ -576,7 +576,7 @@ class LanguagePage(Page):
         player.participant.vars['lang'] = player.lang
 
 
-class FormIniziale(Page):
+class InitialFormPage(Page):
     form_model = 'player'
     form_fields = [
         'genere', 'eta', 'titolo_studio', 'occupazione',
@@ -731,4 +731,4 @@ class ResultsPage(Page):
         )
 
 
-page_sequence = [FormIniziale, IntroPage, DecisionPage, ResultsPage]
+page_sequence = [InitialFormPage, IntroPage, DecisionPage, ResultsPage]

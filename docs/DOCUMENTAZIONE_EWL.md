@@ -284,7 +284,7 @@ ci sono due opzioni.
 
 I partecipanti vedono solo il cursore ?; ? viene forzato a 0 nel backend.
 
-**Passo 1** — In `quantum_pd/DecisionePage.html`, elimina l'intera card del
+**Passo 1** — In `quantum_pd/DecisionPage.html`, elimina l'intera card del
 cursore ? (il blocco `<div class="card mb-4">` con `name="phi"`), e rimuovi
 dalla funzione `setPreset` il terzo bottone "Mossa speciale".
 
@@ -302,7 +302,7 @@ dalla funzione `setPreset` il terzo bottone "Mossa speciale".
 2. Togli `phi` dai campi del form e forza il valore a 0 prima della simulazione:
 
    ```python
-   class DecisionePage(Page):
+   class DecisionPage(Page):
        form_model = 'player'
        form_fields = ['theta']
 

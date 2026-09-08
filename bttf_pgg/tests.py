@@ -4,7 +4,7 @@ from . import (
     C,
     marty_tit_for_tat_contribution,
     LanguagePage,
-    FormIniziale,
+    InitialFormPage,
     IntroPage,
     DecisionPage,
     ResultsPage,
@@ -23,7 +23,7 @@ class PlayerBot(Bot):
     def play_round(self):
         if self.player.round_number == 1:
             yield Submission(LanguagePage, dict(lang=self.case))
-            yield Submission(FormIniziale, dict(
+            yield Submission(InitialFormPage, dict(
                 genere='non_specifico',
                 eta=18,
                 titolo_studio='diploma',

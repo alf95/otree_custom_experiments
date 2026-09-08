@@ -7,7 +7,7 @@ Implements a single-player-vs-bot **Quantum Prisoner's Dilemma** using the
 
 | Page             | Purpose                                                        |
 |------------------|----------------------------------------------------------------|
-| `DecisionePage`  | Human picks θ ∈ [0, π] and φ ∈ [0, π/2] via sliders            |
+| `DecisionPage`   | Human picks θ ∈ [0, π] and φ ∈ [0, π/2] via sliders            |
 | `ResultsWaitPage`| Runs `simulate()`: bot move + EWL simulation + payoff          |
 | `ResultsPage`    | Shows strategies, outcome probabilities, sampled outcome, points |
 

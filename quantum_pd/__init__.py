@@ -73,7 +73,7 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    # --- Input dell'umano (form della DecisionePage) ---
+    # --- Input dell'umano (form della DecisionPage) ---
     theta = models.FloatField(
         min=0, max=math.pi, initial=math.pi / 2,
         label="Quanto cooperi (0) o tradisci (pi)",
@@ -277,7 +277,7 @@ def simulate(group):
 # PAGINE
 # ---------------------------------------------------------------------------
 
-class DecisionePage(Page):
+class DecisionPage(Page):
     form_model = 'player'
     form_fields = ['theta', 'phi']
 
@@ -319,4 +319,4 @@ class ResultsPage(Page):
         )
 
 
-page_sequence = [DecisionePage, ResultsWaitPage, ResultsPage]
+page_sequence = [DecisionPage, ResultsWaitPage, ResultsPage]
