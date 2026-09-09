@@ -542,11 +542,14 @@ class ResultsPage(Page):
         # Nel flusso unificato (registration -> bttf_pgg -> pizza_pgg -> fine)
         # l'adulto (assigned_game == 'bttf') ha gia' giocato il suo gioco: al
         # termine del round 5 salta pizza_pgg e va direttamente alla chiusura.
+        # La guardia sul round finale e' OBBLIGATORIA: senza di essa il redirect
+        # scatta dopo il round 1 e il partecipante gioca un solo round.
         # La guardia `in upcoming_apps` rende innocua la logica nelle sessioni
         # standalone di bttf (senza 'fine' in sequenza).
-        if player.participant.vars.get('assigned_game') == 'bttf':
-            if 'fine' in upcoming_apps:
-                return 'fine'
+        if player.round_number == C.NUM_ROUNDS:
+            if player.participant.vars.get('assigned_game') == 'bttf':
+                if 'fine' in upcoming_apps:
+                    return 'fine'
         return None
 
     @staticmethod
