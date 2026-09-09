@@ -3,8 +3,6 @@ from otree.api import Bot, Submission
 from . import (
     C,
     marty_tit_for_tat_contribution,
-    LanguagePage,
-    InitialFormPage,
     IntroPage,
     DecisionPage,
     ResultsPage,
@@ -22,15 +20,6 @@ class PlayerBot(Bot):
 
     def play_round(self):
         if self.player.round_number == 1:
-            yield Submission(LanguagePage, dict(lang=self.case))
-            yield Submission(InitialFormPage, dict(
-                genere='non_specifico',
-                eta=18,
-                titolo_studio='diploma',
-                occupazione='studente',
-                luogo_residenza='Chieti',
-                esperienza_precedente='no',
-            ))
             yield Submission(IntroPage)
         yield Submission(
             DecisionPage,

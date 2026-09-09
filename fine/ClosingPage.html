@@ -1,0 +1,103 @@
+{{ extends "global/Page.html" }}
+
+{{ block title }}
+    Esperimento concluso
+{{ endblock }}
+
+{{ block content }}
+
+<style>
+    .nrd-close * { box-sizing: border-box; }
+    .nrd-close {
+        --blue: #123c63;
+        --blue2: #1b5e8a;
+        --teal: #0e7c86;
+        --gold: #c8961e;
+        --ink: #22303f;
+        --muted: #5b6b7b;
+        --line: #e3e9f0;
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        color: var(--ink);
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    .nrd-close-hero {
+        background: linear-gradient(135deg, #123c63 0%, #1b5e8a 55%, #0e7c86 100%);
+        color: #ffffff;
+        border-radius: 14px;
+        padding: 34px 36px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(18, 60, 99, .25);
+        text-align: center;
+    }
+    .nrd-close-hero h1 {
+        margin: 0 0 8px;
+        font-size: 1.9rem;
+        font-weight: 800;
+    }
+    .nrd-close-hero p {
+        margin: 0;
+        font-size: 1.05rem;
+        opacity: .95;
+    }
+    .nrd-close-card {
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 10px rgba(34, 48, 63, .06);
+    }
+    .nrd-close-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+    }
+    .nrd-close-row:last-child { border-bottom: none; }
+    .nrd-close-row .nrd-close-key {
+        color: var(--muted);
+        font-weight: 600;
+    }
+    .nrd-close-row .nrd-close-val {
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 1.05rem;
+    }
+    .nrd-close-note {
+        color: var(--muted);
+        font-size: .9rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+</style>
+
+<div class="nrd-close">
+
+    <div class="nrd-close-hero">
+        <h1>Grazie per aver partecipato! &#127881;</h1>
+        <p>L'esperimento &egrave; terminato. Puoi chiudere questa pagina.</p>
+    </div>
+
+    <div class="nrd-close-card">
+        <div class="nrd-close-row">
+            <span class="nrd-close-key">Codice identificativo</span>
+            <span class="nrd-close-val">{{ codice_id }}</span>
+        </div>
+        <div class="nrd-close-row">
+            <span class="nrd-close-key">Guadagno finale</span>
+            <span class="nrd-close-val">{{ final_payoff }}</span>
+        </div>
+    </div>
+
+    <p class="nrd-close-note">
+        Conserva il tuo codice identificativo: potr&agrave; servirti per eventuali
+        chiarimenti con lo sperimentatore. I tuoi dati sono trattati in forma
+        anonima, nel rispetto della normativa vigente sulla protezione dei dati
+        personali.
+    </p>
+
+</div>
+
+{{ endblock }}
