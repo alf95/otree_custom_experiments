@@ -94,18 +94,21 @@ class Player(BasePlayer):
 
 
 def generate_participant_id(player):
-    """Genera un codice identificativo univoco nel formato
-    ID + numero (0-500, minimo 2 cifre) + lettera maiuscola (A-Z).
+    """Genera un codice identificativo univoco di 6 caratteri nel formato
+    4 cifre (0000-9999) + 2 lettere maiuscole (A-Z), senza prefisso 'ID'.
 
-    Esempi: 'ID01A', 'ID402X'. Il codice e' derivato in modo deterministico
+    Esempi: '0421AB', '8410XQ'. Il codice e' derivato in modo deterministico
     dal `participant.code` di oTree (univoco per sessione), quindi non cambia
     tra un round e l'altro e non collide tra partecipanti diversi.
     """
     seed = player.participant.code or str(player.participant.id)
     digest = hashlib.sha256(seed.encode('utf-8')).hexdigest()
-    number = int(digest[:6], 16) % 501                    # 0..500
-    letter = string.ascii_uppercase[int(digest[6:8], 16) % 26]  # A..Z
-    return f"ID{number:02d}{letter}"
+    number = int(digest[:8], 16) % 10000                   # 0..9999
+    letters = ''.join(
+        string.ascii_uppercase[int(digest[i:i + 2], 16) % 26]
+        for i in range(8, 12, 2)                           # due lettere A..Z
+    )
+    return f"{number:04d}{letters}"
 
 
 def assigned_game(eta):

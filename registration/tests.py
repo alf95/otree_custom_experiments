@@ -66,10 +66,13 @@ class PlayerBot(Bot):
         expect(self.player.occupazione, 'lavoratore')
         expect(self.player.luogo_residenza, 'Chieti')
         expect(self.player.esperienza_precedente, 'no')
-        # Il codice ID deve essere stato generato e condiviso (formato ID##X).
+        # Il codice identificativo deve essere stato generato e condiviso
+        # (formato di 6 caratteri: 4 cifre + 2 lettere maiuscole, es. '0421AB').
         codice = self.player.participant.vars['codice_id']
-        expect(codice[:2], 'ID')
-        expect(len(codice), 5)
+        expect(len(codice), 6)
+        expect(codice[:4].isdigit(), True)
+        expect(codice[4:].isalpha(), True)
+        expect(codice[4:].isupper(), True)
         expect(self.player.participant.vars['eta'], 25)
         expect(self.player.participant.vars['assigned_game'], 'bttf')
 
