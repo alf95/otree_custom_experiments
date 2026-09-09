@@ -238,6 +238,8 @@ class ResultsPage(Page):
         human = player.contribution if player.contribution is not None else 0
         human_kept = C.ENDOWMENT - human
 
+        # I compagni compaiono con avatar e nome ma SENZA numeri: le fette
+        # messe da ciascuno restano segrete (si vede solo il totale del Piatto).
         kids = [
             dict(
                 avatar='🧒', name='Tu',
@@ -248,23 +250,14 @@ class ResultsPage(Page):
             ),
             dict(
                 avatar='😋', name='Il Goloso',
-                contribution=player.goloso_contribution,
-                payoff=player.goloso_payoff,
-                payoff_text=format_slices(player.goloso_payoff),
                 is_you=False,
             ),
             dict(
                 avatar='😊', name='Il Generoso',
-                contribution=player.generoso_contribution,
-                payoff=player.generoso_payoff,
-                payoff_text=format_slices(player.generoso_payoff),
                 is_you=False,
             ),
             dict(
                 avatar='🤝', name="L'Amico Reciproco",
-                contribution=player.reciproco_contribution,
-                payoff=player.reciproco_payoff,
-                payoff_text=format_slices(player.reciproco_payoff),
                 is_you=False,
             ),
         ]

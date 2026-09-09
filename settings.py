@@ -75,10 +75,9 @@ SESSION_CONFIGS = [
     #                                          automatici): 5 monete al round 1,
     #                                          poi media dei contributi altrui.
     #  * `default_language` = lingua di partenza del selettore ('it' o 'en').
-    #  * `show_bot_results` = True/False    -> se True mostra la tabella dettagliata
-    #                                          con scelte/guadagni dei singoli bot;
-    #                                          se False (default) mostra solo la
-    #                                          scelta del giocatore e il fondo comune.
+    #  Nota (design): il comportamento dei bot non viene MAI mostrato al
+    #  partecipante: nelle schermate si vedono solo i totali del gruppo e i
+    #  nomi/avatar dei compagni (le scelte dei singoli restano segrete).
     # -------------------------------------------------------------------------
     dict(
         name='bttf_pgg_human',
@@ -88,7 +87,6 @@ SESSION_CONFIGS = [
         app_sequence=['registration', 'bttf_pgg'],
         marty_strategy='human',
         default_language='it',
-        show_bot_results=False,
     ),
     dict(
         name='bttf_pgg_auto',
@@ -98,7 +96,6 @@ SESSION_CONFIGS = [
         app_sequence=['bttf_pgg'],
         marty_strategy='tit_for_tat',
         default_language='it',
-        show_bot_results=False,
     ),
     # -------------------------------------------------------------------------
     # PIZZAGAME - Public Goods Game per bambini (1 umano "Tu" + 3 bot)
@@ -133,7 +130,6 @@ SESSION_CONFIGS = [
         app_sequence=['registration', 'bttf_pgg', 'pizza_pgg', 'fine'],
         marty_strategy='human',
         default_language='it',
-        show_bot_results=False,
     ),
 ]
 

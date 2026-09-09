@@ -218,10 +218,10 @@
 
 <div class="card mb-4">
     <div class="card-body p-4">
-        <h5 class="card-title mb-1">🧑‍🤝‍🧑 Quante fette mangia ogni bambino?</h5>
+        <h5 class="card-title mb-1">🧑‍🤝‍🧑 Chi c'è alla festa?</h5>
         <p style="color: var(--dim); font-size: 0.95rem;">
             Ogni bambino riceve {{ individual_share }} fette dal Piatto Condiviso ({{ fund }} ÷ {{ n_players }}),
-            più le fette che ha tenuto per sé.
+            più le fette che ha tenuto per sé. Le scelte degli amici sono segrete: ognuno decide da solo!
         </p>
         <div class="row g-3 mt-1">
             {{ for kid in kids }}
@@ -231,9 +231,11 @@
                     <div class="kid-name">{{ kid.name }}</div>
                     {{ if kid.is_you }}
                     <div class="kid-you-tag">Sei tu!</div>
-                    {{ endif }}
                     <div class="kid-row">messe nel piatto: <strong>{{ kid.contribution }}</strong></div>
                     <div class="kid-row">mangia: <span class="big">{{ kid.payoff_text }}</span></div>
+                    {{ else }}
+                    <div class="kid-row" style="color: var(--dim);">🕵️ scelta segreta</div>
+                    {{ endif }}
                 </div>
             </div>
             {{ endfor }}
