@@ -37,6 +37,37 @@ sperimentali gia' pronte. Scegline una in base al comportamento del bot:
 > Non devi spiegare ai partecipanti nulla di fisica: le istruzioni a schermo
 > sono gia' in italiano e il partecipante muove semplicemente due cursori.
 
+### Un solo link per tutti i partecipanti (Rooms)
+
+Per far partecipare tutti allo **stesso esperimento** con lo **stesso link**,
+il progetto usa la funzione **Rooms** di oTree. Una room e' legata a una
+sessione e ogni partecipante che apre il link della room viene assegnato
+automaticamente a quella sessione (un "posto" per browser, tramite cookie).
+
+La room dell'esperimento completo e' gia' configurata in `settings.py`
+(sezione `ROOMS`). Procedura per lo sperimentatore:
+
+1. Avvia il server: `otree devserver`.
+2. Apri il pannello admin: <http://localhost:8000/rooms>.
+3. Nella room **"Esperimento completo - Notte dei Ricercatori 2026"** clicca
+   **Create session** e scegli la sessione `esperimento_nrd`.
+4. Distribuisci ai partecipanti il **link della room**:
+
+   ```
+   http://<host>:<porta>/room/esperimento_nrd
+   ```
+
+   (in locale: <http://localhost:8000/room/esperimento_nrd>)
+
+Ogni partecipante che apre quel link vede una pagina di benvenuto in italiano
+e poi entra nella sessione. Tutti i dati finiscono nella stessa sessione e sono
+esportabili dalla scheda **Data** del pannello admin.
+
+> **Nota:** la room e' "aperta" (senza elenco di etichette): chiunque apra il
+> link entra finche' ci sono posti liberi nella sessione. Se vuoi limitare
+> l'accesso a un elenco predefinito di partecipanti, aggiungi un
+> `participant_label_file` alla room (vedi documentazione oTree).
+
 ### Consigli pratici
 
 - Assegna ogni partecipante a **una sola** condizione (una sola sessione).

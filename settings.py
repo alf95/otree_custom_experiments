@@ -26,46 +26,46 @@ from os import environ
 # `group.session.config['bot_strategy']` e determina il comportamento del bot.
 # I suoi valori sono chiavi interne del codice: NON vanno modificati.
 SESSION_CONFIGS = [
-    dict(
-        name='quantum_pd_cooperate',
-        display_name='Dilemma del Prigioniero - Bot: coopera sempre',
-        doc='Il bot coopera a ogni round. Condizione piu\' semplice, utile per familiarizzare.',
-        num_demo_participants=1,
-        app_sequence=['quantum_pd'],
-        bot_strategy='always_classical_cooperate',
-    ),
-    dict(
-        name='quantum_pd_defect',
-        display_name='Dilemma del Prigioniero - Bot: tradisce sempre',
-        doc='Il bot tradisce a ogni round. Condizione "ostile".',
-        num_demo_participants=1,
-        app_sequence=['quantum_pd'],
-        bot_strategy='always_classical_defect',
-    ),
-    dict(
-        name='quantum_pd_quantum',
-        display_name='Dilemma del Prigioniero - Bot: mossa speciale',
-        doc='Il bot usa la strategia speciale del gioco quantistico (la piu\' vantaggiosa se usata da entrambi).',
-        num_demo_participants=1,
-        app_sequence=['quantum_pd'],
-        bot_strategy='always_quantum',
-    ),
-    dict(
-        name='quantum_pd_random',
-        display_name='Dilemma del Prigioniero - Bot: casuale',
-        doc='Il bot sceglie a caso a ogni round.',
-        num_demo_participants=1,
-        app_sequence=['quantum_pd'],
-        bot_strategy='random',
-    ),
-    dict(
-        name='quantum_pd_tit_for_tat',
-        display_name='Dilemma del Prigioniero - Bot: tit-for-tat (imita)',
-        doc='Il bot copia la scelta del partecipante del round precedente; al primo round coopera.',
-        num_demo_participants=1,
-        app_sequence=['quantum_pd'],
-        bot_strategy='tit_for_tat',
-    ),
+    # dict(
+    #     name='quantum_pd_cooperate',
+    #     display_name='Dilemma del Prigioniero - Bot: coopera sempre',
+    #     doc='Il bot coopera a ogni round. Condizione piu\' semplice, utile per familiarizzare.',
+    #     num_demo_participants=1,
+    #     app_sequence=['quantum_pd'],
+    #     bot_strategy='always_classical_cooperate',
+    # ),
+    # dict(
+    #     name='quantum_pd_defect',
+    #     display_name='Dilemma del Prigioniero - Bot: tradisce sempre',
+    #     doc='Il bot tradisce a ogni round. Condizione "ostile".',
+    #     num_demo_participants=1,
+    #     app_sequence=['quantum_pd'],
+    #     bot_strategy='always_classical_defect',
+    # ),
+    # dict(
+    #     name='quantum_pd_quantum',
+    #     display_name='Dilemma del Prigioniero - Bot: mossa speciale',
+    #     doc='Il bot usa la strategia speciale del gioco quantistico (la piu\' vantaggiosa se usata da entrambi).',
+    #     num_demo_participants=1,
+    #     app_sequence=['quantum_pd'],
+    #     bot_strategy='always_quantum',
+    # ),
+    # dict(
+    #     name='quantum_pd_random',
+    #     display_name='Dilemma del Prigioniero - Bot: casuale',
+    #     doc='Il bot sceglie a caso a ogni round.',
+    #     num_demo_participants=1,
+    #     app_sequence=['quantum_pd'],
+    #     bot_strategy='random',
+    # ),
+    # dict(
+    #     name='quantum_pd_tit_for_tat',
+    #     display_name='Dilemma del Prigioniero - Bot: tit-for-tat (imita)',
+    #     doc='Il bot copia la scelta del partecipante del round precedente; al primo round coopera.',
+    #     num_demo_participants=1,
+    #     app_sequence=['quantum_pd'],
+    #     bot_strategy='tit_for_tat',
+    # ),
     # -------------------------------------------------------------------------
     # PUBLIC GOODS GAME - "Ritorno al Futuro" (1 umano Marty + 3 bot)
     # -------------------------------------------------------------------------
@@ -149,7 +149,43 @@ REAL_WORLD_CURRENCY_CODE = 'EUR'
 
 USE_POINTS = True
 
-ROOMS = []
+# =============================================================================
+#  ROOMS - UN SOLO LINK PER TUTTI I PARTECIPANTI
+# =============================================================================
+#  Una "room" (stanza) di oTree permette di dare a TUTTI i partecipanti lo
+#  STESSO link per partecipare all'esperimento.
+#
+#  Come funziona:
+#    * Ogni room e' legata a UNA sessione (creata da una SESSION_CONFIGS).
+#    * Il link condiviso da distribuire ai partecipanti e':
+#          http://<host>:<porta>/room/<nome_room>
+#      (es. http://localhost:8000/room/esperimento_nrd)
+#    * Ogni partecipante che apre quel link viene assegnato automaticamente
+#      alla sessione collegata alla room (un "posto" per browser, tramite
+#      cookie), quindi tutti giocano nella STESSA sessione.
+#
+#  Procedura per lo sperimentatore:
+#    1. Avvia il server (otree devserver).
+#    2. Vai su http://localhost:8000/rooms (pannello admin).
+#    3. Nella room "Esperimento completo - Notte dei Ricercatori 2026"
+#       clicca "Create session" e scegli la sessione `esperimento_nrd`.
+#    4. Distribuisci ai partecipanti il link della room
+#       (http://<host>:<porta>/room/esperimento_nrd).
+#
+#  NOTA: senza `participant_label_file` la room e' "aperta": chiunque apra il
+#  link entra nella sessione finche' ci sono posti liberi. Se vuoi limitare
+#  l'accesso a un elenco predefinito di partecipanti, aggiungi un file di
+#  etichette (vedi documentazione oTree).
+# =============================================================================
+ROOMS = [
+    dict(
+        name='esperimento_nrd',
+        display_name='Esperimento completo - Notte dei Ricercatori 2026',
+        # Pagina di benvenuto personalizzata (in italiano) mostrata prima
+        # dell'ingresso nella sessione. Se omessa, oTree usa quella di default.
+        welcome_page='_templates/esperimento_nrd_welcome.html',
+    ),
+]
 
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD', 'admin')

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benvenuto - Notte dei Ricercatori 2026</title>
+    <link href="{% static 'bootstrap5/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'otree/css/theme2.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e8f0f2;
+        }
+        .card-welcome {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            max-width: 640px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+        p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        .btn-start {
+            background: #f5a623;
+            border: none;
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 1.15rem;
+            padding: 0.75rem 2.5rem;
+            border-radius: 2rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 166, 35, 0.4);
+            color: #1a1a1a;
+        }
+        .error-msg {
+            color: #ffb3b3;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-welcome">
+        <h1>Benvenuto alla Notte dei Ricercatori 2026</h1>
+        <p>
+            Grazie per aver accettato di partecipare al nostro esperimento!
+            Ti chiederemo di compilare una breve scheda di registrazione e poi
+            di giocare a un piccolo gioco interattivo. Non c'&egrave; nulla di
+            difficile: bastano pochi minuti.
+        </p>
+        <p>
+            Le tue risposte sono anonime e verranno utilizzate solo a scopo di
+            ricerca. Puoi interrompere in qualsiasi momento.
+        </p>
+        <form>
+            <button type="submit" class="btn btn-start">Inizia l'esperimento</button>
+            <p id="other-errors" class="error-msg" style="display: none;"></p>
+        </form>
+    </div>
+
+    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+
+        document.querySelector('form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const form = document.querySelector('form');
+            const formData = new FormData(form);
+            for (const [name, value] of formData.entries()) {
+                if (value) {
+                    urlParams.set(name, value);
+                }
+            }
+
+            const jsonData = Object.fromEntries(urlParams.entries());
+
+            try {
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                const data = await response.json();
+                if (data.status === 'ok') {
+                    urlParams.set('welcome_page_ok', '1');
+                    window.location.href = window.location.pathname + '?' + urlParams.toString();
+                } else if (data.errors) {
+                    const otherErrorsEl = document.querySelector('#other-errors');
+                    otherErrorsEl.innerHTML = '';
+                    for (const [fieldName, errorMessage] of Object.entries(data.errors)) {
+                        otherErrorsEl.insertAdjacentHTML('beforeend', errorMessage + '<br>');
+                    }
+                    otherErrorsEl.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
