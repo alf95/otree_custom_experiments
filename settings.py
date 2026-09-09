@@ -131,6 +131,20 @@ SESSION_CONFIGS = [
         marty_strategy='human',
         default_language='it',
     ),
+    # -------------------------------------------------------------------------
+    # TEST AUTOMATICI - Validazione scheda di registrazione
+    # -------------------------------------------------------------------------
+    #  Sessione dedicata ai test automatici della validazione del form di
+    #  registrazione (app `registration`). Non va usata per sessioni reali:
+    #  serve solo a eseguire `otree test registration_validation`.
+    # -------------------------------------------------------------------------
+    dict(
+        name='registration_validation',
+        display_name='[TEST] Validazione scheda di registrazione',
+        doc='Sessione di test automatici per la validazione del form di registrazione (otree test registration_validation).',
+        num_demo_participants=1,
+        app_sequence=['registration'],
+    ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(

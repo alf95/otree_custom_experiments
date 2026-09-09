@@ -113,6 +113,68 @@ def assigned_game(eta):
     return 'pizza' if eta < C.AGE_THRESHOLD else 'bttf'
 
 
+# ---------------------------------------------------------------------------
+# Validazione della scheda di registrazione
+# ---------------------------------------------------------------------------
+# oTree applica in automatico i controlli "di base" definiti sul modello
+# (campo obbligatorio, tipo numerico, min/max, scelta tra i valori ammessi),
+# con messaggi di errore gia' tradotti in italiano (settings LANGUAGE_CODE).
+#
+# Le funzioni qui sotto aggiungono i controlli SEMANTICI che il modello non
+# sa esprimere da solo (es. "non solo spazi", lunghezze minime/massime del
+# testo libero). Vengono richiamate da InitialFormPage.error_message solo
+# DOPO che tutti i controlli di base sono passati.
+# ---------------------------------------------------------------------------
+
+# Limiti applicati al campo testuale libero "luogo_residenza". Devono
+# combaciare con gli attributi HTML (maxlength) usati nel template.
+LUOGO_MIN_LENGTH = 2
+LUOGO_MAX_LENGTH = 100
+
+MSG_LUOGO_REQUIRED = 'Inserisci un luogo di residenza valido (non solo spazi).'
+MSG_LUOGO_TOO_SHORT = (
+    f'Il luogo di residenza deve contenere almeno {LUOGO_MIN_LENGTH} caratteri.'
+)
+MSG_LUOGO_TOO_LONG = (
+    f'Il luogo di residenza puo\' contenere al massimo {LUOGO_MAX_LENGTH} caratteri.'
+)
+
+
+def normalize_luogo_residenza(value):
+    """Rimuove spazi iniziali/finali e compatta le sequenze di spazi interni."""
+    if value is None:
+        return ''
+    return ' '.join(value.split())
+
+
+def registration_field_errors(values):
+    """Controlli semantici aggiuntivi sui campi del form di registrazione.
+
+    Riceve il dict ``values`` dei dati gia' ripuliti dal form oTree e
+    restituisce un dict {campo: messaggio_di_errore}; vuoto se tutto e'
+    valido. NB: viene invocata solo quando i controlli di base del modello
+    sono gia' passati (es. eta' e' un intero valido e nei limiti, le scelte
+    sono tra quelle ammesse).
+    """
+    errors = {}
+
+    # `luogo_residenza` e' l'unico campo a testo libero: oltre all'obbligo
+    # (gestito dal modello) verifichiamo che non siano solo spazi e che la
+    # lunghezza sia entro i limiti.
+    luogo = normalize_luogo_residenza(values.get('luogo_residenza'))
+    if not luogo:
+        # Stringa composta solo da spazi: sfugge al controllo "obbligatorio"
+        # di oTree (che considera presente anche una sequenza di soli spazi).
+        if values.get('luogo_residenza'):
+            errors['luogo_residenza'] = MSG_LUOGO_REQUIRED
+    elif len(luogo) < LUOGO_MIN_LENGTH:
+        errors['luogo_residenza'] = MSG_LUOGO_TOO_SHORT
+    elif len(luogo) > LUOGO_MAX_LENGTH:
+        errors['luogo_residenza'] = MSG_LUOGO_TOO_LONG
+
+    return errors
+
+
 class InitialFormPage(Page):
     form_model = 'player'
     form_fields = [
@@ -129,11 +191,23 @@ class InitialFormPage(Page):
         return dict(codice_id=codice)
 
     @staticmethod
+    def error_message(player, values):
+        """Controlli semantici extra (oltre a quelli automatici del modello).
+
+        Restituisce un dict {campo: messaggio}; se vuoto il form e' valido.
+        oTree chiama questo metodo solo quando tutti i controlli di base
+        (obbligatorieta', tipo, min/max, scelte ammesse) sono passati.
+        """
+        return registration_field_errors(values)
+
+    @staticmethod
     def before_next_page(player, timeout_happened):
         player.codice_id = player.participant.vars.get('codice_id', '')
         # Dati condivisi con le app successive (bttf_pgg / pizza_pgg / fine).
         player.participant.vars['eta'] = player.eta
         player.participant.vars['assigned_game'] = assigned_game(player.eta)
+        # Salva il testo libero normalizzato (niente spazi superflui).
+        player.luogo_residenza = normalize_luogo_residenza(player.luogo_residenza)
 
     @staticmethod
     def app_after_this_page(player, upcoming_apps):

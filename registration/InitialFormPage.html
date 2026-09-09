@@ -167,6 +167,26 @@
         margin-bottom: 6px;
     }
     .nrd-consent p { margin: 0; }
+    .nrd-card.nrd-invalid {
+        border-color: #d93025;
+        box-shadow: 0 0 0 3px rgba(217, 48, 37, .12);
+    }
+    .nrd-card.nrd-invalid .nrd-input,
+    .nrd-card.nrd-invalid .nrd-select {
+        border-color: #d93025;
+    }
+    .nrd-card.nrd-invalid .nrd-options .nrd-option {
+        border-color: #e5a09a;
+    }
+    .nrd-card.nrd-invalid .nrd-option:hover {
+        border-color: #d93025;
+    }
+    .nrd-invalid-msg {
+        color: #b3261e;
+        font-size: .88rem;
+        font-weight: 600;
+        margin-top: 10px;
+    }
     .nrd-submit {
         display: block;
         width: 100%;
@@ -306,14 +326,127 @@ Per ulteriori informazioni si prega di contattare il coordinatore scientifico de
 
 <script>
 (function () {
-    document.querySelectorAll('.nrd-option').forEach(function (option) {
-        var input = option.querySelector('input[type="radio"]');
-        if (!input) { return; }
-        function refresh() {
-            option.classList.toggle('is-checked', input.checked);
+    var root = document.querySelector('.nrd');
+    if (!root) { return; }
+    var form = root.closest('form');
+    if (!form) { return; }
+
+    /* Disattiva la validazione nativa del browser: gestita qui sotto per
+       poter evidenziare in rosso TUTTI i campi mancanti in un colpo solo. */
+    form.setAttribute('novalidate', 'novalidate');
+
+    /* ---------- 1) Selezione esclusiva dei bottoni (.nrd-option) ---------- */
+    function clearGroup(name) {
+        root.querySelectorAll('input[type="radio"][name="' + name + '"]').forEach(function (r) {
+            var opt = r.closest('.nrd-option');
+            if (opt) { opt.classList.remove('is-checked'); }
+        });
+    }
+
+    function syncButtonState(input) {
+        /* Solo il bottone selezionato ha la classe nrd-option is-checked:
+           gli altri bottoni dello stesso campo la perdono. */
+        clearGroup(input.name);
+        if (input.checked) {
+            var opt = input.closest('.nrd-option');
+            if (opt) { opt.classList.add('is-checked'); }
         }
-        input.addEventListener('change', refresh);
-        refresh();
+    }
+
+    // Stato iniziale (utile dopo un eventuale round-trip con il server).
+    root.querySelectorAll('input[type="radio"]').forEach(function (r) {
+        syncButtonState(r);
+    });
+
+    /* ---------- 2) Campi non valorizzati evidenziati in rosso ---------- */
+    var ERROR_MSG = "Per favore compila questo campo.";
+    var ERROR_MSG_OPTIONS = "Seleziona un'opzione per continuare.";
+
+    function getAnchor(card) {
+        return card.querySelector('.nrd-options') ||
+               card.querySelector('.nrd-field') ||
+               card.querySelector('input, select');
+    }
+
+    function showError(card) {
+        if (card.classList.contains('nrd-invalid')) { return; }
+        card.classList.add('nrd-invalid');
+        var hasOptions = !!card.querySelector('input[type="radio"]');
+        var msg = document.createElement('div');
+        msg.className = 'nrd-invalid-msg';
+        msg.textContent = hasOptions ? ERROR_MSG_OPTIONS : ERROR_MSG;
+        var anchor = getAnchor(card);
+        anchor.parentNode.insertBefore(msg, anchor.nextSibling);
+    }
+
+    function hideError(card) {
+        card.classList.remove('nrd-invalid');
+        var msg = card.querySelector('.nrd-invalid-msg');
+        if (msg) { msg.parentNode.removeChild(msg); }
+    }
+
+    function groupIsChecked(card) {
+        var radio = card.querySelector('input[type="radio"]');
+        if (!radio) { return true; }
+        return !!card.querySelector('input[type="radio"]:checked');
+    }
+
+    function controlHasValue(control) {
+        if (control.type === 'radio') { return true; } /* gestito a livello di gruppo */
+        if (control.type === 'checkbox') { return control.checked; }
+        return control.value.trim() !== '';
+    }
+
+    function cardIsValid(card) {
+        var required = card.querySelectorAll('input[required], select[required]');
+        if (!required.length) { return true; }
+        if (!groupIsChecked(card)) { return false; }
+        var ok = true;
+        required.forEach(function (c) {
+            if (c.type !== 'radio' && !controlHasValue(c)) { ok = false; }
+        });
+        return ok;
+    }
+
+    // Rimuove (o ripristina, dopo un submit) il rosso per una singola card.
+    function refreshCard(card) {
+        if (cardIsValid(card)) {
+            hideError(card);
+        } else if (form.classList.contains('nrd-validated')) {
+            showError(card);
+        }
+    }
+
+    form.addEventListener('submit', function (e) {
+        form.classList.add('nrd-validated');
+        var firstInvalid = null;
+        root.querySelectorAll('.nrd-card').forEach(function (card) {
+            if (cardIsValid(card)) {
+                hideError(card);
+            } else {
+                showError(card);
+                if (!firstInvalid) { firstInvalid = card; }
+            }
+        });
+        if (firstInvalid) {
+            e.preventDefault();
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var ctrl = firstInvalid.querySelector('input[type="radio"]:not(:checked), input, select');
+            if (ctrl) { ctrl.focus({ preventScroll: true }); }
+        }
+    });
+
+    // Alla digitazione/cambio: rimuovi il rosso quando il campo viene valorizzato.
+    root.addEventListener('input', function (e) {
+        var card = e.target.closest('.nrd-card');
+        if (card) { refreshCard(card); }
+    });
+    root.addEventListener('change', function (e) {
+        var t = e.target;
+        var card = t.closest('.nrd-card');
+        if (!card) { return; }
+        if (t.type === 'radio') { syncButtonState(t); }
+        refreshCard(card);
     });
 })();
 </script>
