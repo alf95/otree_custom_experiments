@@ -72,8 +72,9 @@ SESSION_CONFIGS = [
     #  * `marty_strategy`   = 'human'       -> Marty gioca tramite la dashboard
     #                                          interattiva (sessione con umano)
     #                        = 'tit_for_tat' -> Marty e' simulato (sessioni/test
-    #                                          automatici): 5 monete al round 1,
-    #                                          poi media dei contributi altrui.
+    #                                          automatici): 5 unit\u00e0 di energia
+    #                                          al round 1, poi media dei
+    #                                          contributi altrui.
     #  * `default_language` = lingua di partenza del selettore ('it' o 'en').
     #  Nota (design): il comportamento dei bot non viene MAI mostrato al
     #  partecipante: nelle schermate si vedono solo i totali del gruppo e i
@@ -82,7 +83,7 @@ SESSION_CONFIGS = [
     dict(
         name='bttf_pgg_human',
         display_name='Public Goods Game - Ritorno al Futuro (Marty: umano)',
-        doc='PGG a 4 ruoli (Marty umano + bot Doc, Biff, Jennifer). Dotazione in Monete/Salvadanaio (10-18 anni).',
+        doc='PGG a 4 ruoli (Marty umano + bot Doc, Biff, Jennifer). Dotazione in unit\u00e0 di energia/Salvadanaio (10-18 anni).',
         num_demo_participants=1,
         app_sequence=['registration', 'bttf_pgg'],
         marty_strategy='human',
@@ -91,7 +92,7 @@ SESSION_CONFIGS = [
     dict(
         name='bttf_pgg_auto',
         display_name='Public Goods Game - Ritorno al Futuro (Marty: tit-for-tat)',
-        doc='PGG a 4 ruoli con Marty simulato (tit-for-tat in monete), per sessioni/test automatici.',
+        doc='PGG a 4 ruoli con Marty simulato (tit-for-tat in unit\u00e0 di energia), per sessioni/test automatici.',
         num_demo_participants=1,
         app_sequence=['bttf_pgg'],
         marty_strategy='tit_for_tat',
@@ -103,7 +104,7 @@ SESSION_CONFIGS = [
     #  * Dotazione: 5 fette di pizza a testa a ogni round.
     #  * Piatto Condiviso: le fette donate vengono raddoppiate (x2) e divise
     #    in 4 parti uguali tra tutti i bambini.
-    #  * Bot: Il Goloso (0 fette), Il Generoso (5 fette), L'Amico Reciproco
+    #  * Bot: Il Goloso (0 fette), Il Generoso (5 fette), L'Amico Equo
     #    (3 fette al round 1, poi media delle fette degli altri).
     # -------------------------------------------------------------------------
     dict(

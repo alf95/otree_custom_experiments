@@ -162,7 +162,7 @@
     }
 </style>
 
-<div class="retro-header">:: {{ texts.results_header }} ::</div>
+<div class="retro-header">:: {{ results_header }} ::</div>
 
 {{ if is_final_round }}
 <!-- ================================================================= -->
@@ -209,7 +209,7 @@
     </div>
 </div>
 
-<!-- CRONOLOGIA DEI 5 ROUND -->
+<!-- CRONOLOGIA DEI ROUND -->
 <div class="card mb-4">
     <div class="card-body p-4">
         <h5 class="card-title mb-3" style="color:var(--cyan);">{{ texts.final_round_history_title }}</h5>
@@ -241,7 +241,7 @@
 
 {{ else }}
 <!-- ================================================================= -->
-<!-- SCHERMATA INTERMEDIA: ACCUMULO MONETE E CARICA (ROUND 1..4)       -->
+<!-- SCHERMATA INTERMEDIA: ACCUMULO ENERGIA E CARICA (ROUND 1..4)       -->
 <!-- ================================================================= -->
 <div class="card mb-4">
     <div class="card-body p-4">
@@ -315,7 +315,7 @@
         <h5 class="card-title mb-3" style="color:var(--cyan);">{{ texts.results_summary_title }}</h5>
         <ul class="list-group list-group-flush" style="background:transparent;">
             <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
-                <span>🪙 {{ texts.results_kept }}</span>
+                <span>⚡ {{ texts.results_kept }}</span>
                 <span class="retro-value" style="color:var(--green);">{{ marty_kept }} {{ texts.units }}</span>
             </li>
             <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">

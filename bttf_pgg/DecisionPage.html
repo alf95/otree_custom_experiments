@@ -22,8 +22,6 @@ body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",
 .form-range::-moz-range-thumb{background:var(--orange);border:2px solid #fff;border-radius:50%;width:28px;height:28px;box-shadow:0 0 14px rgba(255,159,28,1);cursor:pointer}
 .retro-header{color:var(--cyan);letter-spacing:2px;font-size:1.05rem;border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:20px;text-shadow:0 0 6px rgba(0,229,255,.6)}
 .retro-label{color:var(--dim);letter-spacing:1px;font-size:.85rem}
-.retro-btn{background:var(--panel2);color:var(--cyan);border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-weight:bold}
-.retro-btn:hover{border-color:var(--green);color:var(--green);background:#0f2820}
 .alert-info{background:rgba(0,229,255,.08);color:var(--text);border:1px solid var(--cyan);border-radius:8px}
 .box-allocation{border-radius:8px;transition:transform .2s ease}
 .box-allocation:hover{transform:translateY(-2px)}
@@ -39,13 +37,13 @@ body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",
 </div>
 {{ endif }}
 
-<!-- DOPPIO BOX INTERATTIVO SALVADANAIO / CASSA COMUNE -->
+<!-- DOPPIO BOX INTERATTIVO SALVADANAIO / FONDO COMUNE -->
 <div class="row g-3 mb-4">
     <!-- Box Salvadanaio Personale -->
     <div class="col-6">
         <div class="card box-allocation h-100 text-center p-3" style="border: 2px solid var(--green); background: rgba(57, 255, 20, 0.08);">
             <div class="retro-label" style="color: var(--green); font-size: 0.95rem; font-weight: bold;">
-                🪙 {{ texts.decision_box_keep_title }}
+                ⚡ {{ texts.decision_box_keep_title }}
             </div>
             <div id="keep-display" style="font-size: 3.4rem; font-weight: bold; color: var(--green); margin: 4px 0; text-shadow: 0 0 10px rgba(57,255,20,.6);">
                 {{ kept_value }}
@@ -56,7 +54,7 @@ body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",
         </div>
     </div>
 
-    <!-- Box Cassa DeLorean -->
+    <!-- Box Fondo DeLorean -->
     <div class="col-6">
         <div class="card box-allocation h-100 text-center p-3" style="border: 2px solid var(--orange); background: rgba(255, 159, 28, 0.08);">
             <div class="retro-label" style="color: var(--orange); font-size: 0.95rem; font-weight: bold;">
@@ -88,22 +86,6 @@ body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",
                min="0" max="{{ max_contribution }}" step="1"
                value="{{ contribution_value }}" oninput="updateContrib()">
         {{ formfield_errors 'contribution' }}
-
-        <!-- SCELTE RAPIDE -->
-        <div class="mt-4 pt-3 border-top" style="border-color:var(--line)!important;">
-            <span class="retro-label me-3">{{ texts.decision_quick }}:</span>
-            <div class="btn-group mt-2 mt-sm-0" role="group">
-                <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(0)">
-                    {{ texts.decision_quick_none }}
-                </button>
-                <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(5)">
-                    {{ texts.decision_quick_half }}
-                </button>
-                <button type="button" class="retro-btn btn btn-sm" onclick="setContrib(10)">
-                    {{ texts.decision_quick_all }}
-                </button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -124,11 +106,6 @@ body{background:var(--bg)!important;color:var(--text);font-family:"Courier New",
         const keep = TOTAL_ENDOWMENT - give;
         contribDisplayEl.textContent = give;
         keepDisplayEl.textContent = keep;
-    }
-
-    function setContrib(v) {
-        contribEl.value = v;
-        updateContrib();
     }
 
     // Inizializzazione al caricamento della pagina

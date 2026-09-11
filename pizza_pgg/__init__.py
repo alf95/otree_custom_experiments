@@ -7,7 +7,7 @@ Pizzagame - Public Goods Game (PGG) classico adattato per bambini (6-9 anni).
 Un bambino (Tu) gioca insieme a tre amici controllati dal computer:
     * Il Goloso         -> tiene sempre tutto per sé (0 fette nel Piatto Condiviso)
     * Il Generoso       -> mette sempre tutte le sue 5 fette nel Piatto Condiviso
-    * L'Amico Reciproco -> al primo round mette 3 fette, poi mette quanto la media
+    * L'Amico Equo      -> al primo round mette 3 fette, poi mette quanto la media
                            delle fette messe dagli altri nel round precedente
 
 Regole: a ogni round ogni bambino riceve 5 fette di pizza.
@@ -88,7 +88,7 @@ def generoso_contribution(player):
 
 
 def reciproco_contribution(player):
-    """L'Amico Reciproco: al primo round mette 3 fette; poi mette quanto la
+    """L'Amico Equo: al primo round mette 3 fette; poi mette quanto la
     media (arrotondata) delle fette messe dagli ALTRI tre bambini nel round
     precedente (Tu, Il Goloso, Il Generoso)."""
     if player.round_number == 1:
@@ -257,7 +257,7 @@ class ResultsPage(Page):
                 is_you=False,
             ),
             dict(
-                avatar='🤝', name="L'Amico Reciproco",
+                avatar='🤝', name="L'Amico Equo",
                 is_you=False,
             ),
         ]
