@@ -121,14 +121,17 @@
         letter-spacing: 1px
     }
 
-    .retro-danger {
-        background: rgba(255, 59, 59, .12);
-        border: 2px solid var(--red);
-        color: var(--red);
-        text-shadow: 0 0 8px rgba(255, 59, 59, .8);
+    .retro-paradox {
+        background: rgba(255, 159, 28, .12);
+        border: 2px solid #ffbe6b;
+        color: #ff9f1c;
+        text-shadow: 0 0 8px rgba(255, 159, 28, .8);
         padding: 20px;
         border-radius: 8px;
         letter-spacing: 1px
+    }
+    .card-paradox {
+        border: 1px solid #ffbe6b !important;
     }
 
     .progress-retro-track {
@@ -168,13 +171,13 @@
 <!-- ================================================================= -->
 <!-- SCHERMATA FINALE: VERDETTO DEL VIAGGIO NEL TEMPO (ROUND 5)         -->
 <!-- ================================================================= -->
-<div class="card mb-4 {{ if game_success }}border-success{{ else }}border-danger{{ endif }}">
+<div class="card mb-4 {{ if game_success }}border-success{{ else }}card-paradox{{ endif }}">
     <div class="card-body p-4">
-        <div class="{{ if game_success }}retro-success{{ else }}retro-danger{{ endif }} text-center mb-3">
-            <h2 style="font-size:1.7rem; margin-bottom:12px;">
+        <div class="{{ if game_success }}retro-success{{ else }}retro-paradox{{ endif }} text-center mb-3">
+            <h2 style="font-size:1.7rem; margin-bottom:12px; color:{{ if game_success }}var(--green){{ else }}#ff9f1c{{ endif }}; text-shadow:0 0 8px {{ if game_success }}rgba(57,255,20,.8){{ else }}rgba(255,159,28,.8){{ endif }};">
                 {{ if game_success }}{{ texts.final_success_badge }}{{ else }}{{ texts.final_paradox_badge }}{{ endif }}
             </h2>
-            <p class="mb-0" style="font-size:1.05rem; line-height:1.5;">
+            <p class="mb-0" style="font-size:1.05rem; line-height:1.5; color:{{ if game_success }}var(--text){{ else }}#ffc078{{ endif }};">
                 {{ if game_success }}{{ texts.final_success_desc }}{{ else }}{{ final_paradox_text }}{{ endif }}
             </p>
         </div>
@@ -218,19 +221,18 @@
                 <thead>
                     <tr>
                         <th>{{ texts.col_round }}</th>
-                        <th class="text-end">{{ texts.col_marty_contrib }}</th>
-                        <th class="text-end">{{ texts.col_group_contrib }}</th>
-                        <th class="text-end">{{ texts.col_marty_round_payoff }}</th>
+                        <th class="text-end">{{ texts.col_your_contribution }}</th>
+                        <th class="text-end">{{ texts.col_group_energy }}</th>
+                        <th class="text-end">{{ texts.col_group_pct }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{ for r in round_history }}
                     <tr>
                         <td style="color: azure;">Round {{ r.round }}</td>
-                        <td class="text-end" style="color:var(--orange);">{{ r.marty_contrib }} {{ texts.units }}</td>
-                        <td class="text-end" style="color:var(--cyan);">{{ r.group_total }} {{ texts.units }}</td>
-                        <td class="text-end" style="color:var(--green); font-weight:bold;">{{ r.marty_payoff }} {{
-                            texts.units }}</td>
+                        <td class="text-end" style="color:var(--orange); font-weight:bold;">{{ r.marty_contrib }} {{ texts.units }}</td>
+                        <td class="text-end" style="color:var(--cyan); font-weight:bold;">{{ r.group_total }} {{ texts.units }}</td>
+                        <td class="text-end" style="color:var(--green); font-weight:bold;">{{ r.group_pct }}%</td>
                     </tr>
                     {{ endfor }}
                 </tbody>
@@ -261,7 +263,7 @@
                 }} {{ texts.gw }})</span>
         </div>
         <div class="alert alert-info mb-0 py-2">
-            <strong>💡 OBIETTIVO:</strong> {{ interim_status_text }}
+            <strong>🎯 OBIETTIVO:</strong> {{ interim_status_text }}
         </div>
     </div>
 </div>
@@ -284,64 +286,28 @@
     </div>
 </div>
 
-<!-- LA TUA DECISIONE -->
+<!-- RESOCONTO DEL ROUND: PROPRIA CONTRIBUZIONE, QUANTITA E PERCENTUALE GRUPPO -->
 <div class="card mb-4">
     <div class="card-body p-4">
         <h5 class="card-title mb-3" style="color:var(--orange);">{{ texts.results_your_decision }}</h5>
-        <table class="table table-striped align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>{{ texts.col_player }}</th>
-                    <th class="text-end">{{ texts.col_contribution }}</th>
-                    <th class="text-end">{{ texts.col_payoff }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="color:var(--green); font-weight:bold;">{{ texts.you_label }}</td>
-                    <td class="text-end" style="color:var(--orange); font-weight:bold;">{{ contribution }} {{
-                        texts.units }}</td>
-                    <td class="text-end" style="color:var(--green); font-weight:bold;">{{ marty_payoff }} {{ texts.units
-                        }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- DETTAGLIO CALCOLO DEL GUADAGNO -->
-<div class="card mb-4">
-    <div class="card-body p-4">
-        <h5 class="card-title mb-3" style="color:var(--cyan);">{{ texts.results_summary_title }}</h5>
-        <ul class="list-group list-group-flush" style="background:transparent;">
-            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
-                <span>⚡ {{ texts.results_kept }}</span>
-                <span class="retro-value" style="color:var(--green);">{{ marty_kept }} {{ texts.units }}</span>
-            </li>
-            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
-                <span>⚡ {{ texts.results_total }}</span>
-                <span class="retro-value">{{ total_contribution }} {{ texts.units }}</span>
-            </li>
-            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
-                <span>🚀 {{ texts.results_fund }}</span>
-                <span class="retro-value">{{ fund_energy }} {{ texts.units }}</span>
-            </li>
-            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center">
-                <span>🎁 {{ texts.results_share }}</span>
-                <span class="retro-value" style="color:var(--cyan);">+ {{ individual_share }} {{ texts.units }}</span>
-            </li>
-            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center"
-                style="border-top:1px dashed var(--line);">
-                <strong style="color:var(--green);">💰 {{ texts.results_payoff_you }}</strong>
-                <span class="retro-big" style="color:var(--green);">{{ marty_payoff }} {{ texts.units }}</span>
-            </li>
-            <li class="list-group-item calculation-row d-flex justify-content-between align-items-center"
-                style="border-top:2px solid var(--line); background:rgba(0,229,255,0.04);">
-                <strong style="color:var(--cyan); letter-spacing:1px;">🔒 {{ texts.results_cumulative_payoff }}</strong>
-                <span class="retro-big" style="color:var(--cyan); font-weight:bold;">{{ cumulative_marty_payoff }} {{
-                    texts.units }}</span>
-            </li>
-        </ul>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ texts.col_your_contribution }}</th>
+                        <th class="text-end">{{ texts.col_group_energy }}</th>
+                        <th class="text-end">{{ texts.col_group_pct }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="color:var(--orange); font-weight:bold;">{{ contribution }} {{ texts.units }}</td>
+                        <td class="text-end" style="color:var(--cyan); font-weight:bold;">{{ total_contribution }} {{ texts.units }}</td>
+                        <td class="text-end" style="color:var(--green); font-weight:bold;">{{ round_group_pct }}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {{ endif }}

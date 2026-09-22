@@ -123,7 +123,7 @@ TEXTS = {
 
         'intro_title': 'Benvenuto a Hill Valley, 1985!',
         'intro_1': (
-            "Sei Marty McFly! La DeLorean è ferma e il Flusso Canalizzatore è scarico: "
+            "Sei Marty McFly! La DeLorean (automobile fantascientifica che viaggia nel tempo) è ferma e il Flusso Canalizzatore è scarico: "
             "per far partire la macchina del tempo e tornare al futuro serve una carica di 1.21 GW. "
             "Per riuscirci, Doc Brown ha bisogno di fondi per alimentare la DeLorean. "
             "Insieme a te partecipano altri tre ragazzi di Hill Valley: Doc, Biff e Jennifer."
@@ -134,28 +134,32 @@ TEXTS = {
             "donarne al fondo comune per consentire il funzionamento della DeLorean!"
         ),
         'intro_rules_title': 'Come funziona il gioco: Energia e Macchina del Tempo',
-        'rule_1': "⚡ La tua dotazione: a ogni round ricevi 10 unità di energia. Sono tue!",
-        'rule_2': "🔒 Il tuo Salvadanaio: le unità di energia che decidi di NON donare restano al sicuro nel tuo salvadanaio personale.",
-        'rule_3': "⚡ Fondo DeLorean: le unità di energia donate da te e dagli altri vengono sommate e moltiplicate per 1.6 da Doc (crescono del 60%!). Il totale viene poi diviso in 4 parti uguali tra tutti i giocatori.",
-        'rule_4': "💰 Il tuo guadagno a ogni round: unità di energia che hai tenuto per te + la tua parte derivante dalla suddivisione equa del fondo comune (ricorda che quello che ricevi dipende anche dalle scelte effettuate dagli altri membri del gruppo).",
-        'rule_5': "🚀 Ricarica collettiva: tutte le unità di energia donate dai membri del gruppo si sommano per caricare la DeLorean fino all'obiettivo di 1.21 GW (100 unità di energia in totale).",
+        'rule_1': "⚡ La tua dotazione: a ogni round del gioco ricevi 10 unità di energia. Sono tue!",
+        'rule_2': "🔒 Il tuo Salvadanaio: le unità di energia che decidi di NON donare restano nel tuo salvadanaio personale.",
+        'rule_3': "⚡ Fondo DeLorean: le unità di energia donate da te e dagli altri giocatori saranno sommate e moltiplicate per 1.6 da Doc (crescono del 60%!). Il totale sarà poi diviso in 4 parti uguali tra tutti i giocatori.",
+        'rule_4': "💰 Il tuo guadagno a ogni round: unità di energia che hai tenuto per te + la tua parte derivante dalla suddivisione equa del fondo comune (ricorda che quello che ricevi dipende anche dalle scelte effettuate dagli altri giocatori).",
+        'rule_5': "🚀 Ricarica collettiva: tutte le unità di energia donate dai membri del gruppo si sommano per caricare la DeLorean fino all'obiettivo di 1.21 GW (100 unità di energia⚡).",
         'intro_goal': (
             "Obiettivo di squadra: donare almeno {target} unità di energia in totale per raggiungere 1.21 GW. "
-            "Se il gruppo ce la fa, la DeLorean sfreccia a 88 MPH nel tempo: che missione! "
-            "Se invece il gruppo dona meno di {target} unità di energia, la DeLorean resta a secco e non parte. "
+            "Se il gruppo ce la fa, la DeLorean sfreccerà a 88 MPH nel tempo: che missione! "
+            "Se invece il gruppo dona meno di {target} unità di energia, la DeLorean resterà a secco e non partirà. "
             "In ogni caso, tutte le unità di energia che hai messo nel tuo salvadanaio restano tue!"
         ),
         'intro_rounds': "Giocherai insieme a Doc, Biff e Jennifer: la tua squadra per far partire la DeLorean!",
         'intro_chars_title': "I tuoi compagni di gioco a Hill Valley",
         'char_doc': "Doc Brown: uno scienziato brillante. Adora le invenzioni e vuole che la missione riesca!",
-        'char_biff': "Biff Tannen: sicuro di sé e un po' spaccone, ma in fondo tifa per la squadra.",
-        'char_jennifer': "Jennifer Parker: attenta e gentile, è sempre pronta ad aiutare gli altri.",
+        'char_biff': "Biff Tannen: sicuro di sé e un po' spaccone, ma in fondo tifa per il gruppo.",
+        'char_jennifer': "Jennifer Parker: attenta e gentile, è sempre pronta ad aiutare gli altri giocatori.",
         'intro_start': "Inizia l'avventura!",
 
-        'decision_header': 'MISSIONE DE LOREAN: LA TUA SCELTA',
+        'decision_header': 'MISSIONE DELOREAN: LA TUA SCELTA',
         'decision_title': 'Round {r} - Quante unità di energia doni?',
         'decision_intro': (
             "Marty, hai 10 unità di energia per questo round! Decidi quante tenerne nel tuo Salvadanaio "
+            "e quante donarne nel fondo comune per la DeLorean."
+        ),
+        'decision_intro_subsequent': (
+            "Marty, hai 10 nuove unità di energia per questo round! Decidi quante tenerne nel tuo Salvadanaio "
             "e quante donarne nel fondo comune per la DeLorean."
         ),
         'decision_charge_status': 'Carica attuale della DeLorean: {gw} GW / 1.21 GW ({pct}% - {cumul}/{target} unità di energia raccolte finora)',
@@ -163,7 +167,7 @@ TEXTS = {
         'decision_box_keep_desc': 'Unità di energia sicure che tieni per te',
         'decision_box_give_title': 'Nel fondo DeLorean',
         'decision_box_give_desc': 'Unità di energia che doni alla missione comune',
-        'decision_slider_label': 'Trascina il cursore per scegliere quante unità di energia donare:',
+        'decision_slider_label': 'Trascina il cursore in basso 👇 per scegliere quante unità di energia donare:',
         'decision_min': '0 unità di energia (tieni tutto)',
         'decision_max': '10 unità di energia (dona tutto)',
         'decision_submit': 'Conferma la scelta',
@@ -175,6 +179,9 @@ TEXTS = {
         'results_title': 'Round {r} - Resoconto',
         'col_player': 'Giocatore',
         'col_contribution': 'Unità di energia donate',
+        'col_your_contribution': 'La tua contribuzione',
+        'col_group_energy': 'Energia raccolta dal gruppo nel round',
+        'col_group_pct': 'Percentuale raggiunta nel round',
         'col_payoff': 'Guadagno round',
         'you_label': 'Tu (Marty)',
         'results_flux_title': 'Carica della DeLorean verso 1.21 GW',
@@ -190,11 +197,11 @@ TEXTS = {
         'results_cumulative_payoff': 'Unità di energia totali nel tuo salvadanaio finora',
         'results_progress_label': 'Carica Flusso Canalizzatore:',
         'results_energy_accumulated': 'Unità di energia totali donate dal gruppo: {cumul} / {target} unità di energia',
-        'results_interim_status': 'Raggiungi le 100 unità di energia (1.21 GW) per far partire la DeLorean.',
+        'results_interim_status': 'Raggiungi le 100 unità di energia (1.21 GW) per fare partire la DeLorean.',
         'results_continue': 'Prossimo round',
 
         # Fine gioco (Round 5)
-        'final_header': 'VERDETTO FINALE: LA DE LOREAN PARTE?',
+        'final_header': 'VERDETTO FINALE: LA DELOREAN PARTE?',
         'final_success_badge': '88 MPH - VIAGGIO NEL TEMPO RIUSCITO!',
         'final_paradox_badge': 'PARADOSSO TEMPORALE! LA MACCHINA NON PARTE!',
         'final_success_desc': (
@@ -261,6 +268,10 @@ TEXTS = {
             "Marty, you received 10 units of energy for this round! Decide how many to keep in your Piggy Bank "
             "and how many to contribute to the common fund for the DeLorean."
         ),
+        'decision_intro_subsequent': (
+            "Marty, you received 10 new units of energy for this round! Decide how many to keep in your Piggy Bank "
+            "and how many to contribute to the common fund for the DeLorean."
+        ),
         'decision_charge_status': 'Current DeLorean charge: {gw} GW / 1.21 GW ({pct}% - {cumul}/{target} units of energy collected so far)',
         'decision_box_keep_title': 'In your Piggy Bank',
         'decision_box_keep_desc': 'Units of energy kept safely for yourself',
@@ -278,6 +289,9 @@ TEXTS = {
         'results_title': 'Round {r} - Summary',
         'col_player': 'Player',
         'col_contribution': 'Units of energy donated',
+        'col_your_contribution': 'Your contribution',
+        'col_group_energy': 'Group energy collected in this round',
+        'col_group_pct': 'Percentage reached in this round',
         'col_payoff': 'Round earnings',
         'you_label': 'You (Marty)',
         'results_flux_title': 'DeLorean Charge towards 1.21 GW',
@@ -520,9 +534,12 @@ class DecisionPage(Page):
             contrib_val = 0
         kept_val = C.ENDOWMENT - contrib_val
 
+        intro_text = t['decision_intro'] if player.round_number == 1 else t.get('decision_intro_subsequent', t['decision_intro'])
+
         return dict(
             texts=t,
             title=t['decision_title'].format(r=player.round_number, n=C.NUM_ROUNDS),
+            decision_intro=intro_text,
             decision_charge_status=status_text,
             show_charge_status=(player.round_number > 1),
             contribution_value=contrib_val,
@@ -558,14 +575,23 @@ class ResultsPage(Page):
         is_final = (player.round_number == C.NUM_ROUNDS)
         rounds_remaining = max(0, C.NUM_ROUNDS - player.round_number)
 
+        max_round_energy = C.N_PLAYERS * C.ENDOWMENT
+        round_group_pct = round((player.total_contribution / max_round_energy) * 100.0, 1)
+        if round_group_pct.is_integer():
+            round_group_pct = int(round_group_pct)
+
         round_history = []
         if is_final:
             all_rounds = player.in_all_rounds()
             for r in all_rounds:
+                r_pct = round((r.total_contribution / max_round_energy) * 100.0, 1)
+                if r_pct.is_integer():
+                    r_pct = int(r_pct)
                 round_history.append({
                     'round': r.round_number,
                     'marty_contrib': r.contribution,
                     'group_total': round(r.total_contribution, 1),
+                    'group_pct': r_pct,
                     'marty_payoff': r.marty_payoff,
                 })
 
@@ -587,6 +613,8 @@ class ResultsPage(Page):
             contribution=marty_contrib,
             marty_kept=marty_kept,
             total_contribution=round(player.total_contribution, 2),
+            round_group_pct=round_group_pct,
+            max_round_energy=max_round_energy,
             fund_energy=round(player.fund_energy, 2),
             individual_share=round(player.individual_share, 2),
             marty_payoff=player.marty_payoff,

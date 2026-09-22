@@ -5,9 +5,9 @@ doc = """
 Schermata di chiusura condivisa dell'esperimento "Notte dei Ricercatori 2026".
 
 E' l'ULTIMA app di ogni sessione sperimentale unificata. Viene raggiunta:
-    * dall'adulto (>= 9 anni) al termine di bttf_pgg (salto esplicito da
+    * dall'adulto (> 13 anni) al termine di bttf_pgg (salto esplicito da
       bttf_pgg verso questa app, scavalcando pizza_pgg);
-    * dal bambino (< 9 anni) al termine di pizza_pgg (progressione naturale).
+    * dal bambino (<= 13 anni) al termine di pizza_pgg (progressione naturale).
 
 Mostra il codice identificativo e il payoff finale accumulato dal partecipante.
 """
