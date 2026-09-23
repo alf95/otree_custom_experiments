@@ -146,6 +146,20 @@ SESSION_CONFIGS = [
         num_demo_participants=1,
         app_sequence=['registration'],
     ),
+    # -------------------------------------------------------------------------
+    # COFFEE-SUGAR PROBLEM - Trappola Cognitiva di Kahneman (CRT)
+    # -------------------------------------------------------------------------
+    #  * Problema classico: Caffè + Zucchero = 1,10 €, Caffè costa 1,00 € in più
+    #  * Misura Sistema 1 (intuitivo: 1,00 €) vs Sistema 2 (analitico: 1,05 €)
+    #  * Rilevazione del tempo di risposta e debriefing con spiegazione scientifica
+    # -------------------------------------------------------------------------
+    dict(
+        name='coffee_sugar_problem',
+        display_name='Economia Comportamentale - Caffè e Zucchero (Trappola Cognitiva di Kahneman)',
+        doc='Esperimento sulla trappola cognitiva di Daniel Kahneman e Shane Frederick (CRT): "Caffè e Zucchero" (Sistema 1 vs Sistema 2).',
+        num_demo_participants=1,
+        app_sequence=['coffee_sugar'],
+    ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(
