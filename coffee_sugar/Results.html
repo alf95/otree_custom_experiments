@@ -1,0 +1,176 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    <span class="sr-only">Riepilogo e Risultati Finali</span>
+{{ endblock }}
+
+{{ block content }}
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    coffee: {
+                        50: '#fdf8f6',
+                        100: '#f2e8e5',
+                        300: '#e0a96d',
+                        600: '#7c3f1d',
+                        900: '#201207',
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .otree-body {
+        max-width: 920px !important;
+        margin: 0 auto;
+        padding-top: 1rem;
+    }
+    .otree-title {
+        display: none !important;
+    }
+    .otree-form-errors {
+        display: none !important;
+    }
+</style>
+
+<div class="min-h-screen py-6 px-3 sm:px-6 font-sans text-slate-800">
+
+    <!-- Top Card: Congratulazioni & Payout Finale -->
+    <div class="bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden mb-8 border border-emerald-700/50">
+        <div class="absolute -right-8 -bottom-8 opacity-10 text-[180px] select-none pointer-events-none">💶</div>
+        <div class="relative z-10 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-4 border border-emerald-400/30">
+                <span>Riepilogo Sessione Conclusa</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-3">
+                Ricevuta del Tuo Ordine
+            </h1>
+            <p class="text-emerald-100/90 text-sm sm:text-base leading-relaxed font-normal mb-6">
+                Ecco il dettaglio dell'allocazione del tuo budget di <strong>{{ budget_str }} €</strong> e il guadagno sperimentale accreditato.
+            </p>
+
+            <!-- Grande Box Payoff Finale -->
+            <div class="inline-flex flex-col sm:flex-row sm:items-center gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/20">
+                <div class="text-xs uppercase font-extrabold tracking-wider text-emerald-300">
+                    Compenso Totale Ottenuto:
+                </div>
+                <div class="text-4xl sm:text-5xl font-black text-amber-300 tracking-tight">
+                    {{ total_payout_str }} €
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Griglia a 2 Colonne: Ricevuta di Spesa + Analisi Economica -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Card 1: Dettaglio del Vassoio & Spesa -->
+        <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-200/80">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
+                    🧾
+                </div>
+                <div>
+                    <h2 class="text-lg font-black text-slate-900">Scontrino di Cassa</h2>
+                    <p class="text-xs text-slate-500">Beni acquistati e bilancio residuo</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                    <span class="text-slate-600 font-medium">☕ Tazze di Caffè ({{ coffee_units }} &times; {{ coffee_price_str }} €):</span>
+                    <span class="font-bold text-slate-900">{{ coffee_units }} pz</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                    <span class="text-slate-600 font-medium">🍬 Bustine Zucchero ({{ sugar_units }} &times; {{ sugar_price_str }} €):</span>
+                    <span class="font-bold text-slate-900">{{ sugar_units }} pz</span>
+                </div>
+                <div class="flex justify-between items-center py-2.5 bg-slate-50 px-3 rounded-xl font-semibold">
+                    <span class="text-slate-700">Totale Speso:</span>
+                    <span class="text-base font-black text-slate-900">{{ spent_str }} €</span>
+                </div>
+                <div class="flex justify-between items-center py-2.5 bg-emerald-50 px-3 rounded-xl font-semibold text-emerald-800 border border-emerald-200/60">
+                    <span>Fondi non spesi (Liquidità residua):</span>
+                    <span class="text-base font-black text-emerald-700">{{ left_str }} €</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Metriche di Soddisfazione e Preferenze -->
+        <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-200/80">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold">
+                    📊
+                </div>
+                <div>
+                    <h2 class="text-lg font-black text-slate-900">Qualità dell'Esperienza</h2>
+                    <p class="text-xs text-slate-500">Analisi delle preferenze complementari</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        <span>Indice di Soddisfazione Raggiunto</span>
+                        <span class="text-slate-800 font-extrabold text-sm">{{ satisfaction_percent }}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-amber-500 to-emerald-500 rounded-full" style="width: {{ satisfaction_percent }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2 text-xs">
+                    <div class="bg-emerald-50 border border-emerald-200/60 p-3 rounded-xl text-center">
+                        <div class="text-emerald-700 font-medium">Tazze Perfette (1:2)</div>
+                        <div class="text-2xl font-black text-emerald-900 mt-1">{{ perfect_cups }}</div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+                        <div class="text-slate-600 font-medium">Punti Utilità</div>
+                        <div class="text-2xl font-black text-slate-900 mt-1">{{ utility_score }}</div>
+                    </div>
+                </div>
+
+                <!-- Dettaglio sbilanciamento se presente -->
+                {% if extra_coffee > 0 or extra_sugar > 0 %}
+                <div class="bg-amber-50 border border-amber-200/70 p-3 rounded-xl text-xs text-amber-900">
+                    <span class="font-bold">Nota di consumo:</span>
+                    {% if extra_coffee > 0 %}
+                        {{ extra_coffee }} caffè senza sufficiente zucchero (gusto amaro).
+                    {% endif %}
+                    {% if extra_sugar > 0 %}
+                        {{ extra_sugar }} bustine di zucchero avanzate senza tazza.
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Box Esplicativo della Teoria Economica -->
+    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-8 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        <h3 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
+            <span>💡</span>
+            <span>Cosa abbiamo osservato: Teoria della Scelta del Consumatore</span>
+        </h3>
+        <p>
+            Questo problema illustra la decisione razionale del consumatore in presenza di <strong>beni complementari perfetti</strong> 
+            (funzione di utilità di Leontief $U(x_1, x_2) = \min(a x_1, b x_2)$). In tale contesto, l'utilità marginale di un bene senza l'altro è nulla o quasi, 
+            e il paniere ottimale giace sempre sul vertice delle curve d'indifferenza a forma di "L" (in questo caso, 1 tazza di caffè ogni 2 bustine di zucchero).
+        </p>
+    </div>
+
+    <!-- Bottone di Fine / Prosegui -->
+    <div class="text-center">
+        <button type="submit" class="px-10 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-base shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+            Completa Esperimento
+        </button>
+    </div>
+
+</div>
+{{ endblock }}

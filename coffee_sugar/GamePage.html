@@ -1,0 +1,883 @@
+{{ extends "global/Page.html" }}
+{{ block title }}
+    <span class="sr-only">Componi il tuo Ordine</span>
+{{ endblock }}
+
+{{ block content }}
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    espresso: {
+                        50: '#fdf8f6',
+                        100: '#f4e9e4',
+                        200: '#e8d4cb',
+                        300: '#d5b3a2',
+                        400: '#bd8b74',
+                        500: '#a36c53',
+                        600: '#87513b',
+                        700: '#6d3f2d',
+                        800: '#522f21',
+                        900: '#381f16',
+                        950: '#1e0f09',
+                    }
+                },
+                keyframes: {
+                    steam: {
+                        '0%': { transform: 'translateY(0) scaleX(1)', opacity: '0.7' },
+                        '50%': { transform: 'translateY(-6px) scaleX(1.15)', opacity: '0.4' },
+                        '100%': { transform: 'translateY(-12px) scaleX(1.3)', opacity: '0' },
+                    },
+                    shake: {
+                        '0%, 100%': { transform: 'translateX(0)' },
+                        '20%, 60%': { transform: 'translateX(-6px)' },
+                        '40%, 80%': { transform: 'translateX(6px)' },
+                    },
+                    popIn: {
+                        '0%': { transform: 'scale(0.7) translateY(8px)', opacity: '0' },
+                        '100%': { transform: 'scale(1) translateY(0)', opacity: '1' },
+                    }
+                },
+                animation: {
+                    steam1: 'steam 2s infinite ease-out',
+                    steam2: 'steam 2.2s infinite ease-out 0.6s',
+                    shake: 'shake 0.4s ease-in-out',
+                    popIn: 'popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .otree-body {
+        max-width: 1040px !important;
+        margin: 0 auto;
+        padding-top: 0.5rem;
+    }
+    .otree-title {
+        display: none !important;
+    }
+    .otree-form-errors {
+        display: none !important;
+    }
+
+    /* Range slider custom styling */
+    input[type=range] {
+        -webkit-appearance: none;
+        background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 24px;
+        width: 24px;
+        border-radius: 50%;
+        background: #d97706;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        border: 2px solid #ffffff;
+        transition: transform 0.15s, background-color 0.15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+        background: #b45309;
+    }
+    input[type=range]::-moz-range-thumb {
+        height: 24px;
+        width: 24px;
+        border-radius: 50%;
+        background: #d97706;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        border: 2px solid #ffffff;
+        transition: transform 0.15s, background-color 0.15s;
+    }
+</style>
+
+<!-- Hidden form fields collegati al Player di oTree -->
+<input type="hidden" name="coffee_units" id="id_coffee_units" value="0">
+<input type="hidden" name="sugar_units" id="id_sugar_units" value="0">
+
+<div class="min-h-screen py-4 px-2 sm:px-4 font-sans text-slate-800">
+
+    <!-- Top Bar: Header & Live Budget Indicator -->
+    <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-200/80 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>Banco del Bar</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span class="text-emerald-700">Budget: {{ budget_str }} €</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    Componi la tua Ordinazione
+                </h1>
+                <p class="text-slate-500 text-xs sm:text-sm">
+                    Regola le quantità con gli slider o i pulsanti rapiti. Guarda il vassoio riempirsi e scopri la soddisfazione del tuo palato!
+                </p>
+            </div>
+
+            <!-- Sound feedback toggle -->
+            <div class="flex items-center gap-3 self-end md:self-auto">
+                <button type="button" id="soundToggleBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-600 transition-colors">
+                    <span id="soundIcon">🔊</span>
+                    <span id="soundLabel">Audio Attivo</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Budget Bar -->
+        <div class="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/70" id="budgetCard">
+            <div class="flex justify-between items-baseline mb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Spesa Corrente</span>
+                    <span id="spentDisplay" class="text-xl sm:text-2xl font-black text-slate-900">0,00 €</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Fondi Residui</span>
+                    <span id="leftDisplay" class="text-xl sm:text-2xl font-black text-emerald-600">{{ budget_str }} €</span>
+                </div>
+            </div>
+
+            <!-- Progress bar visuale -->
+            <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden p-0.5 relative shadow-inner">
+                <div id="budgetProgressBar" 
+                     class="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-emerald-500 via-amber-500 to-amber-600"
+                     style="width: 0%;">
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-2 text-[11px] text-slate-400 font-medium">
+                <span>0,00 € (Nessuna spesa)</span>
+                <span id="budgetUsagePercent">0% del budget utilizzato</span>
+                <span>{{ budget_str }} € (Budget massimo)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace: Griglia a 2 Colonne (Controlli & Indicatore + Vassoio Centrale) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+
+        <!-- Colonna Sinistra: Controlli di Input (Caffè e Zucchero) (5 Colonne) -->
+        <div class="lg:col-span-5 space-y-6">
+
+            <!-- Card Controllo: Caffè -->
+            <div id="coffeeCard" class="bg-white rounded-3xl p-5 sm:p-6 shadow-md border border-slate-200/80 transition-transform">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-900/10 text-amber-900 flex items-center justify-center text-2xl font-bold border border-amber-900/15">
+                            ☕
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900">Tazze di Caffè</h2>
+                            <p class="text-xs font-semibold text-amber-800">Costo: {{ coffee_price_str }} € ciascuna</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span id="coffeeTotalCost" class="text-base font-extrabold text-slate-700">0,00 €</span>
+                        <div class="text-[10px] text-slate-400 font-medium">subtotale</div>
+                    </div>
+                </div>
+
+                <!-- Input sincrono: Pulsanti e Valore -->
+                <div class="flex items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/70 mb-4">
+                    <button type="button" id="coffeeMinusBtn" class="w-12 h-12 rounded-xl bg-white text-slate-700 hover:bg-slate-200 active:scale-95 text-xl font-bold flex items-center justify-center shadow-sm border border-slate-200 transition-all select-none">
+                        &minus;
+                    </button>
+                    <div class="text-center flex-1">
+                        <div id="coffeeCountDisplay" class="text-3xl font-black text-slate-900 leading-none">0</div>
+                        <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-1">tazze</div>
+                    </div>
+                    <button type="button" id="coffeePlusBtn" class="w-12 h-12 rounded-xl bg-amber-600 text-white hover:bg-amber-700 active:scale-95 text-xl font-bold flex items-center justify-center shadow-md transition-all select-none disabled:opacity-30 disabled:pointer-events-none">
+                        +
+                    </button>
+                </div>
+
+                <!-- Slider orizzontale sincronizzato -->
+                <div class="px-1">
+                    <div class="flex justify-between text-xs text-slate-400 font-semibold mb-1">
+                        <span>0</span>
+                        <span>Max possibile: <span id="coffeeMaxPossible">6</span></span>
+                    </div>
+                    <input type="range" id="coffeeSlider" min="0" max="{{ max_coffee }}" value="0" step="1" 
+                           class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-amber-600">
+                </div>
+            </div>
+
+            <!-- Card Controllo: Zucchero -->
+            <div id="sugarCard" class="bg-white rounded-3xl p-5 sm:p-6 shadow-md border border-slate-200/80 transition-transform">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-700 flex items-center justify-center text-2xl font-bold border border-sky-200">
+                            🍬
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900">Bustine di Zucchero</h2>
+                            <p class="text-xs font-semibold text-sky-700">Costo: {{ sugar_price_str }} € ciascuna</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span id="sugarTotalCost" class="text-base font-extrabold text-slate-700">0,00 €</span>
+                        <div class="text-[10px] text-slate-400 font-medium">subtotale</div>
+                    </div>
+                </div>
+
+                <!-- Input sincrono: Pulsanti e Valore -->
+                <div class="flex items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/70 mb-4">
+                    <button type="button" id="sugarMinusBtn" class="w-12 h-12 rounded-xl bg-white text-slate-700 hover:bg-slate-200 active:scale-95 text-xl font-bold flex items-center justify-center shadow-sm border border-slate-200 transition-all select-none">
+                        &minus;
+                    </button>
+                    <div class="text-center flex-1">
+                        <div id="sugarCountDisplay" class="text-3xl font-black text-slate-900 leading-none">0</div>
+                        <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-1">bustine</div>
+                    </div>
+                    <button type="button" id="sugarPlusBtn" class="w-12 h-12 rounded-xl bg-sky-600 text-white hover:bg-sky-700 active:scale-95 text-xl font-bold flex items-center justify-center shadow-md transition-all select-none disabled:opacity-30 disabled:pointer-events-none">
+                        +
+                    </button>
+                </div>
+
+                <!-- Slider orizzontale sincronizzato -->
+                <div class="px-1">
+                    <div class="flex justify-between text-xs text-slate-400 font-semibold mb-1">
+                        <span>0</span>
+                        <span>Max teorico: {{ max_sugar }}</span>
+                    </div>
+                    <input type="range" id="sugarSlider" min="0" max="{{ max_sugar }}" value="0" step="1" 
+                           class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-sky-600">
+                </div>
+            </div>
+
+            <!-- Quick Recipe Shortcut Button -->
+            <div class="bg-amber-50/80 rounded-2xl p-4 border border-amber-200/70 flex items-center justify-between gap-3">
+                <div class="text-xs text-amber-900">
+                    <span class="font-bold">Suggerimento Economico:</span><br>
+                    Rapporto ideale: 1 Caffè + 2 Zuccheri (5,00 € a tazza completa).
+                </div>
+                <button type="button" id="bestComboBtn" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all whitespace-nowrap">
+                    Paniere Ottimo (4☕ + 8🍬)
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Colonna Destra: Vassoio Interattivo e Tachimetro di Soddisfazione (7 Colonne) -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- Vassoio / Tavolo del Bar Visivo -->
+            <div class="bg-gradient-to-b from-stone-800 to-stone-900 rounded-3xl p-6 sm:p-7 shadow-xl border-4 border-stone-700 flex-1 flex flex-col relative overflow-hidden min-h-[340px]">
+                
+                <!-- Tray Header with badge -->
+                <div class="flex items-center justify-between mb-4 border-b border-stone-700/80 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🪵</span>
+                        <h2 class="text-sm sm:text-base font-bold text-stone-200 uppercase tracking-wider">Il Tuo Vassoio</h2>
+                    </div>
+                    <div id="traySummaryBadge" class="text-xs px-3 py-1 rounded-full bg-stone-700 text-stone-300 font-semibold">
+                        0 articoli nel vassoio
+                    </div>
+                </div>
+
+                <!-- Area di visualizzazione dinamica -->
+                <div id="trayContainer" class="flex-1 flex flex-col justify-center items-center p-4 text-center">
+                    <!-- Placeholder quando vuoto -->
+                    <div id="emptyTrayMessage" class="flex flex-col items-center justify-center text-stone-400 py-10 transition-opacity">
+                        <div class="w-16 h-16 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center text-3xl mb-3">
+                            🛎️
+                        </div>
+                        <p class="font-bold text-stone-300 text-base">Il vassoio è vuoto</p>
+                        <p class="text-xs text-stone-400 max-w-xs mt-1">
+                            Aggiungi tazzine di caffè e bustine di zucchero per visualizzare la preparazione.
+                        </p>
+                    </div>
+
+                    <!-- Griglia dinamica degli oggetti composti -->
+                    <div id="activeTrayItems" class="w-full hidden space-y-5">
+                        
+                        <!-- Sezione Tazze Perfette (1 tazza + 2 bustine) -->
+                        <div id="perfectCupsSection" class="hidden text-left">
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 mb-2 flex items-center gap-1.5">
+                                <span>✨ Tazze Perfettamente Dolcificate (1☕ + 2🍬)</span>
+                                <span id="perfectBadgeCount" class="bg-emerald-900/60 border border-emerald-500/40 text-emerald-200 px-2 py-0.5 rounded-full text-[10px]">0</span>
+                            </div>
+                            <div id="perfectCupsList" class="flex flex-wrap gap-3"></div>
+                        </div>
+
+                        <!-- Sezione Tazze Amare (senza bustine sufficienti) -->
+                        <div id="bitterCupsSection" class="hidden text-left">
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400 mb-2 flex items-center gap-1.5">
+                                <span>☕ Caffè Senza Zucchero (Gusto Amaro)</span>
+                                <span id="bitterBadgeCount" class="bg-amber-900/60 border border-amber-500/40 text-amber-200 px-2 py-0.5 rounded-full text-[10px]">0</span>
+                            </div>
+                            <div id="bitterCupsList" class="flex flex-wrap gap-3"></div>
+                        </div>
+
+                        <!-- Sezione Zuccheri in Eccesso (senza tazza) -->
+                        <div id="excessSugarSection" class="hidden text-left">
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-400 mb-2 flex items-center gap-1.5">
+                                <span>🍬 Bustine Avanzate (Senza Caffè)</span>
+                                <span id="sugarBadgeCount" class="bg-sky-900/60 border border-sky-500/40 text-sky-200 px-2 py-0.5 rounded-full text-[10px]">0</span>
+                            </div>
+                            <div id="excessSugarList" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Footer del Vassoio: Status rapido -->
+                <div class="mt-auto pt-3 border-t border-stone-800 text-stone-400 text-xs flex justify-between items-center">
+                    <span id="trayRecipeNotes" class="italic">Seleziona la tua combinazione preferita.</span>
+                    <button type="button" id="clearTrayBtn" class="text-stone-400 hover:text-red-400 font-semibold transition-colors">
+                        Svuota vassoio
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tachimetro di Soddisfazione (Satisfaction Meter 0-100%) -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-200/80">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Esperienza di Consumo</div>
+                        <h2 class="text-xl font-black text-slate-900">Indice di Soddisfazione</h2>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-slate-500">Stima Payoff:</div>
+                        <div id="estimatedPayoutDisplay" class="text-lg font-black text-emerald-600">5,00 €</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <!-- Gauge circolare animato SVG -->
+                    <div class="relative w-36 h-36 flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                            <!-- Background circle track -->
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="12" />
+                            <!-- Animated foreground meter -->
+                            <circle id="gaugeProgressCircle" cx="60" cy="60" r="50" fill="none" 
+                                    stroke="url(#gaugeGradient)" stroke-width="12" stroke-linecap="round"
+                                    stroke-dasharray="314.16" stroke-dashoffset="314.16"
+                                    class="transition-all duration-500 ease-out" />
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#ef4444" />
+                                    <stop offset="50%" stop-color="#f59e0b" />
+                                    <stop offset="100%" stop-color="#10b981" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <!-- Center Percentage Label -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <span id="satisfactionPercentDisplay" class="text-3xl font-black text-slate-900 leading-none">0%</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Gusto</span>
+                        </div>
+                    </div>
+
+                    <!-- Descrizione e Feedback di Gusto -->
+                    <div class="flex-1 space-y-2 text-center sm:text-left">
+                        <div id="satisfactionBadge" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700">
+                            Vassoio Incompleto
+                        </div>
+                        <p id="satisfactionDescription" class="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                            Aggiungi caffè e zucchero per calcolare la combinazione ottimale di gusto e risparmio monetario.
+                        </p>
+                        <div class="text-[11px] text-slate-400">
+                            Punteggio utilità: <span id="utilityPointsDisplay" class="font-bold text-slate-700">10,0</span> / 80,0 punti
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Alert / Toast per feedback sfondamento budget o errori -->
+    <div id="errorToast" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center justify-between gap-3 shadow-md animate-shake">
+        <div class="flex items-center gap-2">
+            <span class="text-xl">⚠️</span>
+            <span id="errorToastMessage" class="font-semibold">Budget insufficiente per aggiungere questo articolo!</span>
+        </div>
+        <button type="button" onclick="document.getElementById('errorToast').classList.add('hidden')" class="text-red-600 hover:text-red-900 font-bold text-sm">
+            ✕
+        </button>
+    </div>
+
+    <!-- Bottom Action Bar / Submit oTree -->
+    <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-xs text-slate-500 text-center sm:text-left">
+            <span class="font-bold text-slate-800">Conferma della Scelta:</span><br class="hidden sm:inline">
+            Una volta inviato l'ordine, vedrai la ricevuta finale e il calcolo del pagamento in Euro.
+        </div>
+        <div class="w-full sm:w-auto">
+            <button type="submit" id="submitOrderBtn" 
+                    class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-base shadow-lg shadow-emerald-600/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3">
+                <span>Conferma Ordine &amp; Scopri Risultati</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- JAVASCRIPT LOGICA DI INTERAZIONE E GAMIFICATION -->
+<script>
+    (function() {
+        // Parametri passati dal server oTree
+        const BUDGET = {{ budget }};
+        const COFFEE_PRICE = {{ coffee_price }};
+        const SUGAR_PRICE = {{ sugar_price }};
+        const IDEAL_RATIO = {{ ideal_sugar }};
+        const MAX_COFFEE = {{ max_coffee }};
+        const MAX_SUGAR = {{ max_sugar }};
+        const MAX_BENCHMARK_SCORE = 80.0;
+        const MAX_BONUS = {{ max_bonus }};
+        const SAVINGS_RATE = {{ savings_rate }};
+
+        // Stato locale reattivo
+        let state = {
+            coffee: 0,
+            sugar: 0,
+            soundEnabled: true,
+        };
+
+        // Riferimenti DOM
+        const coffeeInput = document.getElementById('id_coffee_units');
+        const sugarInput = document.getElementById('id_sugar_units');
+
+        const coffeeCount = document.getElementById('coffeeCountDisplay');
+        const sugarCount = document.getElementById('sugarCountDisplay');
+        const coffeeSlider = document.getElementById('coffeeSlider');
+        const sugarSlider = document.getElementById('sugarSlider');
+
+        const coffeeMinusBtn = document.getElementById('coffeeMinusBtn');
+        const coffeePlusBtn = document.getElementById('coffeePlusBtn');
+        const sugarMinusBtn = document.getElementById('sugarMinusBtn');
+        const sugarPlusBtn = document.getElementById('sugarPlusBtn');
+
+        const coffeeTotalCost = document.getElementById('coffeeTotalCost');
+        const sugarTotalCost = document.getElementById('sugarTotalCost');
+
+        const spentDisplay = document.getElementById('spentDisplay');
+        const leftDisplay = document.getElementById('leftDisplay');
+        const budgetProgressBar = document.getElementById('budgetProgressBar');
+        const budgetUsagePercent = document.getElementById('budgetUsagePercent');
+        const budgetCard = document.getElementById('budgetCard');
+
+        const gaugeProgressCircle = document.getElementById('gaugeProgressCircle');
+        const satisfactionPercentDisplay = document.getElementById('satisfactionPercentDisplay');
+        const satisfactionBadge = document.getElementById('satisfactionBadge');
+        const satisfactionDescription = document.getElementById('satisfactionDescription');
+        const utilityPointsDisplay = document.getElementById('utilityPointsDisplay');
+        const estimatedPayoutDisplay = document.getElementById('estimatedPayoutDisplay');
+
+        // Tray DOM
+        const trayContainer = document.getElementById('trayContainer');
+        const emptyTrayMessage = document.getElementById('emptyTrayMessage');
+        const activeTrayItems = document.getElementById('activeTrayItems');
+        const perfectCupsSection = document.getElementById('perfectCupsSection');
+        const perfectCupsList = document.getElementById('perfectCupsList');
+        const perfectBadgeCount = document.getElementById('perfectBadgeCount');
+        const bitterCupsSection = document.getElementById('bitterCupsSection');
+        const bitterCupsList = document.getElementById('bitterCupsList');
+        const bitterBadgeCount = document.getElementById('bitterBadgeCount');
+        const excessSugarSection = document.getElementById('excessSugarSection');
+        const excessSugarList = document.getElementById('excessSugarList');
+        const sugarBadgeCount = document.getElementById('sugarBadgeCount');
+        const traySummaryBadge = document.getElementById('traySummaryBadge');
+        const trayRecipeNotes = document.getElementById('trayRecipeNotes');
+
+        const errorToast = document.getElementById('errorToast');
+        const errorToastMessage = document.getElementById('errorToastMessage');
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        const soundIcon = document.getElementById('soundIcon');
+        const soundLabel = document.getElementById('soundLabel');
+        const bestComboBtn = document.getElementById('bestComboBtn');
+        const clearTrayBtn = document.getElementById('clearTrayBtn');
+
+        // Web Audio API sintetizzatore leggero per feedback sonoro (senza dipendenze esterne)
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx && window.AudioContext) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') ctx.resume();
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime;
+                if (type === 'add') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'remove') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.setValueAtTime(140, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+                    osc.start(now);
+                    osc.stop(now + 0.22);
+                } else if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                }
+            } catch (e) {
+                // Silently skip if audio is not permitted by browser policy
+            }
+        }
+
+        // Toggle Audio
+        soundToggleBtn.addEventListener('click', function() {
+            state.soundEnabled = !state.soundEnabled;
+            soundIcon.textContent = state.soundEnabled ? '🔊' : '🔇';
+            soundLabel.textContent = state.soundEnabled ? 'Audio Attivo' : 'Audio Spento';
+            if (state.soundEnabled) playSound('add');
+        });
+
+        // Trigger shake visuale per tentativi invalidi
+        function triggerShake(element, message) {
+            playSound('error');
+            if (element) {
+                element.classList.remove('animate-shake');
+                void element.offsetWidth; // trigger reflow
+                element.classList.add('animate-shake');
+            }
+            if (message) {
+                errorToastMessage.textContent = message;
+                errorToast.classList.remove('hidden');
+                setTimeout(() => {
+                    errorToast.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        // Calcolo formule matematiche
+        function calculate(coffee, sugar) {
+            const spent = (coffee * COFFEE_PRICE) + (sugar * SUGAR_PRICE);
+            const left = Math.max(0, BUDGET - spent);
+
+            const perfect = Math.min(coffee, Math.floor(sugar / IDEAL_RATIO));
+            const extraCoffee = coffee - perfect;
+            const extraSugar = sugar - (perfect * IDEAL_RATIO);
+
+            const rawScore = (perfect * 20.0) +
+                             (extraCoffee * 4.0) +
+                             (extraSugar * 0.5) +
+                             (left * 0.5);
+
+            const satisfaction = Math.min(100.0, Math.max(0.0, (rawScore / MAX_BENCHMARK_SCORE) * 100.0));
+            const payout = (satisfaction / 100.0 * MAX_BONUS) + (left * SAVINGS_RATE);
+
+            return {
+                spent: spent,
+                left: left,
+                perfect: perfect,
+                extraCoffee: extraCoffee,
+                extraSugar: extraSugar,
+                rawScore: rawScore,
+                satisfaction: satisfaction,
+                payout: payout,
+            };
+        }
+
+        // SVG template per tazza di caffè fumante
+        function createCoffeeSVG(isPerfect) {
+            const badge = isPerfect ? '🍬🍬' : '⚠️ amaro';
+            const badgeClass = isPerfect ? 'bg-emerald-800 text-emerald-200 border-emerald-500' : 'bg-amber-900 text-amber-200 border-amber-500';
+
+            return `
+                <div class="relative group bg-stone-800/90 border border-stone-600/70 rounded-2xl p-3 flex flex-col items-center justify-center animate-popIn shadow-md hover:scale-105 transition-transform w-24">
+                    <!-- Steam animation -->
+                    <div class="flex gap-1.5 h-3 items-end mb-1 opacity-70">
+                        <div class="w-1 h-3 bg-stone-300 rounded-full animate-steam1"></div>
+                        <div class="w-1 h-2.5 bg-stone-300 rounded-full animate-steam2"></div>
+                        <div class="w-1 h-2 bg-stone-300 rounded-full animate-steam1"></div>
+                    </div>
+                    <!-- Cup icon -->
+                    <div class="text-3xl select-none leading-none">☕</div>
+                    <div class="mt-2 text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded border ${badgeClass} text-center leading-tight">
+                        ${badge}
+                    </div>
+                </div>
+            `;
+        }
+
+        // SVG / icona per bustina di zucchero singola
+        function createSugarIcon() {
+            return `
+                <div class="bg-sky-950/80 border border-sky-600/60 rounded-xl px-2.5 py-1.5 flex items-center gap-1.5 animate-popIn shadow-sm text-sky-200 text-xs font-bold">
+                    <span>🍬</span>
+                    <span class="text-[10px]">1 bustina</span>
+                </div>
+            `;
+        }
+
+        // Aggiorna tutta la UI in base allo stato
+        function updateUI() {
+            const data = calculate(state.coffee, state.sugar);
+
+            // 1. Sincronizzazione campi form hidden oTree
+            coffeeInput.value = state.coffee;
+            sugarInput.value = state.sugar;
+
+            // 2. Aggiorna conteggi numerici e slider
+            coffeeCount.textContent = state.coffee;
+            sugarCount.textContent = state.sugar;
+            coffeeSlider.value = state.coffee;
+            sugarSlider.value = state.sugar;
+
+            // Subtotali
+            coffeeTotalCost.textContent = (state.coffee * COFFEE_PRICE).toFixed(2).replace('.', ',') + ' €';
+            sugarTotalCost.textContent = (state.sugar * SUGAR_PRICE).toFixed(2).replace('.', ',') + ' €';
+
+            // 3. Dynamic Budget Bar
+            spentDisplay.textContent = data.spent.toFixed(2).replace('.', ',') + ' €';
+            leftDisplay.textContent = data.left.toFixed(2).replace('.', ',') + ' €';
+
+            const budgetPercent = Math.min(100, (data.spent / BUDGET) * 100);
+            budgetProgressBar.style.width = budgetPercent + '%';
+            budgetUsagePercent.textContent = Math.round(budgetPercent) + '% del budget utilizzato';
+
+            if (budgetPercent > 90) {
+                budgetProgressBar.className = 'h-full rounded-full transition-all duration-300 bg-gradient-to-r from-amber-500 to-rose-600';
+            } else if (budgetPercent > 60) {
+                budgetProgressBar.className = 'h-full rounded-full transition-all duration-300 bg-gradient-to-r from-emerald-500 to-amber-500';
+            } else {
+                budgetProgressBar.className = 'h-full rounded-full transition-all duration-300 bg-gradient-to-r from-emerald-400 to-emerald-500';
+            }
+
+            // 4. Validazione pulsanti incrementali (+)
+            const canAffordCoffee = (data.left >= COFFEE_PRICE);
+            const canAffordSugar = (data.left >= SUGAR_PRICE);
+
+            coffeePlusBtn.disabled = !canAffordCoffee;
+            sugarPlusBtn.disabled = !canAffordSugar;
+
+            // 5. Tachimetro della Soddisfazione (Circular Gauge)
+            // Circonferenza = 2 * PI * 50 = 314.16
+            const circumference = 314.16;
+            const offset = circumference - (data.satisfaction / 100 * circumference);
+            gaugeProgressCircle.style.strokeDashoffset = offset;
+            satisfactionPercentDisplay.textContent = Math.round(data.satisfaction) + '%';
+            utilityPointsDisplay.textContent = data.rawScore.toFixed(1);
+            estimatedPayoutDisplay.textContent = data.payout.toFixed(2).replace('.', ',') + ' €';
+
+            // Feedback testuale del gusto
+            if (state.coffee === 0 && state.sugar === 0) {
+                satisfactionBadge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700';
+                satisfactionBadge.textContent = 'Vassoio Vuoto';
+                satisfactionDescription.textContent = 'Non hai ancora ordinato nulla. Spendi parte del budget per creare la tua combinazione ideale.';
+            } else if (data.extraCoffee > 0 && data.extraSugar === 0 && data.perfect === 0) {
+                satisfactionBadge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800';
+                satisfactionBadge.textContent = 'Gusto Troppo Amaro ☕';
+                satisfactionDescription.textContent = 'Hai scelto caffè senza abbastanza bustine di zucchero per raggiungere il sapore ottimale.';
+            } else if (data.extraSugar > 0 && state.coffee === 0) {
+                satisfactionBadge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-sky-100 text-sky-800';
+                satisfactionBadge.textContent = 'Solo Zucchero 🍬';
+                satisfactionDescription.textContent = 'Hai ordinato bustine di zucchero senza tazzine di caffè. Aggiungi caffè per gustarle!';
+            } else if (data.satisfaction >= 95) {
+                satisfactionBadge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800';
+                satisfactionBadge.textContent = 'Paniere Ottimo / Perfetto! 🌟';
+                satisfactionDescription.textContent = 'Eccellente! Hai massimizzato il valore delle tue risorse con una proporzione impeccabile 1:2.';
+            } else if (data.perfect > 0 && (data.extraCoffee > 0 || data.extraSugar > 0)) {
+                satisfactionBadge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800';
+                satisfactionBadge.textContent = 'Parzialmente Equilibrato ⚖️';
+                satisfactionDescription.textContent = `Hai preparato ${data.perfect} tazze perfette, ma restano elementi sbilanciati. Puoi riallocare per migliorare.`;
+            } else {
+                satisfactionBadge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700';
+                satisfactionBadge.textContent = 'Buon Equilibrio 👍';
+                satisfactionDescription.textContent = `Hai preparato ${data.perfect} tazze perfette. Hai ancora ${data.left.toFixed(2)} € di budget residuo.`;
+            }
+
+            // 6. Vassoio interattivo
+            const totalItems = state.coffee + state.sugar;
+            traySummaryBadge.textContent = `${totalItems} articol${totalItems === 1 ? 'o' : 'i'} nel vassoio`;
+
+            if (totalItems === 0) {
+                emptyTrayMessage.classList.remove('hidden');
+                activeTrayItems.classList.add('hidden');
+                trayRecipeNotes.textContent = 'Seleziona la tua combinazione preferita.';
+            } else {
+                emptyTrayMessage.classList.add('hidden');
+                activeTrayItems.classList.remove('hidden');
+
+                // Tazze perfette
+                if (data.perfect > 0) {
+                    perfectCupsSection.classList.remove('hidden');
+                    perfectBadgeCount.textContent = data.perfect;
+                    let html = '';
+                    for (let i = 0; i < data.perfect; i++) {
+                        html += createCoffeeSVG(true);
+                    }
+                    perfectCupsList.innerHTML = html;
+                } else {
+                    perfectCupsSection.classList.add('hidden');
+                    perfectCupsList.innerHTML = '';
+                }
+
+                // Caffè amaro
+                if (data.extraCoffee > 0) {
+                    bitterCupsSection.classList.remove('hidden');
+                    bitterBadgeCount.textContent = data.extraCoffee;
+                    let html = '';
+                    for (let i = 0; i < data.extraCoffee; i++) {
+                        html += createCoffeeSVG(false);
+                    }
+                    bitterCupsList.innerHTML = html;
+                } else {
+                    bitterCupsSection.classList.add('hidden');
+                    bitterCupsList.innerHTML = '';
+                }
+
+                // Zucchero sprecato
+                if (data.extraSugar > 0) {
+                    excessSugarSection.classList.remove('hidden');
+                    sugarBadgeCount.textContent = data.extraSugar;
+                    let html = '';
+                    for (let i = 0; i < data.extraSugar; i++) {
+                        html += createSugarIcon();
+                    }
+                    excessSugarList.innerHTML = html;
+                } else {
+                    excessSugarSection.classList.add('hidden');
+                    excessSugarList.innerHTML = '';
+                }
+
+                trayRecipeNotes.textContent = `Composizione: ${state.coffee} caffè, ${state.sugar} bustine (${data.perfect} tazze ideali).`;
+            }
+        }
+
+        // Gestori eventi per Caffè
+        coffeePlusBtn.addEventListener('click', function() {
+            const cost = (state.coffee + 1) * COFFEE_PRICE + state.sugar * SUGAR_PRICE;
+            if (cost <= BUDGET + 1e-6) {
+                state.coffee++;
+                playSound('add');
+                updateUI();
+            } else {
+                triggerShake(document.getElementById('coffeeCard'), 'Budget insufficiente per un altro caffè (costo: 3,00 €)!');
+            }
+        });
+
+        coffeeMinusBtn.addEventListener('click', function() {
+            if (state.coffee > 0) {
+                state.coffee--;
+                playSound('remove');
+                updateUI();
+            }
+        });
+
+        coffeeSlider.addEventListener('input', function(e) {
+            const val = parseInt(e.target.value, 10);
+            const cost = val * COFFEE_PRICE + state.sugar * SUGAR_PRICE;
+            if (cost <= BUDGET + 1e-6) {
+                state.coffee = val;
+                playSound('add');
+                updateUI();
+            } else {
+                // Ricalcola il massimo consentito
+                const maxAllowed = Math.floor((BUDGET - state.sugar * SUGAR_PRICE) / COFFEE_PRICE);
+                state.coffee = Math.max(0, maxAllowed);
+                triggerShake(document.getElementById('coffeeCard'), 'Superato il budget massimo di 20,00 €!');
+                updateUI();
+            }
+        });
+
+        // Gestori eventi per Zucchero
+        sugarPlusBtn.addEventListener('click', function() {
+            const cost = state.coffee * COFFEE_PRICE + (state.sugar + 1) * SUGAR_PRICE;
+            if (cost <= BUDGET + 1e-6) {
+                state.sugar++;
+                playSound('add');
+                updateUI();
+            } else {
+                triggerShake(document.getElementById('sugarCard'), 'Budget insufficiente per un\'altra bustina di zucchero (costo: 1,00 €)!');
+            }
+        });
+
+        sugarMinusBtn.addEventListener('click', function() {
+            if (state.sugar > 0) {
+                state.sugar--;
+                playSound('remove');
+                updateUI();
+            }
+        });
+
+        sugarSlider.addEventListener('input', function(e) {
+            const val = parseInt(e.target.value, 10);
+            const cost = state.coffee * COFFEE_PRICE + val * SUGAR_PRICE;
+            if (cost <= BUDGET + 1e-6) {
+                state.sugar = val;
+                playSound('add');
+                updateUI();
+            } else {
+                // Ricalcola il massimo consentito
+                const maxAllowed = Math.floor((BUDGET - state.coffee * COFFEE_PRICE) / SUGAR_PRICE);
+                state.sugar = Math.max(0, maxAllowed);
+                triggerShake(document.getElementById('sugarCard'), 'Superato il budget massimo di 20,00 €!');
+                updateUI();
+            }
+        });
+
+        // Shortcut: Paniere Ottimo (4 caffè + 8 bustine = 20,00 €)
+        bestComboBtn.addEventListener('click', function() {
+            state.coffee = 4;
+            state.sugar = 8;
+            playSound('success');
+            updateUI();
+        });
+
+        // Svuota vassoio
+        clearTrayBtn.addEventListener('click', function() {
+            state.coffee = 0;
+            state.sugar = 0;
+            playSound('remove');
+            updateUI();
+        });
+
+        // Validazione finale pre-submit
+        document.getElementById('submitOrderBtn').addEventListener('click', function(e) {
+            const cost = state.coffee * COFFEE_PRICE + state.sugar * SUGAR_PRICE;
+            if (cost > BUDGET + 1e-6) {
+                e.preventDefault();
+                triggerShake(budgetCard, 'Attenzione: la spesa supera il budget massimo disponibile!');
+            }
+        });
+
+        // Inizializzazione iniziale
+        updateUI();
+    })();
+</script>
+{{ endblock }}

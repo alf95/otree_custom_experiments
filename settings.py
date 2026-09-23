@@ -146,6 +146,20 @@ SESSION_CONFIGS = [
         num_demo_participants=1,
         app_sequence=['registration'],
     ),
+    # -------------------------------------------------------------------------
+    # COFFEE-SUGAR PROBLEM - Scelta del Consumatore ed Economia Comportamentale
+    # -------------------------------------------------------------------------
+    #  * Budget iniziale: 20,00 €
+    #  * Beni: Tazza di Caffè (3,00 €) e Bustina di Zucchero (1,00 €)
+    #  * Preferenze complementari (1:2) con Vassoio Interattivo e Gamification
+    # -------------------------------------------------------------------------
+    dict(
+        name='coffee_sugar_problem',
+        display_name='Economia Comportamentale - Coffee-Sugar Problem (Scelta del Consumatore)',
+        doc='Minigioco interattivo sulla scelta del consumatore e allocazione di bilancio con preferenze complementari (Caffè e Zucchero in Euro).',
+        num_demo_participants=1,
+        app_sequence=['coffee_sugar'],
+    ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(
