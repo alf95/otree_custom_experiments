@@ -1,6 +1,6 @@
 {{ extends "global/Page.html" }}
 {{ block title }}
-    <span class="sr-only">Riepilogo e Risultati Finali</span>
+    <span class="sr-only">Risultati &amp; Spiegazione Scientifica</span>
 {{ endblock }}
 
 {{ block content }}
@@ -13,8 +13,11 @@
                     coffee: {
                         50: '#fdf8f6',
                         100: '#f2e8e5',
+                        200: '#eaddd7',
                         300: '#e0a96d',
+                        500: '#a35d29',
                         600: '#7c3f1d',
+                        800: '#4a2511',
                         900: '#201207',
                     }
                 }
@@ -25,9 +28,9 @@
 
 <style>
     .otree-body {
-        max-width: 920px !important;
+        max-width: 860px !important;
         margin: 0 auto;
-        padding-top: 1rem;
+        padding-top: 1.5rem;
     }
     .otree-title {
         display: none !important;
@@ -37,139 +40,184 @@
     }
 </style>
 
-<div class="min-h-screen py-6 px-3 sm:px-6 font-sans text-slate-800">
+<div class="min-h-screen py-4 px-3 sm:px-6 font-sans text-slate-800">
 
-    <!-- Top Card: Congratulazioni & Payout Finale -->
-    <div class="bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden mb-8 border border-emerald-700/50">
-        <div class="absolute -right-8 -bottom-8 opacity-10 text-[180px] select-none pointer-events-none">💶</div>
+    <!-- Hero Card con Verdetto Dinamico -->
+    {{ if is_correct }}
+    <div class="bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden mb-8 border border-emerald-600/40">
+        <div class="absolute -right-8 -bottom-8 opacity-10 text-[180px] select-none pointer-events-none">🧠</div>
         <div class="relative z-10 max-w-2xl">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-4 border border-emerald-400/30">
-                <span>Riepilogo Sessione Conclusa</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-xs font-black uppercase tracking-wider mb-4 border border-emerald-400/30">
+                <span>Esito: Corretto!</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             </div>
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-3">
-                Ricevuta del Tuo Ordine
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mb-3">
+                Complimenti! Hai superato la trappola cognitiva! 🎉
             </h1>
-            <p class="text-emerald-100/90 text-sm sm:text-base leading-relaxed font-normal mb-6">
-                Ecco il dettaglio dell'allocazione del tuo budget di <strong>{{ budget_str }} €</strong> e il guadagno sperimentale accreditato.
+            <p class="text-emerald-100/90 text-base sm:text-lg leading-relaxed font-normal">
+                Hai attivato il <strong>Sistema 2</strong> (il pensiero riflessivo e logico): lo zucchero costa esattamente <strong>{{ correct_sugar_str }} €</strong> (5 centesimi), resistendo all'impulso ingannevole dei 10 centesimi.
+            </p>
+        </div>
+    </div>
+    {{ elif is_trap }}
+    <div class="bg-gradient-to-br from-amber-900 via-orange-950 to-stone-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden mb-8 border border-amber-600/40">
+        <div class="absolute -right-8 -bottom-8 opacity-10 text-[180px] select-none pointer-events-none">🪤</div>
+        <div class="relative z-10 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-black uppercase tracking-wider mb-4 border border-amber-400/30">
+                <span>Trappola Cognitiva del Sistema 1</span>
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mb-3">
+                Sei caduto nel tranello dell'intuizione! ⚡
+            </h1>
+            <p class="text-amber-100/90 text-base sm:text-lg leading-relaxed font-normal">
+                Hai risposto <strong>{{ submitted_price_str }} €</strong> (10 centesimi): è esattamente la risposta istintiva e immediata suggerita dal cervello, ma <em>non è corretta</em>!
+            </p>
+        </div>
+    </div>
+    {{ else }}
+    <div class="bg-gradient-to-br from-slate-800 via-slate-900 to-stone-900 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden mb-8 border border-slate-700">
+        <div class="absolute -right-8 -bottom-8 opacity-10 text-[180px] select-none pointer-events-none">❓</div>
+        <div class="relative z-10 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-400/20 text-slate-300 text-xs font-black uppercase tracking-wider mb-4 border border-slate-400/30">
+                <span>Esito: Non Corretto</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mb-3">
+                Risposta non corretta 🧐
+            </h1>
+            <p class="text-slate-200 text-base sm:text-lg leading-relaxed font-normal">
+                Hai indicato <strong>{{ submitted_price_str }} €</strong>. Scopriamo insieme quale tranello logico si nasconde dietro questa domanda.
+            </p>
+        </div>
+    </div>
+    {{ endif }}
+
+    <!-- 3 Box Metriche Rapide: Risposta Data, Risposta Esatta, Tempo -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-2xl p-5 shadow-md border border-slate-200">
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">La tua risposta</div>
+            <div class="text-3xl font-black text-slate-900">{{ submitted_price_str }} €</div>
+            <div class="text-xs text-slate-500 mt-1">Prezzo zucchero indicato</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-md border border-slate-200">
+            <div class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Risposta Corretta</div>
+            <div class="text-3xl font-black text-emerald-600">{{ correct_sugar_str }} €</div>
+            <div class="text-xs text-slate-500 mt-1">Prezzo reale dello zucchero (5 cent)</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-md border border-slate-200">
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tempo di Risposta</div>
+            <div class="text-3xl font-black text-amber-700">{{ response_time }} s</div>
+            <div class="text-xs text-slate-500 mt-1">
+                {{ if is_fast_decision }}
+                    Decisione fulminea (Sistema 1)
+                {{ else }}
+                    Decisione ponderata (Sistema 2)
+                {{ endif }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sezione 1: Dimostrazione Matematica -->
+    <div class="bg-white rounded-3xl p-7 sm:p-9 shadow-xl border border-slate-200/80 mb-8">
+        <h2 class="text-xl font-extrabold text-slate-900 mb-6 flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl">📐</span>
+            La Soluzione Matematica: Perché 0,10 € è un tranello?
+        </h2>
+
+        <!-- Confronto a 2 Colonne: L'illusione vs La Realtà -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            
+            <!-- Colonna 1: La Trappola (0,10 €) -->
+            <div class="bg-rose-50/70 border-2 border-rose-200 rounded-2xl p-5">
+                <div class="flex items-center gap-2 text-rose-800 font-extrabold text-sm uppercase tracking-wide mb-3">
+                    <span>❌ L'Intuizione Errata (0,10 €)</span>
+                </div>
+                <p class="text-sm text-slate-700 mb-3 leading-relaxed">
+                    Il cervello sottrae spontaneamente 1,00 € da 1,10 €, concludendo d'impulso che lo zucchero costi 0,10 € (10 centesimi). Ma verifichiamo:
+                </p>
+                <div class="space-y-1.5 text-xs bg-white p-3 rounded-xl border border-rose-200 font-mono text-slate-800">
+                    <div>Se Zucchero = 0,10 €</div>
+                    <div>Caffè (1,00 € in più) = 1,10 €</div>
+                    <div class="pt-1 border-t border-slate-200 text-rose-600 font-bold">
+                        Totale: 1,10 € + 0,10 € = <strong>1,20 €</strong>!
+                    </div>
+                </div>
+                <p class="text-xs text-rose-700 mt-3 font-semibold">
+                    Il totale sarebbe 1,20 € e non 1,10 €! Oppure, se il caffè costasse 1,00 € e lo zucchero 0,10 €, la differenza sarebbe di soli 0,90 €!
+                </p>
+            </div>
+
+            <!-- Colonna 2: La Soluzione Esatta (0,05 €) -->
+            <div class="bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl p-5">
+                <div class="flex items-center gap-2 text-emerald-800 font-extrabold text-sm uppercase tracking-wide mb-3">
+                    <span>✅ La Risposta Esatta (0,05 €)</span>
+                </div>
+                <p class="text-sm text-slate-700 mb-3 leading-relaxed">
+                    Impostando l'equazione algebrica: <em>Zucchero = X</em>, <em>Caffè = X + 1,00 €</em>:
+                </p>
+                <div class="space-y-1.5 text-xs bg-white p-3 rounded-xl border border-emerald-200 font-mono text-slate-800">
+                    <div>(X + 1,00) + X = 1,10 €  ➔  2X = 0,10 €</div>
+                    <div>X = <strong>0,05 €</strong> (Prezzo Zucchero: 5 centesimi)</div>
+                    <div class="pt-1 border-t border-slate-200 text-emerald-700 font-bold">
+                        Caffè = 0,05 € + 1,00 € = <strong>1,05 €</strong>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-800 mt-3 font-semibold">
+                    Verifica: 1,05 € + 0,05 € = 1,10 € (Totale) e 1,05 € - 0,05 € = 1,00 € (Differenza esatta)!
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Sezione 2: La Spiegazione di Economia Comportamentale (Kahneman & Frederick) -->
+    <div class="bg-gradient-to-br from-slate-900 to-amber-950 rounded-3xl p-7 sm:p-9 text-white shadow-xl mb-8 border border-amber-900/40">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center text-xl">🎓</span>
+            <div>
+                <h2 class="text-xl sm:text-2xl font-black text-white">
+                    La Scienza Comportamentale: Daniel Kahneman &amp; il CRT
+                </h2>
+                <p class="text-xs text-amber-200/80">I due sistemi del pensiero umano: Veloce e Lento</p>
+            </div>
+        </div>
+
+        <div class="space-y-4 text-slate-200 text-sm sm:text-base leading-relaxed">
+            <p>
+                Questo quesito è la trasposizione del celebre problema della <strong>mazza e della pallina</strong> (<em>bat-and-ball problem</em>), parte fondamentale del <strong>Cognitive Reflection Test (CRT)</strong> introdotto dallo psicologo Shane Frederick nel 2005 e descritto dal premio Nobel <strong>Daniel Kahneman</strong> nel libro <em>"Pensieri lenti e veloci"</em>.
             </p>
 
-            <!-- Grande Box Payoff Finale -->
-            <div class="inline-flex flex-col sm:flex-row sm:items-center gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/20">
-                <div class="text-xs uppercase font-extrabold tracking-wider text-emerald-300">
-                    Compenso Totale Ottenuto:
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+                    <div class="font-extrabold text-amber-300 text-base mb-1">⚡ Sistema 1 (Pensiero Veloce)</div>
+                    <p class="text-xs text-slate-200">
+                        È istintivo, automatico, associativo e intuitivo. Quando elabora le cifre 1,10 € e 1,00 €, divide spontaneamente i valori e suggerisce all'istante "10 centesimi", saltando la verifica logica.
+                    </p>
                 </div>
-                <div class="text-4xl sm:text-5xl font-black text-amber-300 tracking-tight">
-                    {{ total_payout_str }} €
+                <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+                    <div class="font-extrabold text-teal-300 text-base mb-1">🧠 Sistema 2 (Pensiero Lento)</div>
+                    <p class="text-xs text-slate-200">
+                        È riflessivo, logico, analitico e richiede sforzo deliberato. Serve a verificare le intuizioni e a calcolare che solo con 5 centesimi (0,05 €) i conti tornano perfettamente.
+                    </p>
                 </div>
+            </div>
+
+            <div class="bg-amber-500/20 rounded-2xl p-4 border border-amber-400/30 text-amber-100 text-xs sm:text-sm">
+                <span class="font-bold text-amber-300">📊 Non preoccuparti se hai risposto 0,10 €:</span> Negli studi sperimentali condotti presso università d'élite (tra cui <strong>Harvard, MIT e Princeton</strong>), oltre il <strong>50%</strong> degli studenti risponde d'istinto <em>10 centesimi (0,10 €)</em>. È una dimostrazione universale di come l'intuizione inganni anche le menti più brillanti.
             </div>
         </div>
     </div>
 
-    <!-- Griglia a 2 Colonne: Ricevuta di Spesa + Analisi Economica -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-        <!-- Card 1: Dettaglio del Vassoio & Spesa -->
-        <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-200/80">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
-                    🧾
-                </div>
-                <div>
-                    <h2 class="text-lg font-black text-slate-900">Scontrino di Cassa</h2>
-                    <p class="text-xs text-slate-500">Beni acquistati e bilancio residuo</p>
-                </div>
-            </div>
-
-            <div class="space-y-3 text-sm">
-                <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span class="text-slate-600 font-medium">☕ Tazze di Caffè ({{ coffee_units }} &times; {{ coffee_price_str }} €):</span>
-                    <span class="font-bold text-slate-900">{{ coffee_units }} pz</span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span class="text-slate-600 font-medium">🍬 Bustine Zucchero ({{ sugar_units }} &times; {{ sugar_price_str }} €):</span>
-                    <span class="font-bold text-slate-900">{{ sugar_units }} pz</span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 bg-slate-50 px-3 rounded-xl font-semibold">
-                    <span class="text-slate-700">Totale Speso:</span>
-                    <span class="text-base font-black text-slate-900">{{ spent_str }} €</span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 bg-emerald-50 px-3 rounded-xl font-semibold text-emerald-800 border border-emerald-200/60">
-                    <span>Fondi non spesi (Liquidità residua):</span>
-                    <span class="text-base font-black text-emerald-700">{{ left_str }} €</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2: Metriche di Soddisfazione e Preferenze -->
-        <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-200/80">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold">
-                    📊
-                </div>
-                <div>
-                    <h2 class="text-lg font-black text-slate-900">Qualità dell'Esperienza</h2>
-                    <p class="text-xs text-slate-500">Analisi delle preferenze complementari</p>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        <span>Indice di Soddisfazione Raggiunto</span>
-                        <span class="text-slate-800 font-extrabold text-sm">{{ satisfaction_percent }}%</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-amber-500 to-emerald-500 rounded-full" style="width: {{ satisfaction_percent }}%;"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 pt-2 text-xs">
-                    <div class="bg-emerald-50 border border-emerald-200/60 p-3 rounded-xl text-center">
-                        <div class="text-emerald-700 font-medium">Tazze Perfette (1:2)</div>
-                        <div class="text-2xl font-black text-emerald-900 mt-1">{{ perfect_cups }}</div>
-                    </div>
-                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
-                        <div class="text-slate-600 font-medium">Punti Utilità</div>
-                        <div class="text-2xl font-black text-slate-900 mt-1">{{ utility_score }}</div>
-                    </div>
-                </div>
-
-                <!-- Dettaglio sbilanciamento se presente -->
-                {% if extra_coffee > 0 or extra_sugar > 0 %}
-                <div class="bg-amber-50 border border-amber-200/70 p-3 rounded-xl text-xs text-amber-900">
-                    <span class="font-bold">Nota di consumo:</span>
-                    {% if extra_coffee > 0 %}
-                        {{ extra_coffee }} caffè senza sufficiente zucchero (gusto amaro).
-                    {% endif %}
-                    {% if extra_sugar > 0 %}
-                        {{ extra_sugar }} bustine di zucchero avanzate senza tazza.
-                    {% endif %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Box Esplicativo della Teoria Economica -->
-    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-8 text-xs sm:text-sm text-slate-600 leading-relaxed">
-        <h3 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-            <span>💡</span>
-            <span>Cosa abbiamo osservato: Teoria della Scelta del Consumatore</span>
-        </h3>
-        <p>
-            Questo problema illustra la decisione razionale del consumatore in presenza di <strong>beni complementari perfetti</strong> 
-            (funzione di utilità di Leontief $U(x_1, x_2) = \min(a x_1, b x_2)$). In tale contesto, l'utilità marginale di un bene senza l'altro è nulla o quasi, 
-            e il paniere ottimale giace sempre sul vertice delle curve d'indifferenza a forma di "L" (in questo caso, 1 tazza di caffè ogni 2 bustine di zucchero).
-        </p>
-    </div>
-
-    <!-- Bottone di Fine / Prosegui -->
-    <div class="text-center">
-        <button type="submit" class="px-10 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-base shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-            Completa Esperimento
-        </button>
+    <!-- Bottone di Conclusione / Riavvio Demo -->
+    <div class="text-center py-4">
+        <a 
+            href="/" 
+            class="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-md text-sm"
+        >
+            <span>Torna alla Dashboard Sperimentale</span>
+            <span>🏠</span>
+        </a>
     </div>
 
 </div>

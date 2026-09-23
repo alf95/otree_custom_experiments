@@ -2,12 +2,17 @@ from otree.api import *
 
 
 doc = """
-Coffee-Sugar Problem - Esperimento interattivo di Scelta del Consumatore ed Economia Comportamentale.
+Esperimento di Economia Comportamentale - La Trappola Cognitiva "Caffè & Zucchero".
+Adattamento del celebre problema della "Mazza e Pallina" (Cognitive Reflection Test - CRT)
+introdotto da Shane Frederick e reso celebre dal premio Nobel Daniel Kahneman.
 
-Il partecipante dispone di un budget fisso in Euro (€) e deve scegliere come allocare
-le proprie risorse tra due beni complementari: Tazze di Caffè e Bustine di Zucchero.
-Preferenze in stile Leontief (rapporto ideale 1:2) con gradimento in tempo reale (0-100%)
-e calcolo del guadagno sperimentale finale.
+Il partecipante affronta la domanda:
+"Un caffè e una bustina di zucchero costano in totale 1,10 €.
+Il caffè costa 1,00 € in più dello zucchero.
+Quanto costa lo zucchero?"
+
+Misura la prevalenza del Sistema 1 (euristica impulsiva: 0,10 € / 10 centesimi) rispetto al
+Sistema 2 (ragionamento logico-matematico: 0,05 € / 5 centesimi) e registra il tempo di risposta.
 """
 
 
@@ -16,31 +21,14 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
 
-    # Parametri economici (in Euro €)
-    BUDGET = 20.00
-    COFFEE_PRICE = 3.00
-    SUGAR_PRICE = 1.00
-    IDEAL_SUGAR_PER_COFFEE = 2
+    # Dati del problema
+    TOTAL_PRICE = 1.10
+    DIFF_PRICE = 1.00
 
-    # Limiti massimi teorici per bene
-    MAX_COFFEE = int(BUDGET // COFFEE_PRICE)  # 6
-    MAX_SUGAR = int(BUDGET // SUGAR_PRICE)    # 20
-
-    # Ponderazioni del Punteggio / Soddisfazione
-    POINTS_PER_PERFECT_CUP = 20.0
-    POINTS_PER_BITTER_COFFEE = 4.0   # Caffè senza il giusto zucchero
-    POINTS_PER_SURPLUS_SUGAR = 0.5   # Zucchero avanzato oltre la proporzione
-    POINTS_PER_SAVED_EURO = 0.5      # Valore residuo di liquidità
-
-    # Numero massimo di combinazioni ideali con il budget iniziale (20 / (3 + 2*1) = 4)
-    MAX_IDEAL_CUPS = int(BUDGET // (COFFEE_PRICE + IDEAL_SUGAR_PER_COFFEE * SUGAR_PRICE))
-    MAX_BENCHMARK_SCORE = MAX_IDEAL_CUPS * POINTS_PER_PERFECT_CUP  # 80.0
-
-    # Conversione monetaria payoff:
-    # Soddisfazione piena (100%) -> 15.00 € di bonus consumatore
-    # Budget residuo non speso -> 25% del valore convertito in denaro (0.25 € per ogni 1.00 € risparmiato)
-    SATISFACTION_MAX_BONUS = 15.00
-    SAVED_BUDGET_CASH_RATE = 0.25
+    # Risposte di riferimento
+    CORRECT_SUGAR_PRICE = 0.05
+    CORRECT_COFFEE_PRICE = 1.05
+    INTUITIVE_TRAP_PRICE = 0.10
 
 
 class Subsession(BaseSubsession):
@@ -52,87 +40,52 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    # Quantità scelte dal partecipante
-    coffee_units = models.IntegerField(
-        min=0, max=C.MAX_COFFEE, initial=0,
-        doc="Unità di caffè acquistate dal partecipante"
-    )
-    sugar_units = models.IntegerField(
-        min=0, max=C.MAX_SUGAR, initial=0,
-        doc="Bustine di zucchero acquistate dal partecipante"
+    # Risposta testuale fornita dal partecipante
+    answer_raw = models.StringField(
+        label="Quanto costa lo zucchero (€)?",
+        blank=False,
+        initial='',
+        doc="Stringa inserita dal partecipante (es. '0.05', '0,05', '0.10')"
     )
 
-    # Risultati economici e di utilità
-    budget_spent = models.FloatField(
+    # Valore numerico normalizzato
+    submitted_price = models.FloatField(
         initial=0.0,
-        doc="Totale speso in Euro per il paniere scelto"
+        doc="Prezzo dello zucchero interpretato come float"
     )
-    budget_left = models.FloatField(
-        initial=C.BUDGET,
-        doc="Fondi residui in Euro non spesi"
+
+    # Classificazione della risposta
+    is_correct = models.BooleanField(
+        initial=False,
+        doc="True se la risposta è 0.05 € (ragionamento analitico - Sistema 2)"
     )
-    perfect_cups = models.IntegerField(
-        initial=0,
-        doc="Numero di tazze perfettamente bilanciate (1 caffè : 2 zuccheri)"
+    is_trap = models.BooleanField(
+        initial=False,
+        doc="True se il partecipante è caduto nella trappola intuitiva (0.10 € - Sistema 1)"
     )
-    utility_score = models.FloatField(
+
+    # Metriche comportamentali
+    response_time_seconds = models.FloatField(
         initial=0.0,
-        doc="Punteggio grezzo di utilità calcolato dalla funzione di preferenza"
-    )
-    satisfaction_percent = models.FloatField(
-        initial=0.0,
-        doc="Indice di soddisfazione del consumatore normalizzato (0 - 100%)"
-    )
-    total_payout = models.FloatField(
-        initial=0.0,
-        doc="Guadagno finale in Euro accreditato al partecipante"
+        doc="Tempo impiegato per rispondere in secondi (misurato dal client)"
     )
 
 
-# ---------------------------------------------------------------------------
-# LOGICA ECONOMICA E FORMULE
-# ---------------------------------------------------------------------------
-
-def calculate_outcomes(coffee: int, sugar: int):
+def parse_price(raw_str: str):
     """
-    Calcola spesa, budget residuo, tazze perfette, punteggio di utilità,
-    indice di soddisfazione (0-100%) e payout finale in Euro.
+    Pulisce e converte una stringa di prezzo in float.
+    Supporta formati italiani e anglosassoni: '0,05', '0.05', '0,10', '0.10', '5', '10'.
+    Ritorna il float se valido, altrimenti None.
     """
-    spent = round(coffee * C.COFFEE_PRICE + sugar * C.SUGAR_PRICE, 2)
-    left = round(max(0.0, C.BUDGET - spent), 2)
-
-    # Quante tazze perfette con rapporto 1:2
-    perfect = min(coffee, sugar // C.IDEAL_SUGAR_PER_COFFEE)
-    extra_coffee = coffee - perfect
-    extra_sugar = sugar - (perfect * C.IDEAL_SUGAR_PER_COFFEE)
-
-    # Funzione di preferenza quasi-lineare / complementi imperfetti:
-    raw_score = (
-        perfect * C.POINTS_PER_PERFECT_CUP +
-        extra_coffee * C.POINTS_PER_BITTER_COFFEE +
-        extra_sugar * C.POINTS_PER_SURPLUS_SUGAR +
-        left * C.POINTS_PER_SAVED_EURO
-    )
-
-    # Indice percentuale di soddisfazione (con 4 tazze perfette e 0€ residui si raggiunge il 100%)
-    satisfaction = min(100.0, max(0.0, (raw_score / C.MAX_BENCHMARK_SCORE) * 100.0))
-
-    # Payout monetario in Euro:
-    # Bonus soddisfazione (fino a 15.00 €) + conversione del risparmio (0.25 € per ogni € non speso)
-    satisfaction_bonus = (satisfaction / 100.0) * C.SATISFACTION_MAX_BONUS
-    cash_from_savings = left * C.SAVED_BUDGET_CASH_RATE
-    payout = round(satisfaction_bonus + cash_from_savings, 2)
-
-    return {
-        'spent': spent,
-        'left': left,
-        'perfect_cups': perfect,
-        'extra_coffee': extra_coffee,
-        'extra_sugar': extra_sugar,
-        'utility_score': round(raw_score, 2),
-        'satisfaction_percent': round(satisfaction, 1),
-        'total_payout': payout,
-    }
+    if not raw_str:
+        return None
+    cleaned = raw_str.strip().replace('€', '').replace('EUR', '').replace('eur', '').strip()
+    cleaned = cleaned.replace(',', '.')
+    try:
+        val = float(cleaned)
+        return round(val, 2)
+    except (ValueError, TypeError):
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -140,95 +93,79 @@ def calculate_outcomes(coffee: int, sugar: int):
 # ---------------------------------------------------------------------------
 
 class Intro(Page):
-    @staticmethod
-    def vars_for_template(player: Player):
-        return dict(
-            budget=f"{C.BUDGET:.2f}".replace('.', ','),
-            coffee_price=f"{C.COFFEE_PRICE:.2f}".replace('.', ','),
-            sugar_price=f"{C.SUGAR_PRICE:.2f}".replace('.', ','),
-            ideal_sugar=C.IDEAL_SUGAR_PER_COFFEE,
-            max_ideal_cups=C.MAX_IDEAL_CUPS,
-            max_payout=f"{C.SATISFACTION_MAX_BONUS:.2f}".replace('.', ','),
-            savings_rate_pct=int(C.SAVED_BUDGET_CASH_RATE * 100),
-        )
+    """
+    Breve introduzione neutrale per non allertare il partecipante né indurre
+    artificiosamente una modalità analitica (evitando di 'spoilerare' la trappola).
+    """
+    pass
 
 
 class GamePage(Page):
     form_model = 'player'
-    form_fields = ['coffee_units', 'sugar_units']
+    form_fields = ['answer_raw', 'response_time_seconds']
 
     @staticmethod
     def error_message(player: Player, values):
-        coffee = values.get('coffee_units')
-        sugar = values.get('sugar_units')
-
-        if coffee is None or coffee < 0:
-            return "Il numero di tazze di caffè non può essere negativo."
-        if sugar is None or sugar < 0:
-            return "Il numero di bustine di zucchero non può essere negativo."
-
-        cost = coffee * C.COFFEE_PRICE + sugar * C.SUGAR_PRICE
-        if cost > C.BUDGET + 1e-4:
-            return (
-                f"La spesa calcolata ({cost:.2f} €) supera il tuo budget disponibile "
-                f"di {C.BUDGET:.2f} €. Riduci la quantità prima di proseguire."
-            )
+        raw = values.get('answer_raw')
+        price = parse_price(raw)
+        if price is None:
+            return "Inserisci un importo numerico valido in Euro (es. con virgola o punto per i decimali)."
+        if price < 0:
+            return "Il prezzo non può essere un valore negativo."
+        if price > 10.0:
+            return "L'importo inserito sembra eccessivo rispetto al totale di 1,10 €. Verifica il valore inserito."
 
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
-            budget=C.BUDGET,
-            budget_str=f"{C.BUDGET:.2f}".replace('.', ','),
-            coffee_price=C.COFFEE_PRICE,
-            coffee_price_str=f"{C.COFFEE_PRICE:.2f}".replace('.', ','),
-            sugar_price=C.SUGAR_PRICE,
-            sugar_price_str=f"{C.SUGAR_PRICE:.2f}".replace('.', ','),
-            ideal_sugar=C.IDEAL_SUGAR_PER_COFFEE,
-            max_coffee=C.MAX_COFFEE,
-            max_sugar=C.MAX_SUGAR,
-            max_ideal_cups=C.MAX_IDEAL_CUPS,
-            max_bonus=C.SATISFACTION_MAX_BONUS,
-            savings_rate=C.SAVED_BUDGET_CASH_RATE,
+            total_price_str=f"{C.TOTAL_PRICE:.2f}".replace('.', ','),
+            diff_price_str=f"{C.DIFF_PRICE:.2f}".replace('.', ','),
+            answer_val=player.field_maybe_none('answer_raw') or '',
         )
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        coffee = player.coffee_units or 0
-        sugar = player.sugar_units or 0
-        results = calculate_outcomes(coffee, sugar)
+        raw = player.field_maybe_none('answer_raw')
+        price = parse_price(raw)
+        player.submitted_price = price if price is not None else 0.0
 
-        player.budget_spent = results['spent']
-        player.budget_left = results['left']
-        player.perfect_cups = results['perfect_cups']
-        player.utility_score = results['utility_score']
-        player.satisfaction_percent = results['satisfaction_percent']
-        player.total_payout = results['total_payout']
+        # Verifica se è corretta (0.05 €) con tolleranza centesimi
+        player.is_correct = (abs(player.submitted_price - C.CORRECT_SUGAR_PRICE) < 0.009)
 
-        # Registrazione su player.payoff per tracking oTree standard
-        player.payoff = results['total_payout']
+        # Verifica se è la tipica trappola euristica del Sistema 1 (0.10 € / 10 centesimi)
+        player.is_trap = (abs(player.submitted_price - C.INTUITIVE_TRAP_PRICE) < 0.009)
 
 
 class Results(Page):
+    """
+    Schermata di debriefing: rivelazione del tranello cognitivo, spiegazione scientifica
+    (Kahneman & Shane Frederick, Sistema 1 vs Sistema 2) e scomposizione algebrica.
+    """
     @staticmethod
     def vars_for_template(player: Player):
-        coffee = player.coffee_units
-        sugar = player.sugar_units
-        results = calculate_outcomes(coffee, sugar)
+        price_str = f"{player.submitted_price:.2f}".replace('.', ',')
+        correct_sugar_str = f"{C.CORRECT_SUGAR_PRICE:.2f}".replace('.', ',')
+        correct_coffee_str = f"{C.CORRECT_COFFEE_PRICE:.2f}".replace('.', ',')
+        total_price_str = f"{C.TOTAL_PRICE:.2f}".replace('.', ',')
+        diff_price_str = f"{C.DIFF_PRICE:.2f}".replace('.', ',')
+
+        # Calcolo ipotetico del caffè basato sulla risposta dell'utente per lo zucchero
+        implied_coffee = round(C.TOTAL_PRICE - player.submitted_price, 2)
+        implied_diff = round(implied_coffee - player.submitted_price, 2)
 
         return dict(
-            budget_str=f"{C.BUDGET:.2f}".replace('.', ','),
-            coffee_units=coffee,
-            sugar_units=sugar,
-            coffee_price_str=f"{C.COFFEE_PRICE:.2f}".replace('.', ','),
-            sugar_price_str=f"{C.SUGAR_PRICE:.2f}".replace('.', ','),
-            spent_str=f"{results['spent']:.2f}".replace('.', ','),
-            left_str=f"{results['left']:.2f}".replace('.', ','),
-            perfect_cups=results['perfect_cups'],
-            extra_coffee=results['extra_coffee'],
-            extra_sugar=results['extra_sugar'],
-            utility_score=results['utility_score'],
-            satisfaction_percent=results['satisfaction_percent'],
-            total_payout_str=f"{results['total_payout']:.2f}".replace('.', ','),
+            submitted_price_str=price_str,
+            is_correct=player.is_correct,
+            is_trap=player.is_trap,
+            is_other=not (player.is_correct or player.is_trap),
+            is_fast_decision=(player.response_time_seconds < 8.0),
+            correct_sugar_str=correct_sugar_str,
+            correct_coffee_str=correct_coffee_str,
+            total_price_str=total_price_str,
+            diff_price_str=diff_price_str,
+            response_time=round(player.response_time_seconds, 1),
+            implied_coffee_str=f"{implied_coffee:.2f}".replace('.', ','),
+            implied_diff_str=f"{implied_diff:.2f}".replace('.', ','),
         )
 
 

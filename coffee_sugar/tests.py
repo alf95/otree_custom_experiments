@@ -4,79 +4,64 @@ from . import C, Intro, GamePage, Results
 
 class PlayerBot(Bot):
     """
-    Suite di test automatici per coffee_sugar (otree test coffee_sugar).
+    Suite di test automatici per coffee_sugar (otree test coffee_sugar_problem).
     Verifica:
-    1. Sequenza completa Intro -> GamePage -> Results
-    2. Rifiuto server-side delle allocazioni che superano il budget di 20,00 €
-    3. Calcolo corretto dell'ottimo del consumatore (4 caffè, 8 bustine = 20,00 €)
-    4. Calcolo corretto di panieri intermedi e liquidità residua
+    1. Risposta analitica corretta per lo zucchero (Sistema 2: 0,05 € sia con virgola che con punto) -> is_correct = True
+    2. Risposta euristica trappola per lo zucchero (Sistema 1: 0,10 €) -> is_trap = True, is_correct = False
+    3. Rifiuto server-side di input non validi (stringhe non numeriche, valori negativi, importi assurdi)
     """
 
     cases = [
-        'optimal_bundle',
-        'over_budget_failure',
-        'zero_consumption',
-        'partial_bundle',
+        'correct_answer_comma',
+        'correct_answer_dot',
+        'intuitive_trap_answer',
+        'invalid_input_failure',
     ]
 
-    def case_optimal_bundle(self):
-        # 1. Intro
+    def case_correct_answer_comma(self):
         yield Submission(Intro)
+        yield Submission(GamePage, dict(answer_raw="0,05", response_time_seconds=14.2))
 
-        # 2. Scelta ottima: 4 caffè (12 €) + 8 zuccheri (8 €) = 20,00 €
-        yield Submission(GamePage, dict(coffee_units=4, sugar_units=8))
-
-        # Verifiche modello
-        expect(self.player.coffee_units, 4)
-        expect(self.player.sugar_units, 8)
-        expect(self.player.budget_spent, 20.00)
-        expect(self.player.budget_left, 0.00)
-        expect(self.player.perfect_cups, 4)
-        expect(self.player.satisfaction_percent, 100.0)
-        expect(self.player.total_payout, 15.00)
-        expect(self.player.payoff, 15.00)
-
-        # 3. Results
-        yield Submission(Results)
-
-    def case_over_budget_failure(self):
-        yield Submission(Intro)
-
-        # Rifiuto: 7 caffè = 21,00 € (> 20,00 €)
-        yield SubmissionMustFail(GamePage, dict(coffee_units=7, sugar_units=0))
-
-        # Rifiuto: 5 caffè (15 €) + 6 zuccheri (6 €) = 21,00 €
-        yield SubmissionMustFail(GamePage, dict(coffee_units=5, sugar_units=6))
-
-        # Invio valido per completare il test
-        yield Submission(GamePage, dict(coffee_units=2, sugar_units=4))
-        yield Submission(Results)
-
-    def case_zero_consumption(self):
-        yield Submission(Intro)
-
-        # Nessuna consumazione: tutto in liquidità (20,00 € non spesi)
-        yield Submission(GamePage, dict(coffee_units=0, sugar_units=0))
-
-        expect(self.player.budget_spent, 0.00)
-        expect(self.player.budget_left, 20.00)
-        expect(self.player.perfect_cups, 0)
-        # 20 € rimasti * 0.25 cash = 5.00 € di base cash
-        expect(self.player.total_payout > 5.0, True)
+        expect(self.player.is_correct, True)
+        expect(self.player.is_trap, False)
+        expect(self.player.submitted_price, 0.05)
 
         yield Submission(Results)
 
-    def case_partial_bundle(self):
+    def case_correct_answer_dot(self):
+        yield Submission(Intro)
+        yield Submission(GamePage, dict(answer_raw="0.05", response_time_seconds=16.8))
+
+        expect(self.player.is_correct, True)
+        expect(self.player.is_trap, False)
+        expect(self.player.submitted_price, 0.05)
+
+        yield Submission(Results)
+
+    def case_intuitive_trap_answer(self):
+        yield Submission(Intro)
+        yield Submission(GamePage, dict(answer_raw="0,10", response_time_seconds=2.8))
+
+        expect(self.player.is_correct, False)
+        expect(self.player.is_trap, True)
+        expect(self.player.submitted_price, 0.10)
+
+        yield Submission(Results)
+
+    def case_invalid_input_failure(self):
         yield Submission(Intro)
 
-        # 2 caffè (6 €) + 4 zuccheri (4 €) = 10 € spesi, 10 € rimasti
-        yield Submission(GamePage, dict(coffee_units=2, sugar_units=4))
+        # Test testo non valido
+        yield SubmissionMustFail(GamePage, dict(answer_raw="non so", response_time_seconds=2.0))
 
-        expect(self.player.budget_spent, 10.00)
-        expect(self.player.budget_left, 10.00)
-        expect(self.player.perfect_cups, 2)
-        expect(self.player.satisfaction_percent > 50.0, True)
+        # Test numero negativo
+        yield SubmissionMustFail(GamePage, dict(answer_raw="-0.05", response_time_seconds=2.0))
 
+        # Test importo assurdo
+        yield SubmissionMustFail(GamePage, dict(answer_raw="50.00", response_time_seconds=2.0))
+
+        # Conclusione valida
+        yield Submission(GamePage, dict(answer_raw="0.05", response_time_seconds=9.5))
         yield Submission(Results)
 
     def play_round(self):
