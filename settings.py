@@ -83,7 +83,7 @@ SESSION_CONFIGS = [
     dict(
         name='bttf_pgg_human',
         display_name='Public Goods Game - Ritorno al Futuro (Marty: umano)',
-        doc='PGG a 4 ruoli (Marty umano + bot Doc, Biff, Jennifer). Dotazione in unit\u00e0 di energia/Salvadanaio (10-18 anni).',
+        doc='PGG a 4 ruoli (Marty umano + bot Doc, Biff, Jennifer). Dotazione in unit\u00e0 di energia/Salvadanaio (oltre 13 anni).',
         num_demo_participants=1,
         app_sequence=['registration', 'bttf_pgg'],
         marty_strategy='human',
@@ -110,7 +110,7 @@ SESSION_CONFIGS = [
     dict(
         name='pizza_pgg_5round',
         display_name='Pizzagame - La Festa della Pizza (bambini, 5 round)',
-        doc='PGG classico adattato per bambini (6-9 anni): 1 umano + 3 bot, 5 fette a testa, Piatto Condiviso x2.',
+        doc='PGG classico adattato per bambini (fino a 13 anni): 1 umano + 3 bot, 5 fette a testa, Piatto Condiviso x2.',
         num_demo_participants=1,
         app_sequence=['pizza_pgg'],
     ),
@@ -119,14 +119,14 @@ SESSION_CONFIGS = [
     # -------------------------------------------------------------------------
     #  Un'unica sessione che instrada automaticamente ogni partecipante in base
     #  all'eta' inserita nella scheda di registrazione (app `registration`):
-    #      * eta < 9  -> pizza_pgg (gioco per bambini)
-    #      * eta >= 9 -> bttf_pgg  (gioco "Ritorno al Futuro")
+    #      * eta <= 13 -> pizza_pgg (gioco per bambini)
+    #      * eta > 13  -> bttf_pgg  (gioco "Ritorno al Futuro")
     #  Entrambi i rami terminano sulla schermata di chiusura condivisa (`fine`).
     # -------------------------------------------------------------------------
     dict(
         name='esperimento_nrd',
         display_name='Esperimento completo - Notte dei Ricercatori 2026 (instradamento per eta\')',
-        doc='Sessione unificata: registrazione + instradamento automatico (eta<9 -> pizza, eta>=9 -> bttf) + chiusura.',
+        doc='Sessione unificata: registrazione + instradamento automatico (eta<=13 -> pizza, eta>13 -> bttf) + chiusura.',
         num_demo_participants=1,
         app_sequence=['registration', 'bttf_pgg', 'pizza_pgg', 'fine'],
         marty_strategy='human',
@@ -216,7 +216,7 @@ Scegli una sessione qui sotto in base al comportamento che vuoi dare al bot
 <p><strong>Esperimento completo &mdash; Notte dei Ricercatori 2026.</strong>
 Sessione unificata con instradamento automatico: ogni partecipante compila la
 scheda di registrazione e, in base all'et&agrave;, viene mandato al gioco
-corretto (bambini sotto i 9 anni al Pizzagame, dai 9 anni in su al Public
+corretto (bambini fino a 13 anni al Pizzagame, dai 14 anni in su al Public
 Goods Game &ldquo;Ritorno al Futuro&rdquo;). Entrambi i rami terminano su una
 schermata di chiusura condivisa.</p>
 <p><strong>Public Goods Game &mdash; Ritorno al Futuro.</strong>
@@ -224,7 +224,7 @@ Sono disponibili anche due sessioni del gioco dei beni pubblici (PGG) a tema
 <em>Ritorno al Futuro</em>: una in cui Marty e' giocato da un umano (con
 registrazione) e una in simulazione automatica (Marty gioca tit-for-tat).</p>
 <p><strong>Pizzagame &mdash; La Festa della Pizza (bambini).</strong>
-PGG classico adattato per bambini (6-9 anni): 1 bambino umano + 3 bot, 5 fette
+PGG classico adattato per bambini (fino a 13 anni): 1 bambino umano + 3 bot, 5 fette
 di pizza a testa a ogni round, Piatto Condiviso raddoppiato (x2) e diviso in 4
 parti uguali. Interfaccia colorata con bottoni-pizza.</p>
 """

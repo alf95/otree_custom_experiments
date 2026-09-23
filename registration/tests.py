@@ -194,19 +194,21 @@ class PlayerBot(Bot):
     # 7) Instradamento in base all'eta'
     # ------------------------------------------------------------------
     def case_routing_by_age(self):
-        # eta < soglia -> pizza ; eta >= soglia -> bttf.
-        expect(assigned_game(C.AGE_THRESHOLD - 1), 'pizza')
-        expect(assigned_game(C.AGE_THRESHOLD), 'bttf')
+        # eta <= soglia -> pizza ; eta > soglia -> bttf.
+        expect(assigned_game(C.AGE_THRESHOLD), 'pizza')
+        expect(assigned_game(C.AGE_THRESHOLD + 1), 'bttf')
         expect(assigned_game(3), 'pizza')
+        expect(assigned_game(13), 'pizza')
+        expect(assigned_game(14), 'bttf')
         expect(assigned_game(40), 'bttf')
 
-        yield Submission(InitialFormPage, valid_data(eta=8))
+        yield Submission(InitialFormPage, valid_data(eta=13))
         expect(self.player.participant.vars['assigned_game'], 'pizza')
-        expect(self.player.participant.vars['eta'], 8)
+        expect(self.player.participant.vars['eta'], 13)
 
-        yield Submission(InitialFormPage, valid_data(eta=9))
+        yield Submission(InitialFormPage, valid_data(eta=14))
         expect(self.player.participant.vars['assigned_game'], 'bttf')
-        expect(self.player.participant.vars['eta'], 9)
+        expect(self.player.participant.vars['eta'], 14)
 
     # ------------------------------------------------------------------
     # Entry point: esegue il case selezionato

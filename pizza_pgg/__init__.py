@@ -2,7 +2,7 @@ from otree.api import *
 
 
 doc = """
-Pizzagame - Public Goods Game (PGG) classico adattato per bambini (6-9 anni).
+Pizzagame - Public Goods Game (PGG) classico adattato per bambini (fino a 13 anni).
 
 Un bambino (Tu) gioca insieme a tre amici controllati dal computer:
     * Il Goloso         -> tiene sempre tutto per sé (0 fette nel Piatto Condiviso)

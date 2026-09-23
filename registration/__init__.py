@@ -10,8 +10,8 @@ Scheda di registrazione condivisa per l'esperimento "Notte dei Ricercatori 2026"
 E' la PRIMA app di ogni sessione sperimentale unificata. Ogni partecipante
 compila una sola volta la scheda anagrafica; in base all'eta' inserita il
 sistema instrada automaticamente al gioco corretto:
-    * eta < 9  -> pizza_pgg (gioco per bambini)
-    * eta >= 9 -> bttf_pgg  (gioco "Ritorno al Futuro")
+    * eta <= 13 -> pizza_pgg (gioco per bambini)
+    * eta > 13  -> bttf_pgg  (gioco "Ritorno al Futuro")
 
 L'instradamento usa `app_after_this_page` (salto di intere app, feature
 nativa di oTree): se il partecipante e' un bambino, dall'ultima pagina di
@@ -29,9 +29,9 @@ class C(BaseConstants):
 
     NUM_ROUNDS = 1
 
-    # Soglia di eta' (inclusiva verso l'alto) per la scelta del gioco:
-    # eta < AGE_THRESHOLD -> pizza_pgg ; eta >= AGE_THRESHOLD -> bttf_pgg.
-    AGE_THRESHOLD = 9
+    # Soglia di eta' per la scelta del gioco:
+    # eta <= AGE_THRESHOLD -> pizza_pgg ; eta > AGE_THRESHOLD -> bttf_pgg.
+    AGE_THRESHOLD = 13
 
 
 class Subsession(BaseSubsession):
@@ -66,6 +66,7 @@ class Player(BasePlayer):
             ['qualifica_professionale', 'Qualifica professionale'],
             ['laurea_triennale', 'Laurea triennale / base'],
             ['laurea_magistrale', 'Laurea magistrale'],
+            ['laurea_quadriennale_vo', 'Laurea Quadriennale V.O.'],
             ['master_i', 'Master universitario di I livello'],
             ['master_ii', 'Master universitario di II livello'],
             ['dottorato', 'Dottorato di ricerca'],
@@ -112,8 +113,8 @@ def generate_participant_id(player):
 
 
 def assigned_game(eta):
-    """Decide il gioco in base all'eta': 'pizza' se eta < soglia, altrimenti 'bttf'."""
-    return 'pizza' if eta < C.AGE_THRESHOLD else 'bttf'
+    """Decide il gioco in base all'eta': 'pizza' se eta <= soglia (<=13), altrimenti 'bttf' (>13)."""
+    return 'pizza' if eta <= C.AGE_THRESHOLD else 'bttf'
 
 
 # ---------------------------------------------------------------------------
